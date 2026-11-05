@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# NOTE(rebuild fix#2): template LACKS set_option maxRecDepth 20000 — after any regen, insert it as line 1 of NEBlocks.lean + CertData.lean (big literals fail parse at default depth).
+# NOTE(rebuild fix#2): template LACKS set_option maxRecDepth 20000 — after any regen, insert it AFTER the imports of NEBlocks.lean + CertData.lean (big literals fail parse at default depth).
 """Generate StaircasePort/CertData.lean + StaircasePort/NEBlocks.lean from
 extract/out/{cert_data,staircase_data}.json (exact ints only; no floating point anywhere).
 Also sanity-checks the hu/hv/hT analogue values at the extracted witness and prints the
