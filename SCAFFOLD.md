@@ -536,3 +536,87 @@ is a falsehood, not documented-stub debt).
 **Cross-wave consequence to raise with the coordinator:** the campaign's premise that the
 staircase design is the flag basis of Defs4's `qM` is wrong (that is the whole content of
 `n2d_frame_delta`). Every "swap the runs list inside r6's data_edge" step inherits this.
+## MIDRUN NOTES (2026-11-06, sp-midrun — independent middle-run arm)
+QUESTION: the open middle-run item of the N2d RESUME — (a) pivot status of the 439 middle
+positions of stairDataRuns in the r6 frame (qM M) at the witness, (b) dependence on
+flagEquiv's ARBITRARY middle order, (c) the middle clause isPiv_stairR7 must claim so
+Platform.isPiv_mid discharges it.
+
+METHOD (reusable): rightmost-pivot profile pc of the full 529×529 qM M in flag coords.
+THEOREM USED: rk(X,Y) = #{r<X : pc_r ≥ Y} for ALL (X,Y), hence IsPiv(i,j) ⟺ pc_i = j.
+This is exactly the producer's rho identity (check_stair.py:175; rightmost_pivots
+linalg.py:150-162) lifted to the global matrix — ONE elimination answers all 1756 block
+ranks of the run claims. Exact: int Kronecker + Tm*M*Ti (midrun_lib.py, cross-checked
+against n2d_qm_corner_check.py's mtimes on 36 entries); numpy int64 mod-p echelon (all
+intermediates < 2^63); two primes asserted equal; failing blocks re-verified by DIRECT
+submatrix elimination (midrun_spotcheck.py). Validation arms reproduce: rank(qM M) = 484
+(both primes), corner rank 44, old corner run 21/21 (r6's proved thm), added run 0/18,
+singles 4/6 ((24,504),(44,484) fail). pc on corner rows: 24→499, 37→486, 42→504,
+44→44 (row 44 escapes into the SW block!), and bot row 484 becomes a pivot row — the
+singular corner (rank 44) cascades into the middle tail.
+
+(a) **437/439 — the middle run FAILS in the r6 frame at the witness.** Failing positions
+(natural middle order): (464,464) — A,B,C,D = 44,45,44,45, pc_464 = 483 (pivot shifted one
+right); (483,483) — 45,45,44,44, pc_483 = −1 (last middle row is DEPENDENT). Per-position
+A/B/C/D + verdicts: extract/out/midrun_r6frame.json.
+
+(b) **Order-dependent: YES — and no order rescues it.** 4 middle orders × 2 primes
+(natural/reversed/shuffled/colmajor): the middle pc profile is NOT order-uniform. The
+failure structure is invariant: EVERY order fails at the LAST middle position 483
+(dependent row) plus exactly ONE shifted pivot (pc = 483) at an order-dependent position —
+464 / 51 / 50 / 103. Since flagEquiv is Classical.choose, the r6-frame middle clause of
+isPiv_stair_lower is unprovable as stated and false for every instantiation. Data:
+extract/out/midrun_orders.json. Generic controls (3 random label sets, y·x=1, hu/hv/hT≠0,
+STAIRCASE corner rank 45): middle 439/439 in the r6 frame in all trials (and 0 corner rows
+escaping into SW) — the r6-frame failure is caused exactly by the r6-frame corner
+singularity (hC of isPiv_mid failing), as isPiv_mid predicts.
+
+(c) **SPEC for isPiv_stairR7's middle clause** (matches the N2d honest route; cross-check
+target for N6): state it on the STAIRCASE-frame projector qM' M := (Tm' * M * Ti')
+submatrix flagEquiv' flagEquiv' (Nm'/Tm'/Ti' the staircase analogue of Defs4:877-884,
+flagEquiv' per exists_flagEquiv Defs4:891-903 with the staircase aL'/bL'; middle order
+arbitrary and IRRELEVANT — see (b) for why it must be):
+  `theorem isPiv_stairR7_mid (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (h₁ : y₁ ⬝ᵥ x₁ = 1)
+   (h₂ : y₂ ⬝ᵥ x₂ = 1)
+   (hdet : (stairCornerQOf ((1-vecMulVec x₁ y₁) ⊗ₖ (1-vecMulVec x₂ y₂))).det ≠ 0) :
+   ∀ i : ℕ, 45 ≤ i → i < 484 → IsPiv (qM' ((1-vecMulVec x₁ y₁) ⊗ₖ (1-vecMulVec x₂ y₂))) i i`
+Discharged VERBATIM by Platform.isPiv_mid (m:=529, k:=45; generic in p, NO transfer lemma
+for the pivot lemma itself): hk omega; hp = qM'_idem (r6 route
+nb_data_edge_solution.lean:524-526, label-shape-generic); hrank = 484 (Tm', Ti' invertible
+since Nm'² = 0 ⇒ rank(qM' M) = rank(M) = 22·22; trace route :521-531 + qM'_trace);
+hC via N6's corner-transfer identity corner(qM' M) = stairCornerQOf M (the qM'_corner
+analogue of :534-537) + stair_data_cert (N3 PROVED). Hypotheses: h₁ h₂ hdet only —
+hu/hv/hT are NOT needed for the middle clause (they are corner-run fuel). hdet MUST be the
+staircase-frame corner: in the r6 frame the same clause is FALSE at this witness ((a)/(b)).
+Producer convention (settles (b) from ground truth): the producer NEVER wires a middle
+order — the entrance block m−4h+2 = 439 is ONE batched rank-439 block, `H[m-4*h+2] += 2*N`
+(deferred.py:183, docstring :164; count 2N = 6272882, round7-histograms.json "bit"
+[439, 6272882]); only the corner is pc-derived (check_stair.py:174, runs :98), in
+family-list order = the Lean LtermsStair/RtermsStair indices. So the order-free isPiv_mid
+conclusion IS the producer's convention, and it is available exactly when the frame is the
+staircase one.
+
+LANDMINES: (1) aL/bL enumeration is ONE pair per index (45 entries); enumerate the L-term
+SUPPORTS instead and you get 47 and a wrong flag basis. (2) Kronecker entry is
+M[a*23+b][c*23+e] — writing the column block with b instead of c silently gives rank 23.
+(3) exact entries exceed int64 — reduce mod p in Python before np.array. (4) the
+pc-profile theorem needs the on-demand reduction (each new row reduced against ALL
+previous pivot rows); the producer's eager downward elimination computes the same reduced
+rows. Files: midrun_lib.py, midrun_r6frame.py, midrun_orders.py, midrun_spotcheck.py,
+MIDRUN_REPORT.md (also copied to ~/bigo-campaign/MIDRUN_REPORT.md), the two JSONs.
+
+## MIDRUN RESUME (2026-11-06, sp-midrun) — STATUS: QUESTION ANSWERED, item COMPLETE
+Verdicts: (1) r6-frame middle run = 437/439 pivots at the witness; failures (464,464)
+[pc=483] and (483,483) [dependent row]; two primes + direct-elimination spot check.
+(2) Order-dependent YES (one shifted failure moves; the tail failure at 483 is in every
+order; no order certifies the claim). (3) Producer convention: no middle order exists —
+entrance block is one batched 439-block (deferred.py:183); middle claims must be
+order-free, which only the staircase frame delivers. (4) Spec: middle clause of
+isPiv_stairR7 = verbatim Platform.isPiv_mid on qM' M (staircase frame), hypotheses
+h₁ h₂ hdet(staircase), hC = N6's corner-transfer identity + stair_data_cert; no transfer
+lemma for isPiv_mid itself; hu/hv/hT not needed. Next: N6 builds qM' (Tm'/Ti'/flagEquiv')
+and proves corner(qM' M) = stairCornerQOf M — that identity is the ONLY load-bearing
+lemma for the middle clause; corner runs then ride on N2c lifted + isPiv_block in the same
+frame (N2d RESUME honest route). Cross-check pointers for N6: extract/out/midrun_r6frame.json
+(per-position A,B,C,D), extract/out/midrun_orders.json (4 orders × 2 primes + 3 generic
+controls).
