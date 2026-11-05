@@ -676,3 +676,14 @@ staircase frame plus `isPiv_rank1_lower` + `isPiv_block` (generic, nb_data_edge_
 **Do not redo:** `qM M`-based anything (refuted: corner rank 44 at the witness, middle run
 437/439 with failures [464,483]); `isPiv_stair_lower` as stated (N2d); the corner-transfer
 identity read as `cor` (N2d's `n2d_frame_delta`). The new object resolves all three.
+
+### N6 NOTES addendum (measured after the RESUME was written): the (25,2) obstacle is GONE
+`n6_struct_probe.py`'s shifted-block probes: in the STAIRCASE frame the blocks
+`C[24+k][1+g]` (k<g), `C[25+k][2+g]` and `C[23+k][0+g]` each have **0** nonzero 2x2 minors in
+the identity region — so the corner position `(25,2)` (which `isPiv_rank1_lower` cannot reach on
+`C[25+k][2+g]`, since that block needs `l = 0`) IS reachable as `l = 1` of the block
+`C[24+k][1+g]`. Offsets 0, 1 and 2 are all rank-one in the staircase frame, which suggests ONE
+identity `corStairQ M i (c0+γ) = u_i·v_γ` for `i < γ` at several offsets rather than a
+block-by-block computation. (The r6 control gives 0 for the `(i,22+g)` block it uses and 816
+nonzero minors for the shifted blocks — the r6 frame's rank-one region is different, which is
+exactly N2d's frame delta; that is a control that the probe DISCRIMINATES, not a discrepancy.)
