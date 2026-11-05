@@ -308,3 +308,104 @@ is a FRAME discovery, not a proof gap:
 * When regex-substituting a variable name in Lean source, protect named-argument LABELS
   (`(h := ...)` must keep the `h`).
 * A hypothesis named `h` (`intro h`, `have h :`) is silently rewritten by such a substitution.
+## N2c NOTES (2026-11-05, subagent sp-n2c)
+STATUS: PROVED (build verification in progress at write time; see N2c RESUME below).
+### THE STATEMENT IS TRUE AS SCAFFOLDED — and the route is NOT the r6 corner route
+`stairCorner_pivots_witness` (∀ x ∈ runPairs stairCornerRuns45, IsPiv stairCornerQ x.1 x.2)
+is true; verified independently twice (the producer check_stair.py --ij run, and here by a
+fresh mod-P recomputation: extract/n2c_struct2.py reproduces max|entry| 331316300630710586
+302386325809570540 = cert_data's max_abs, and the FULL 46x46 rank profile rk(X,Y) =
+#{r<X : pc_r >= Y} from pc = [44,23..43,22,21,20,2..19,1,0]).
+### WHY r6's corner step does not port
+r6's accepted body got the corner pivots from `isPiv_rank1_lower` (hB : B i j = u i * v j
+for i < j) — a rank-one-above-diagonal structure. The staircase corner is DENSE (2025/2025
+nonzero entries) and its pivot pattern is the PERMUTATION pc, not the diagonal, so there is
+no such hypothesis. Worse: contiguous minors in the late-row blocks are ALL SINGULAR
+(e.g. every 26x26 minor rows rlo..rlo+25 x cols clo..clo+25 inside block (38,14) is 0 mod
+stairCertP, while rank(38,14) = 26) — minors must be found by ECHELON over F_P, not by
+guessing windows. That is the single most important discovery here.
+### THE PROOF SHAPE (all in Pivot.lean, namespace StaircasePort.Stair)
+IsPiv q i j := rk q (i+1) j + rk q i (j+1) = rk q i j + rk q (i+1) (j+1) + 1, where
+rk q X Y = rank of the NE block (rows < X, cols >= Y). With j = pc i and
+k = #{r < i | pc r >= pc i}:
+  A = rk q i j = k, B = rk q (i+1) j = k+1, C = rk q i (j+1) = k, D = rk q (i+1)(j+1) = k.
+UPPERS (all four): trivial `min(#rows,#cols)` (rk_le_height/rk_le_width) or N2b's cut table
+(`rkQ_le_of_block`, a 3-line restatement of stairNE_rk_le for stairCornerQ). LOWER B:
+a nonzero (k+1)-minor inside (i+1, j). LOWER C: a nonzero k-minor inside (i, j+1) — which
+also gives D >= k (block inclusion) and A >= k (block inclusion). Then
+`isPiv_of_bounds` derives A = D = k by monotonicity and closes with omega.
+KEY SIMPLIFICATION: only TWO lower bounds per position are needed (not four), and the
+UNIVERSAL inequality B + C <= A + D + 1 is never needed as a lemma — the four exact values
+make IsPiv pure arithmetic.
+
+### THE CERTIFICATE MECHANISM (reuses N3 verbatim)
+Each minor is certified by the N3 `certChk` product check mod stairCertP (rows x inverse-
+transpose = 1), NOT by computing a determinant: `n2cChk<k>` (decide +kernel) plus
+`n2cEnt<k>` pinning the minor's entries against corZStair stairMZ (decide +kernel), then
+`n2c_rank_lower` casts Z -> Q (corStairQ_cast + RingHom.map_det) exactly as
+stair_data_cert does. 47 certificates: sizes 1, 2x21, 22, 23, 24, 25, 26x18, 43, 44, 45.
+Cover was minimised by a greedy variant search; 18 of the 26s are PROVABLY necessary (each
+i in 25..42 forces maxR <= i and minC >= pc i, and rank(i+1, pc i - 1) < 26 blocks any
+shared shape).
+
+### LANDMINES HIT (for successors)
+(a) Splice order: the block consumes `stairNE_rk_le`, which lives at the END of Pivot.lean —
+the N2c block must be spliced before the final `end Stair`, not at the scaffold theorem's
+site (otherwise "Unknown identifier stairNE_rk_le").
+(b) `runPairs stairCornerRuns45` emits pairs in RUN order, so an equality with
+`(List.range 45).map ...` is FALSE — pin `... .toFinset` equality by decide instead
+(stairCornerRuns45_toFinset / _mem).
+(c) `Fintype.card_le_of_embedding` lands on `Fintype.card (Fin X)`; close with `simpa`.
+(d) `rkQ_le_of_block` needs an explicit `1 ≤ X` for Nat.sub_add_cancel.
+(e) `Int.castRingHom p x` is not syntactically `↑x`: rewrite with bare `eq_intCast` first,
+   then `← ZMod.intCast_mod` (N3's chain), else rw silently fails to match.
+(f) In `n2c_rank_lower` the column indices need BOTH a lower (≥ Y) and an upper (< 45)
+   bound as hypotheses — omega cannot conjure `< 45` from `Y ≤ c`.
+(g) `simpa` alone will not rewrite a matrix form into a hypothesis; build the goal's exact
+   matrix with a `rfl`-checked `heq` and rw both.
+## N2c RESUME (2026-11-05, subagent sp-n2c) — STATUS: PROVED, item COMPLETE
+Stopping point: NOTHING in flight for N2c. `stairCorner_pivots_witness` is PROVED and
+spliced into StaircasePort/Pivot.lean (at the END of `namespace Stair`, after
+`stairNE_rk_le`); `lake build StaircasePort` GREEN (8997 jobs, 0 errors, build_n2c.log —
+~6 min at host load). Axioms (n2c_axcheck.lean): stairCorner_pivots_witness / stairPivAt /
+n2c_rank_lower / rkQ_le_of_block / isPiv_of_bounds / rk_ge_of_det /
+stairCornerRuns45_toFinset/_mem ALL `[propext, Classical.choice, Quot.sound]`; the kernel
+pins n2cChk0 `[propext]`, n2cEnt0 `[propext, Quot.sound]`. NO sorryAi, NO native_decide,
+NO `sorry` in the block (the 6 remaining sorries in Pivot.lean are the 4 Platform
+restatements + N2d `isPiv_stair_lower` — all pre-existing).
+
+Files changed: StaircasePort/Pivot.lean (the N2c block: stairPC, 5 generic rank lemmas +
+isPiv_of_exact/isPiv_of_bounds, rkQ_le_of_block, n2c_rank_lower, 47 certificate data
+triples + chk/ent pins, n2cPiv0..44, stairPivAt, stairCorner_pivots_witness).
+Scratch at clone root: n2c_struct2.py (independent mod-P reproduction of the corner +
+46x46 profile), n2c_plan.py (upper-bound coverage audit), n2c_emit2.py (generator:
+minors by echelon over F_P, cert cover, Lean emission), n2c_splice.py, n2c_probe1.lean +
+log (the 2-position probe that validated all generic plumbing before the full build),
+n2c_axcheck.lean, n2c_cert_search*.py, n2c_gen.py, n2c_struct.py.
+NO shared-file change requests. Nothing blocked on N2c: N2d can consume it as-is.
+
+### N2d STATUS: NOT STARTED (ran out of this agent's budget) — findings that save the next mind days
+1. STATEMENT SHAPE IS CONFIRMED CORRECT and needs NO delta: the consumer
+   (~/bigo-campaign/sp-n52/StaircasePort/Signature.lean:1499) calls
+   `isPiv_stair_lower _ _ _ _ h₁' h₂' (mul_ne_zero (hx1 _) (hx2 _)) (mul_ne_zero hy1 hy2) ?_ ?_`
+   — exactly the scaffold's 9 arguments, in order, with `hdet` = the STAIRCASE-frame corner
+   det (`stairCornerQOf (...)`), i.e. exactly what N3's stair_data_cert and the N5-2
+   course update say. So the frame correction the N5-2 agent measured (corStairQ ≠ cor,
+   r6 frame singular) does not change N2d's SIGNATURE; it changes only the PROOF, because
+   the corner-transfer identity `Cp i j = cor M i j` (nb_data_edge_solution.lean:534-537)
+   must be re-proved in the staircase frame.
+2. The middle run (45,45,439) is the easy half: Platform.isPiv_mid (m = 529, k = 45,
+   p = qM M) needs hk (`2*45 ≤ 529`), hp (`p*p = p`, from DEPort.qM_idem + the
+   Kronecker-of-idempotents identity already used verbatim in
+   sp-n52/Signature.lean:204-210), hrank (`(qM M).rank = 484`, the trace computation
+   :211-217) and hC (the 45x45 corner at rows 0..44 / cols 484..528 = the transfer
+   identity, staircase frame). Positions produced: (i,i) for 45 ≤ i < 484.
+3. The two corner runs (1,507,21) and (25,486,18) need: isPiv_block
+   (nb_data_edge_solution.lean:227-238, PROVED with a full proof in
+   ~/bigo-campaign/sp-n52/ref/) + N2c lifted from the concrete witness to generic labels.
+   The lift is the flag_gen Zariski/Pall product route (nb_flag_gen_solution.lean:977-993);
+   N4's stair_f_nonvanishing + stair_hu/hv/hT are built for precisely that product, so
+   compose with them rather than re-deriving.
+4. isPiv_block also needs `i < j`-shaped side hypotheses on the B/A blocks (the r6 lemma's
+   hB/hBd/hA/hAd) — those are the sparse-family facts, and the staircase family's versions
+   are LtermsStair/RtermsStair support facts (a `decide`/`simp` on the concrete lists).
