@@ -496,3 +496,43 @@ CONDITIONALLY — it takes `hpiv` as a hypothesis; only the instantiation is uns
   ENTRY each frame reads.
 * `set_option linter.unusedSimpArgs false in` is needed on these lemmas (the simp sets are
   deliberately over-complete) — otherwise the build emits unused-arg noise.
+
+## N2d RESUME (2026-11-05, subagent sp-n2d) — STATUS: STATEMENT REFUTED, no work in flight
+**Stopping point:** nothing in flight. `lake build StaircasePort` GREEN (8997 jobs, exit 0)
+with the new frame-delta block; `n2d_axcheck.lean` prints
+`[propext, Classical.choice, Quot.sound]` for all eight new lemmas and `sorryAx` for
+`isPiv_stair_lower` (statement untouched, still `sorry`, now carrying a REFUTED docstring).
+**The stuck goal, verbatim:** prove
+`∀ p ∈ runPairs (stairDataRuns 23 529), IsPiv (qM ((1-x₁y₁) ⊗ₖ (1-x₂y₂))) p.1 p.2`
+given `y₁⬝x₁ = 1`, `y₂⬝x₂ = 1`, `hu`, `hv`, `hT`, and
+`(stairCornerQOf ((1-x₁y₁) ⊗ₖ (1-x₂y₂))).det ≠ 0`. **It is false** — do not attempt it.
+
+**Tried / failed (do not redo):**
+1. Middle run via `Platform.isPiv_mid` + "isPiv_mid needs only hdet": the `hdet` in the
+   statement is the staircase frame, `isPiv_mid` needs the corner of the matrix it is
+   applied to, and `qM M`'s corner is the r6 frame (`qM_corner`) — measured rank 44 at the
+   witness, so this route is unavailable at the very witness the campaign chose.
+2. Corner-transfer identity "`Cp i j = cor M i j` restated with `corStairQ`"
+   (Signature.lean header point 1): false — the two frames read different matrix entries
+   (`n2d_cor_00` vs `n2d_corStairQ_00`; 1528/2025 entries differ at the witness).
+3. Corner runs "via N2c lifted to symbolic labels": moot while the object is `qM M`
+   (18 of the 39 positions are not pivots there). N2c's certificate machinery itself is
+   fine — it is a statement about `stairCornerQ`, not about `qM M`.
+4. Zariski lift: not needed to refute; it is needed for the HONEST route below, and the
+   generic probe says the staircase-frame pattern is not fragile (39/39 at 4 random
+   label sets satisfying hu/hv/hT + staircase hdet).
+
+**Next move (the honest route — a different OBJECT, not a different proof):** build the
+R7/staircase data-entrance projector — the analogue of `Tm`/`Ti`/`flagEquiv` built from
+`LtermsStair`/`RtermsStair` — and prove its `qM_corner` analogue (corner = `corStairQ`).
+Then: middle run from `isPiv_mid` with `hdet = stair_data_cert`; corner runs from N2c's 39
+witness pivots lifted to generic labels through the flag_gen Pall product (N4's
+`stair_f_nonvanishing` + `stair_hu/hv/hT`). `data_edge_stair` (N5-1) then applies unchanged
+(hpiv is its hypothesis). Until that object exists there is nothing true to prove here, and
+`flag_gen`'s call site (Signature.lean:1498-1499) must not be treated as a landed step:
+`flagBasis_stair` currently derives its conclusion from a false hypothesis (its `sorryAx`
+is a falsehood, not documented-stub debt).
+
+**Cross-wave consequence to raise with the coordinator:** the campaign's premise that the
+staircase design is the flag basis of Defs4's `qM` is wrong (that is the whole content of
+`n2d_frame_delta`). Every "swap the runs list inside r6's data_edge" step inherits this.
