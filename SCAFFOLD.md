@@ -409,3 +409,130 @@ NO shared-file change requests. Nothing blocked on N2c: N2d can consume it as-is
 4. isPiv_block also needs `i < j`-shaped side hypotheses on the B/A blocks (the r6 lemma's
    hB/hBd/hA/hAd) — those are the sparse-family facts, and the staircase family's versions
    are LtermsStair/RtermsStair support facts (a `decide`/`simp` on the concrete lists).
+
+## N2d NOTES (2026-11-05, subagent sp-n2d) — STATUS: STATEMENT REFUTED (no proof exists)
+### Verdict
+`isPiv_stair_lower` (Pivot.lean) is **FALSE as stated**. Nothing is proved and nothing
+should be: at the extracted staircase witness every one of its five hypotheses holds while
+18 of the 39 corner positions it claims are not pivots of the matrix it names. This is the
+third false-premise discovery of the campaign (after N2b's false scaffold statement and
+N5-2's unsound pDat route) and it is a FRAME error, not a proof gap.
+
+### The frame fact (two independent verifications)
+1. `qM M`'s top-right 45x45 corner is Defs4's `cor M` (r6 frame: `Lterms`/`Rterms`), by
+   the platform lemma `qM_corner` — the same lemma the accepted r6 `data_edge` proof uses
+   (nb_data_edge_solution.lean:537-539). It is NOT `corStairQ`.
+   `n2d_qm_corner_check.py` rebuilds `qM = (Tm*M*Ti).submatrix flagEquiv flagEquiv` from
+   scratch (concrete flagEquiv from aL/bL + an arbitrary middle order, exact `Fraction`
+   arithmetic) and reproduces the r6-frame `cor` on **2025/2025** entries at the staircase
+   witness; **1528/2025** entries differ from `corStairQ`.
+2. Lean-checked (`n2d_frame_delta`, in Pivot.lean, axioms `[propext, Classical.choice,
+   Quot.sound]`): the two frames read different matrix ENTRIES at (0,0) — `n2d_cor_00`
+   reads `M (0,0) (1,0)`, `n2d_corStairQ_00` reads `M (0,0) (1,3)` — and at the witness
+   those evaluate to `653217308241796875` vs `-54722753962895109375`.
+   So the swap point "`:527-537` Cp/hCe corner identity — restated with `cor → corStairQ`"
+   (Signature.lean header, point 1) is unsound, and `corStairQ ≠ cor` is not an accident
+   of the witness: the two families use different supports.
+
+### The refutation (`n2d_refute.py`, exact, rerunnable)
+At the extracted staircase witness (`extract/out/cert_data.json` labels):
+- all hypotheses of `isPiv_stair_lower` hold: `y₁⬝x₁ = 1`, `y₂⬝x₂ = 1`,
+  `hu = x₁[0]x₂[0] = 9`, `hv = y₁[22]y₂[22] = 28894092²`, all 21 `hT` values nonzero
+  (min |value| = 173364552), and `hdet` (staircase-frame det ≠ 0 = N3's `stair_data_cert`,
+  rank 45 — reproduced here as a profile that matches `pc` exactly);
+- the ACTUAL corner of `qM M` has rank **44**, and **18 of the 39** corner positions in
+  `runPairs (stairDataRuns 23 529)` are NOT pivots: exactly the added staircase run
+  `(25,486,18)` (corner coordinates `(i, i-23)`, `25 ≤ i ≤ 42`). The pre-existing r6 run
+  `(1,507,21)` DOES hold in the r6 frame (21/21), which is what r6's proved theorem says.
+- the 439 middle-run positions are not decidable here (they depend on `flagEquiv`'s
+  arbitrary middle order), but `isPiv_mid`'s hypothesis (invertible corner) FAILS at this
+  witness (rank 44), so the middle run is uncertified too — the r6 route is unavailable.
+Consequence: **flag_gen's call site (Signature.lean:1498-1499) applies a false lemma**, so
+`flagBasis_stair` (N5-2) currently rests on a false statement (its `sorryAx` is not
+"documented platform stub" debt, it is a falsehood). `data_edge_stair` (N5-1) is fine
+CONDITIONALLY — it takes `hpiv` as a hypothesis; only the instantiation is unsound.
+
+### What survives / the honest route
+* `stairCorner_pivots_witness` (N2c) stays true and is exactly right: the staircase
+  corner's pivots at the witness.
+* `n2d_generic_probe.py` (4 random label sets, `y⬝x = 1`, hu/hv/hT, staircase corner rank
+  45): the staircase frame's 39 positions are pivots **39/39 in all 4 trials**, and the
+  control arm reproduces r6's PROVED 21/21 corner pivots in the r6 frame — i.e. the rank
+  machinery is validated and the *staircase-frame* symbolic pattern is plausible
+  (evidence, not proof).
+* Therefore the honest form the consumer needs is a data edge for the **staircase
+  projector**, not for Defs4's `qM`: the SAME construction as `Tm`/`Ti`/`flagEquiv` but
+  built from `LtermsStair`/`RtermsStair` (an R7-side object; the skeleton has the families
+  and the corner but not the change-of-basis/ordering). With it, `qM_corner`'s analogue
+  gives the corner = `corStairQ`, `hdet` = `stair_data_cert` becomes usable, the middle run
+  follows from `isPiv_mid`, and the corner runs need N2c's 39 witness pivots lifted to
+  generic labels (a Zariski lift of the same 47 certificates, or the N4-style Pall product).
+  Without that object there is no true statement to prove here.
+* Do NOT "fix" it by weakening `hdet` to the r6-frame corner: the r6 frame is singular at
+  the staircase witness (measured twice), so that variant cannot certify the R7 witness.
+
+### Files
+* Lean: `StaircasePort/Pivot.lean` — statement left BYTE-IDENTICAL with a REFUTED warning
+  doc; new "N2d — THE FRAME DELTA" block at the end of `namespace Stair`
+  (`n2d_stairMQ_entry`, `n2d_Lterms_0`, `n2d_Rterms_0`, `n2d_LtermsStair_0`,
+  `n2d_RtermsStair_0`, `n2d_cor_00`, `n2d_corStairQ_00`, `n2d_frame_delta`), no sorry, no
+  native_decide, no axiom.
+* Scratch (clone root): `n2d_refute.py` (the refutation), `n2d_qm_corner_check.py`
+  (independent qM corner), `n2d_generic_probe.py` (control arm + generic staircase probe),
+  `n2d_frame_test.py` (first profile test), `n2d_scratch.lean`/`n2d_probe.lean` (proof
+  development), `n2d_axcheck.lean`, `n2d_splice.txt`.
+* NO shared-file change requests: the whole delta is inside Pivot.lean + clone-root scratch.
+
+### Landmines added (banked, new)
+* `decide` cannot unfold regular `def`s here: `decide` on `cor stairMQ 0 0 = <numeral>`
+  fails with "`Decidable` instance did not reduce" because reduction gets stuck on
+  `stairMQ s.2 t.2`. Route: unfold with `simp only [...]` (needs `stairMQ_entry` IN the
+  simp set — that lemma's presence is what lets the surrounding `List.map`/`dite`
+  reductions fire, probably via simp's congruence ordering), then `rw [stairMQ_entry]`,
+  then `norm_num [<label defs>, List.getD_*, Fin.isValue, ↓reduceIte, Fin.mk.injEq]`.
+* The clean way to compute a corner entry is to prove the SUPPORT decomposition first for
+  ARBITRARY `M` (`n2d_cor_00 : cor M 0 0 = M (0,0) (1,0)`, by `simp [cor, <Lterms_0>]`):
+  label-free, reusable, and it makes the frame divergence a statement about which MATRIX
+  ENTRY each frame reads.
+* `set_option linter.unusedSimpArgs false in` is needed on these lemmas (the simp sets are
+  deliberately over-complete) — otherwise the build emits unused-arg noise.
+
+## N2d RESUME (2026-11-05, subagent sp-n2d) — STATUS: STATEMENT REFUTED, no work in flight
+**Stopping point:** nothing in flight. `lake build StaircasePort` GREEN (8997 jobs, exit 0)
+with the new frame-delta block; `n2d_axcheck.lean` prints
+`[propext, Classical.choice, Quot.sound]` for all eight new lemmas and `sorryAx` for
+`isPiv_stair_lower` (statement untouched, still `sorry`, now carrying a REFUTED docstring).
+**The stuck goal, verbatim:** prove
+`∀ p ∈ runPairs (stairDataRuns 23 529), IsPiv (qM ((1-x₁y₁) ⊗ₖ (1-x₂y₂))) p.1 p.2`
+given `y₁⬝x₁ = 1`, `y₂⬝x₂ = 1`, `hu`, `hv`, `hT`, and
+`(stairCornerQOf ((1-x₁y₁) ⊗ₖ (1-x₂y₂))).det ≠ 0`. **It is false** — do not attempt it.
+
+**Tried / failed (do not redo):**
+1. Middle run via `Platform.isPiv_mid` + "isPiv_mid needs only hdet": the `hdet` in the
+   statement is the staircase frame, `isPiv_mid` needs the corner of the matrix it is
+   applied to, and `qM M`'s corner is the r6 frame (`qM_corner`) — measured rank 44 at the
+   witness, so this route is unavailable at the very witness the campaign chose.
+2. Corner-transfer identity "`Cp i j = cor M i j` restated with `corStairQ`"
+   (Signature.lean header point 1): false — the two frames read different matrix entries
+   (`n2d_cor_00` vs `n2d_corStairQ_00`; 1528/2025 entries differ at the witness).
+3. Corner runs "via N2c lifted to symbolic labels": moot while the object is `qM M`
+   (18 of the 39 positions are not pivots there). N2c's certificate machinery itself is
+   fine — it is a statement about `stairCornerQ`, not about `qM M`.
+4. Zariski lift: not needed to refute; it is needed for the HONEST route below, and the
+   generic probe says the staircase-frame pattern is not fragile (39/39 at 4 random
+   label sets satisfying hu/hv/hT + staircase hdet).
+
+**Next move (the honest route — a different OBJECT, not a different proof):** build the
+R7/staircase data-entrance projector — the analogue of `Tm`/`Ti`/`flagEquiv` built from
+`LtermsStair`/`RtermsStair` — and prove its `qM_corner` analogue (corner = `corStairQ`).
+Then: middle run from `isPiv_mid` with `hdet = stair_data_cert`; corner runs from N2c's 39
+witness pivots lifted to generic labels through the flag_gen Pall product (N4's
+`stair_f_nonvanishing` + `stair_hu/hv/hT`). `data_edge_stair` (N5-1) then applies unchanged
+(hpiv is its hypothesis). Until that object exists there is nothing true to prove here, and
+`flag_gen`'s call site (Signature.lean:1498-1499) must not be treated as a landed step:
+`flagBasis_stair` currently derives its conclusion from a false hypothesis (its `sorryAx`
+is a falsehood, not documented-stub debt).
+
+**Cross-wave consequence to raise with the coordinator:** the campaign's premise that the
+staircase design is the flag basis of Defs4's `qM` is wrong (that is the whole content of
+`n2d_frame_delta`). Every "swap the runs list inside r6's data_edge" step inherits this.

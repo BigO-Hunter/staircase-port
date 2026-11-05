@@ -299,7 +299,16 @@ generic labels via flag_gen Zariski); corner runs via N2c at the witness, transf
 qM M's corner by isPiv_block (PROVED, nb_data_edge_solution.lean:227-238, ports verbatim:
 Cp i j = cor M i j identity :534-537 restated with corStairQ), then witness → generic
 labels by the flag_gen Pall/exists_eval_ne product structure
-(nb_flag_gen_solution.lean:977-993; nonvanishing factors = N4 + hdet). -/
+(nb_flag_gen_solution.lean:977-993; nonvanishing factors = N4 + hdet).
+
+**REFUTED (N2d, 2026-11-05) — this statement is FALSE as written.** The `hdet` below is
+the STAIRCASE-frame corner, but the corner of `qM M` is the R6 frame (`qM_corner`), and at
+the extracted staircase witness all hypotheses hold while 18 of the 39 claimed corner
+positions are not pivots (`n2d_refute.py`; the frame divergence is `n2d_frame_delta` at
+the end of this namespace, and `n2d_qm_corner_check.py` reproduces the actual corner of
+`qM stairMQ` independently). Consumers must not apply this theorem: see the "## N2d — THE
+FRAME DELTA" block at the end of `namespace Stair`. The statement is deliberately left
+byte-identical (the consumer arity/argument positions are right; only its truth is not). -/
 theorem isPiv_stair_lower (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
     (h₁ : y₁ ⬝ᵥ x₁ = 1) (h₂ : y₂ ⬝ᵥ x₂ = 1)
     (hu : x₁ ⟨0, by omega⟩ * x₂ ⟨0, by omega⟩ ≠ 0)
@@ -3544,6 +3553,82 @@ theorem stairCorner_pivots_witness :
   rw [stairCornerRuns45_mem] at hx
   obtain ⟨i, hi, rfl⟩ := List.mem_map.mp hx
   exact stairPivAt ⟨i, List.mem_range.mp hi⟩
+
+
+/-! ## N2d — THE FRAME DELTA (the refutation of `isPiv_stair_lower` as scaffolded)
+
+`isPiv_stair_lower` (above) concludes `IsPiv (qM M) p.1 p.2` for `p ∈ runPairs
+(stairDataRuns 23 529)`, from the hypothesis `hdet` that the **staircase frame** corner
+`stairCornerQOf M = Matrix.of (corStairQ M)` is invertible.
+
+That statement is FALSE. Two independent reasons, both verified exactly:
+
+1. **The corner of `qM M` is the r6 frame, not the staircase frame.** The platform lemma
+   `qM_corner` (used verbatim by the accepted `data_edge` proof, nb_data_edge_solution.lean
+   :537-539) identifies the top-right `45 × 45` corner of `qM M` with Defs4's `cor M`
+   (`Lterms`/`Rterms`). `n2d_frame_delta` below pins the divergence decidably at entry
+   (0,0) of the staircase witness: the r6 frame reads the matrix entry `(0,0),(1,0)`,
+   the staircase frame the entry `(0,0),(1,3)`. At the witness these are
+   `653217308241796875` and `-54722753962895109375`; `n2d_qm_corner_check.py` reproduces
+   the actual corner of `qM stairMQ` from `Tm * M * Ti` with a concrete `flagEquiv`
+   (2025/2025 entries = the r6 frame; 1528/2025 differ from the staircase frame).
+   So the swap point "restate the corner identity with `cor → corStairQ`"
+   (Signature.lean header, point 1, ":527-537") is unsound.
+
+2. **The claimed pivots fail at the witness.** `n2d_refute.py` checks all five hypotheses
+   of `isPiv_stair_lower` at the extracted witness labels (`extract/out/cert_data.json`):
+   `y₁ ⬝ x₁ = 1`, `y₂ ⬝ x₂ = 1`, `hu = 9`, `hv = 28894092²`, all 21 `hT` values nonzero,
+   and `hdet` holds (`stair_data_cert`, rank 45). The actual r6-frame corner has rank 44,
+   and **18 of the 39 corner positions** asserted by `stairDataRuns 23 529` are *not*
+   pivots — the failing positions are exactly the added staircase run `(25,486,18)`
+   (corner coordinates `(i, i-23)`, `25 ≤ i ≤ 42`). The pre-existing r6 corner run
+   `(1,507,21)` does hold in the r6 frame.
+
+Consequence: the staircase frame is not the flag basis of Defs4's `qM`. A data edge with
+runs `stairDataRuns 23 529` must be certified for the projector built from the STAIRCASE
+design (`LtermsStair`/`RtermsStair`) — an R7-side definition that does not exist in this
+skeleton (D2/QHNet territory) — not by swapping the corner inside r6's `data_edge`.
+`stairCorner_pivots_witness` (N2c) remains true and useful: it is the witness-level pivot
+fact for the staircase corner itself. -/
+
+/-- Mirror entry formula for the staircase witness pair matrix. -/
+lemma n2d_stairMQ_entry (a b c e : Fin 23) :
+    stairMQ (a, b) (c, e) =
+      ((if a = c then (1 : ℚ) else 0) - stairQX1 a * stairQY1 c) *
+        ((if b = e then (1 : ℚ) else 0) - stairQX2 b * stairQY2 e) := by
+  simp only [stairMQ, kronecker_apply, Matrix.sub_apply, vecMulVec_apply, Matrix.one_apply]
+
+lemma n2d_Lterms_0 : Lterms (h := 19) 0 = [(1, ((0 : Fin 23), (0 : Fin 23)))] := by
+  simp [Lterms]
+
+lemma n2d_Rterms_0 : Rterms (h := 19) 0 = [(1, ((1 : Fin 23), (0 : Fin 23)))] := by
+  simp [Rterms]
+
+lemma n2d_LtermsStair_0 : LtermsStair 0 = [(1, ((0 : Fin 23), (0 : Fin 23)))] := by
+  simp [LtermsStair, LtermsZStair]
+
+lemma n2d_RtermsStair_0 : RtermsStair 0 = [(1, ((1 : Fin 23), (3 : Fin 23)))] := by
+  simp [RtermsStair, RtermsZStair]
+
+/-- The r6/Defs4 corner at (0,0) reads the matrix entry `(0,0),(1,0)` (label-free). -/
+lemma n2d_cor_00 (M : Matrix (Pr 23) (Pr 23) ℚ) :
+    cor (h := 19) M 0 0 = M ((0 : Fin 23), (0 : Fin 23)) ((1 : Fin 23), (0 : Fin 23)) := by
+  simp [cor, n2d_Lterms_0, n2d_Rterms_0]
+
+/-- The staircase corner at (0,0) reads the matrix entry `(0,0),(1,3)` (label-free). -/
+lemma n2d_corStairQ_00 (M : Matrix (Pr 23) (Pr 23) ℚ) :
+    corStairQ M 0 0 = M ((0 : Fin 23), (0 : Fin 23)) ((1 : Fin 23), (3 : Fin 23)) := by
+  simp [corStairQ, n2d_LtermsStair_0, n2d_RtermsStair_0]
+
+/-- **N2d frame delta** — the two frames read different matrix entries at (0,0), so
+`corStairQ` can never replace `cor` in the `qM_corner` identity. At the staircase witness
+the two corner entries are `653217308241796875` and `-54722753962895109375`. -/
+theorem n2d_frame_delta :
+    cor (h := 19) stairMQ 0 0 ≠ corStairQ stairMQ 0 0 := by
+  rw [n2d_cor_00, n2d_corStairQ_00, n2d_stairMQ_entry, n2d_stairMQ_entry]
+  norm_num [stairQX1, stairQY1, stairQX2, stairQY2, stairWX1L, stairWY1L, stairWX2L, stairWY2L,
+    List.getD_cons_zero, List.getD_cons_succ, List.getD_nil, Fin.isValue, ↓reduceIte,
+    Fin.mk.injEq]
 
 
 end Stair
