@@ -227,3 +227,14 @@ in Mathlib d13f23b7 (nor `List.map_congr`; `List.sum_map_congr` is free to defin
 with `simp`, not `ring`; (f) stairTermRow/stairTermCol take the index as `Fin 45`, not `ℕ`.
 ### NEXT
 N2c (stairCorner_pivots_witness) then N2d; nothing in N2b blocks them.
+## N2b RESUME (2026-11-06) — STATUS: PROVED, item COMPLETE
+Stop point: nothing in flight. `stairNE_rk_le` is PROVED and MERGED in StaircasePort/Pivot.lean;
+`lake build StaircasePort` GREEN (8997 jobs); axioms of stairNE_rk_le = [propext,
+Classical.choice, Quot.sound] (n2b_axcheck.lean); zero sorry added, no native_decide in the
+proof layer. `n2b_full.lean` at the clone root is the standalone version of the same
+development (kept for reference/diffing; Pivot.lean is the source of truth).
+Tried-and-failed routes worth not repeating: arbitrary-M statement (FALSE, see counterexample),
+zip-based cut-set interface (needs getD index bridges; StairNEBlock fields are strictly better),
+`rw [Finset.sum_apply]` under Matrix transparency (ext to entries first, always).
+NEXT: N2c (stairCorner_pivots_witness, still sorry) — consumes N3's stair_data_cert (proved)
+and now N2b's upper bound; then N2d.

@@ -1,0 +1,12 @@
+'StaircasePort.Stair.stairNE_rk_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairNE_block_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.corStairQ_stairPairM_sumN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairBlock_hsum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairCornerQOf_pair_entry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairNE_cuts_cover' depends on axioms: [propext, Quot.sound]
+'StaircasePort.Stair.stairNE_cuts_card' does not depend on any axioms
+'StaircasePort.Stair.stairNEBlocksX_map' does not depend on any axioms
+'StaircasePort.Stair.stairNEcardOK_spec' depends on axioms: [propext, Quot.sound]
+'StaircasePort.Stair.stairNEcoverOK_spec' depends on axioms: [propext, Quot.sound]
+'StaircasePort.Stair.card_filter_mem_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
