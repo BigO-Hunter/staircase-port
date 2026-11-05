@@ -199,22 +199,22 @@ theorem stairNESc_coh :
 lemma stairUl_eq_zero (x₁ : Fin 23 → ℚ) (l i : ℕ)
     (h : l ∉ stairLsndN i) : stairUl x₁ l i = 0 :=
   List.sum_map_ite_eq_zero (LtermsStair i) (fun s => (s.2.2 : ℕ))
-    (fun s => s.1 * x₁ s.2.1) l (by rwa [stairLsndN])
+    (fun s => s.1 * x₁ s.2.1) l (by simpa [stairLsndN] using h)
 
 lemma stairVl_eq_zero (y₁ : Fin 23 → ℚ) (l j : ℕ)
     (h : l ∉ stairRsndN j) : stairVl y₁ l j = 0 :=
   List.sum_map_ite_eq_zero (RtermsStair j) (fun s => (s.2.2 : ℕ))
-    (fun s => s.1 * y₁ s.2.1) l (by rwa [stairRsndN])
+    (fun s => s.1 * y₁ s.2.1) l (by simpa [stairRsndN] using h)
 
 lemma stairUk_eq_zero (x₂ : Fin 23 → ℚ) (k i : ℕ)
     (h : k ∉ stairLfstN i) : stairUk x₂ k i = 0 :=
   List.sum_map_ite_eq_zero (LtermsStair i) (fun s => (s.2.1 : ℕ))
-    (fun s => s.1 * x₂ s.2.2) k (by rwa [stairLfstN])
+    (fun s => s.1 * x₂ s.2.2) k (by simpa [stairLfstN] using h)
 
 lemma stairVk_eq_zero (y₂ : Fin 23 → ℚ) (k j : ℕ)
     (h : k ∉ stairRfstN j) : stairVk y₂ k j = 0 :=
   List.sum_map_ite_eq_zero (RtermsStair j) (fun s => (s.2.1 : ℕ))
-    (fun s => s.1 * y₂ s.2.2) k (by rwa [stairRfstN])
+    (fun s => s.1 * y₂ s.2.2) k (by simpa [stairRfstN] using h)
 
 /-! ## P3 part-1 helpers (written pre-wipe, NOT yet run) -/
 
@@ -236,8 +236,8 @@ lemma List.sum_map_eq_zero {α : Type*} (l : List α) (f : α → ℚ)
   induction l with
   | nil => rfl
   | cons s ss ih =>
-    simp only [List.map_cons, List.sum_cons, h s (List.mem_cons_self s ss), zero_add]
-    exact ih fun x hx => h x (List.mem_cons.mpr (Or.inr hx))
+    simp only [List.map_cons, List.sum_cons,
+      h s (by simp), ih (fun x hx => h x (by simp [hx])), zero_add]
 
 lemma mul_ite_one (P : Prop) [Decidable P] (a b : ℚ) :
     a * (if P then (1 : ℚ) else 0) * b = if P then a * b else 0 := by
@@ -255,12 +255,11 @@ lemma summand_normal (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (s t : ℚ × Pr 23)
       = if s.2 = t.2 then (1 : ℚ) else 0 := by
     by_cases h1 : s.2.1 = t.2.1
     · by_cases h2 : s.2.2 = t.2.2
-      · rw [if_pos h1, if_pos h2, if_pos (Prod.ext h1 h2)]
+      · rw [if_pos h1, if_pos h2, if_pos (Prod.ext h1 h2)]; ring
       · have hne : s.2 ≠ t.2 := fun hh => h2 (congrArg Prod.snd hh)
-        rw [if_pos h1, if_neg h2, if_neg hne]
+        rw [if_pos h1, if_neg h2, if_neg hne]; ring
     · have hne : s.2 ≠ t.2 := fun hh => h1 (congrArg Prod.fst hh)
-      rw [if_neg h1, if_neg hne]
-      simp
+      rw [if_neg h1, if_neg hne]; ring
   simp only [stairPairM, Matrix.kroneckerMap_apply, Matrix.sub_apply, Matrix.one_apply,
     Matrix.vecMulVec_apply]
   have pA : s.1 * (if s.2.1 = t.2.1 then (1 : ℚ) else 0)
@@ -274,18 +273,14 @@ lemma summand_normal (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (s t : ℚ × Pr 23)
     exact mul_ite_one _ _ _
   have pB : s.1 * (if s.2.1 = t.2.1 then (1 : ℚ) else 0) * (x₂ s.2.2 * y₂ t.2.2) * t.1
       = if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0 := by
-    split_ifs with h
-    · rw [if_pos h]; ring
-    · rw [if_neg h]; ring
+    split_ifs <;> ring
   have pC : s.1 * (x₁ s.2.1 * y₁ t.2.1) * (if s.2.2 = t.2.2 then (1 : ℚ) else 0) * t.1
       = if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0 := by
-    split_ifs with h
-    · rw [if_pos h]; ring
-    · rw [if_neg h]; ring
+    split_ifs <;> ring
   have pD : s.1 * (x₁ s.2.1 * y₁ t.2.1) * (x₂ s.2.2 * y₂ t.2.2) * t.1
       = (s.1 * x₁ s.2.1 * x₂ s.2.2) * (t.1 * y₁ t.2.1 * y₂ t.2.2) := by ring
-  have e1 : s.1 * ((if s.2.1 = t.2.1 then (1 : ℚ) else 0 - x₁ s.2.1 * y₁ t.2.1)
-        * (if s.2.2 = t.2.2 then (1 : ℚ) else 0 - x₂ s.2.2 * y₂ t.2.2)) * t.1
+  have e1 : s.1 * (((if s.2.1 = t.2.1 then (1 : ℚ) else 0) - x₁ s.2.1 * y₁ t.2.1)
+        * ((if s.2.2 = t.2.2 then (1 : ℚ) else 0) - x₂ s.2.2 * y₂ t.2.2)) * t.1
       = s.1 * (if s.2.1 = t.2.1 then (1 : ℚ) else 0)
           * (if s.2.2 = t.2.2 then (1 : ℚ) else 0) * t.1
         - s.1 * (if s.2.1 = t.2.1 then (1 : ℚ) else 0) * (x₂ s.2.2 * y₂ t.2.2) * t.1
@@ -293,5 +288,141 @@ lemma summand_normal (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (s t : ℚ × Pr 23)
           * (if s.2.2 = t.2.2 then (1 : ℚ) else 0) * t.1
         + s.1 * (x₁ s.2.1 * y₁ t.2.1) * (x₂ s.2.2 * y₂ t.2.2) * t.1 := by ring
   rw [e1, pA, pB, pC, pD]
+
+
+/-! ## P3 part 2: the corner identity (corner entry = Σ over the 47 terms) -/
+
+lemma List.sum_map_congr {α : Type*} (l : List α) {f g : α → ℚ}
+    (h : ∀ s ∈ l, f s = g s) : (l.map f).sum = (l.map g).sum := by
+  induction l with
+  | nil => rfl
+  | cons s ss ih =>
+    simp only [List.map_cons, List.sum_cons]
+    rw [h s (by simp), ih (fun x hx => h x (by simp [hx]))]
+
+/-- Fin/Nat condition bridge for the regrouping lemma's coordinate ite. -/
+lemma stair_ite_fin_nat (g : (ℚ × Pr 23) → Fin 23) (f : (ℚ × Pr 23) → ℚ) (s : ℚ × Pr 23) (c : Fin 23) :
+    (if (g s : ℕ) = (c : ℕ) then f s else 0) = (if g s = c then f s else 0) := by
+  by_cases h : g s = c
+  · rw [if_pos h, if_pos (by rw [h])]
+  · rw [if_neg h, if_neg (fun hh => h (Fin.ext hh))]
+
+lemma stair_sum_fin_nat (g : (ℚ × Pr 23) → Fin 23) (f : (ℚ × Pr 23) → ℚ)
+    (l : List (ℚ × Pr 23)) (c : Fin 23) :
+    (l.map fun s => if (g s : ℕ) = (c : ℕ) then f s else 0).sum
+      = (l.map fun s => if g s = c then f s else 0).sum :=
+  List.sum_map_congr l (fun s _ => stair_ite_fin_nat g f s c)
+
+/-- **The corner identity**: for arbitrary labels the pair matrix's corner entry is the sum of
+the 47 term entries (the identity `rank_le_support_cut` consumes as `hsum`). -/
+theorem corStairQ_stairPairM_sumN (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (i j : ℕ) (hi : i < 45) (hj : j < 45) :
+    corStairQ (stairPairM x₁ y₁ x₂ y₂) i j
+      = ∑ t ∈ Finset.range 47, stairTermN x₁ y₁ x₂ y₂ t i j := by
+  -- (1) fold the row coefficient into the inner sum
+  have h1 : corStairQ (stairPairM x₁ y₁ x₂ y₂) i j
+      = ((RtermsStair j).map fun t =>
+          ((LtermsStair i).map fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1).sum).sum := by
+    simp only [corStairQ]
+    congr 1
+    funext t
+    rw [← List.sum_map_mul_right]
+    congr 1
+    funext s
+    ring
+  -- (2) the per-t four-piece split
+  have h2 : ∀ t : ℚ × Pr 23,
+      ((LtermsStair i).map fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1).sum
+      = ((LtermsStair i).map fun s => if s.2 = t.2 then s.1 * t.1 else 0).sum
+        - ((LtermsStair i).map fun s =>
+            if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0).sum
+        - ((LtermsStair i).map fun s =>
+            if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0).sum
+        + ((LtermsStair i).map fun s =>
+            (s.1 * x₁ s.2.1 * x₂ s.2.2) * (t.1 * y₁ t.2.1 * y₂ t.2.2)).sum := by
+    intro t
+    rw [show (List.map (fun s : ℚ × Pr 23 => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1)
+          (LtermsStair i))
+        = List.map (fun s : ℚ × Pr 23 =>
+            (if s.2 = t.2 then s.1 * t.1 else 0)
+            - (if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0)
+            - (if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0)
+            + ((s.1 * x₁ s.2.1 * x₂ s.2.2) * (t.1 * y₁ t.2.1 * y₂ t.2.2))) (LtermsStair i) from
+      List.map_congr_left (fun s _ => summand_normal x₁ y₁ x₂ y₂ s t)]
+    simp only [List.sum_map_add, List.sum_map_sub]
+  -- (3) the diagonal piece vanishes
+  have hA : ((RtermsStair j).map fun t =>
+      ((LtermsStair i).map fun s => if s.2 = t.2 then s.1 * t.1 else 0).sum).sum = 0 := by
+    refine List.sum_map_eq_zero _ _ (fun t ht => List.sum_map_eq_zero _ _ (fun s hs => ?_))
+    rw [if_neg (stairLR_disjoint i j hi hj s hs t ht)]
+  -- (4) the k-groups (shared FIRST coordinate)
+  have hB : ((RtermsStair j).map fun t =>
+      ((LtermsStair i).map fun s =>
+        if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0).sum).sum
+      = ∑ k : Fin 23, stairUk x₂ k i * stairVk y₂ k j := by
+    rw [List.sum_sum_ite_eq_group (lR := RtermsStair j) (lL := LtermsStair i)
+      (f := fun s => s.1 * x₂ s.2.2) (g := fun t => t.1 * y₂ t.2.2)
+      (k₁ := fun s => s.2.1) (k₂ := fun t => t.2.1)]
+    refine Finset.sum_congr rfl (fun c _ => ?_)
+    simp only [stairUk, stairVk]
+    congr 1
+    · exact (stair_sum_fin_nat (fun s => s.2.1) (fun s => s.1 * x₂ s.2.2) (LtermsStair i) c).symm
+    · exact (stair_sum_fin_nat (fun t => t.2.1) (fun t => t.1 * y₂ t.2.2) (RtermsStair j) c).symm
+  -- (5) the l-groups (shared SECOND coordinate)
+  have hC : ((RtermsStair j).map fun t =>
+      ((LtermsStair i).map fun s =>
+        if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0).sum).sum
+      = ∑ l : Fin 23, stairUl x₁ l i * stairVl y₁ l j := by
+    rw [List.sum_sum_ite_eq_group (lR := RtermsStair j) (lL := LtermsStair i)
+      (f := fun s => s.1 * x₁ s.2.1) (g := fun t => t.1 * y₁ t.2.1)
+      (k₁ := fun s => s.2.2) (k₂ := fun t => t.2.2)]
+    refine Finset.sum_congr rfl (fun c _ => ?_)
+    simp only [stairUl, stairVl]
+    congr 1
+    · exact (stair_sum_fin_nat (fun s => s.2.2) (fun s => s.1 * x₁ s.2.1) (LtermsStair i) c).symm
+    · exact (stair_sum_fin_nat (fun t => t.2.2) (fun t => t.1 * y₁ t.2.1) (RtermsStair j) c).symm
+  -- (6) the whole term
+  have hD : ((RtermsStair j).map fun t =>
+      ((LtermsStair i).map fun s =>
+        (s.1 * x₁ s.2.1 * x₂ s.2.2) * (t.1 * y₁ t.2.1 * y₂ t.2.2)).sum).sum
+      = stairPw x₁ x₂ i * stairQw y₁ y₂ j := by
+    rw [List.sum_sum_mul]
+    simp only [stairPw, stairQw]
+  -- (7) the Fin → range conversions and the range-47 split
+  have hB' : (∑ k : Fin 23, stairUk x₂ k i * stairVk y₂ k j)
+      = ∑ n ∈ Finset.range 23, stairUk x₂ n i * stairVk y₂ n j :=
+    Fin.sum_univ_eq_sum_range (fun n => stairUk x₂ n i * stairVk y₂ n j) 23
+  have hC' : (∑ l : Fin 23, stairUl x₁ l i * stairVl y₁ l j)
+      = ∑ n ∈ Finset.range 23, stairUl x₁ n i * stairVl y₁ n j :=
+    Fin.sum_univ_eq_sum_range (fun n => stairUl x₁ n i * stairVl y₁ n j) 23
+  have hR : (∑ t ∈ Finset.range 47, stairTermN x₁ y₁ x₂ y₂ t i j)
+      = -(∑ n ∈ Finset.range 23, stairUl x₁ n i * stairVl y₁ n j)
+        - (∑ n ∈ Finset.range 23, stairUk x₂ n i * stairVk y₂ n j)
+        + stairPw x₁ x₂ i * stairQw y₁ y₂ j := by
+    rw [← Finset.sum_range_add_sum_Ico (fun t => stairTermN x₁ y₁ x₂ y₂ t i j)
+        (show 23 ≤ 47 by omega),
+      show Finset.Ico 23 47 = insert 46 (Finset.Ico 23 46) by
+        ext x; simp only [Finset.mem_Ico, Finset.mem_insert]; omega,
+      Finset.sum_insert (by simp only [Finset.mem_Ico]; omega),
+      Finset.sum_Ico_eq_sum_range]
+    have e1 : (∑ t ∈ Finset.range 23, stairTermN x₁ y₁ x₂ y₂ t i j)
+        = -(∑ t ∈ Finset.range 23, stairUl x₁ t i * stairVl y₁ t j) := by
+      rw [← Finset.sum_neg_distrib]
+      refine Finset.sum_congr rfl (fun t ht => ?_)
+      simp only [stairTermN, if_pos (Finset.mem_range.mp ht)]
+    have e2 : (∑ t ∈ Finset.range 23, stairTermN x₁ y₁ x₂ y₂ (23 + t) i j)
+        = -(∑ t ∈ Finset.range 23, stairUk x₂ t i * stairVk y₂ t j) := by
+      rw [← Finset.sum_neg_distrib]
+      refine Finset.sum_congr rfl (fun t _ => ?_)
+      simp only [stairTermN, if_neg (show ¬ (23 + t < 23) by omega),
+        if_pos (show 23 + t < 46 by omega), Nat.add_sub_cancel_left]
+    have e3 : stairTermN x₁ y₁ x₂ y₂ 46 i j = stairPw x₁ x₂ i * stairQw y₁ y₂ j := by
+      simp only [stairTermN, if_neg (show ¬ (46 < 23) by omega),
+        if_neg (show ¬ (46 < 46) by omega)]
+    rw [e1, e2, e3]
+    ring
+  rw [h1, List.map_congr_left (fun t _ => h2 t)]
+  simp only [List.sum_map_add, List.sum_map_sub]
+  rw [hA, hB, hC, hD, hB', hC', hR]
+  ring
 
 end StaircasePort.Stair
