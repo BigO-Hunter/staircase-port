@@ -1,0 +1,36 @@
+{
+ "h": 23,
+ "v": 1771,
+ "N": 3136441,
+ "R": 28866,
+ "T": 3217907,
+ "W": 108516254,
+ "L": 1792252,
+ "s": 57403754177,
+ "sum_nw": 1905413587,
+ "checks": {
+  "h_is_23": true,
+  "v_is_C23_3": true,
+  "N_is_v2": true,
+  "R_is_28866": true,
+  "T_is_3217907": true,
+  "T_equals_46v_plus_N": true,
+  "W_is_108516254": true,
+  "W_matches_histogram": true,
+  "ranksum_matches_histogram": true,
+  "sum_nw_matches": true,
+  "staircase_corner": [
+   21,
+   18,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "r6_T_reference": 3217907
+ },
+ "note": "T = 46v + N depends only on (h, v, N): the per-invocation temporaries tmp1/tmp2 (23 per stage-1/stage-2 invocation pair set) and tau(a1,a2) = 46v + a1 v + a2 (N pair slots). Witness-1 keeps h=23 => v=1771, N=3136441 => T=3217907, same as r6. CAVEAT: the tau addressing lives in the Lean QHNet construction (Defs), not in the frozen JSON; final confirmation is the net definition itself (port task N5/D2).",
+ "all_checks_pass": true
+}

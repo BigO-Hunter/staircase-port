@@ -1,0 +1,9 @@
+staircase extraction (h=23, P=67108859, m=529, seed=1, npairs=20)
+pc (rightmost pivots, 45 rows): [44, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 22, 21, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 0]
+runs with offsets (corner coords (i,j,len)): [[0, 44, 1], [1, 23, 21], [22, 22, 1], [23, 21, 1], [24, 20, 1], [25, 2, 18], [43, 1, 1], [44, 0, 1]]
+dataRuns_prime (global): [[45, 45, 439], [1, 507, 21], [25, 486, 18]]
+rs_prime_length: 6 (r6 was h+5=24)
+NE blocks: 689, all cut>=rho: True
+corner invertible: True
+sanity: {"runs_expected": [21, 18, 1, 1, 1, 1, 1, 1], "runs_match": true, "total_rank": 484, "total_rank_expected": 484, "singletons_expected": 6, "singletons_match": true, "certified": true}
+ij control: same pc=True certified=True
