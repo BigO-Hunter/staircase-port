@@ -1,0 +1,122 @@
+n2b_full.lean:44:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:132:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:132:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:264:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:23: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:34: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:266:34: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:10: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:21: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:313:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:313:18: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:314:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:314:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:359:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:414:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:421:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:422:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:425:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:426:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:451:71: error: Application type mismatch: The argument
+  i
+has type
+  ℕ
+but is expected to have type
+  Fin 45
+in the application
+  stairTermRow x₁ y₁ x₂ y₂ (↑t) i
+n2b_full.lean:456:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:459:31: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:459:50: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:459:31: warning: This simp argument is unused:
+  if_neg (by omega)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairTermRow, if_pos h46]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_full.lean:466:71: error: Application type mismatch: The argument
+  j
+has type
+  ℕ
+but is expected to have type
+  Fin 45
+in the application
+  stairTermCol x₁ y₁ x₂ y₂ (↑t) j
+n2b_full.lean:471:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:474:31: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:474:50: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:474:31: warning: This simp argument is unused:
+  if_neg (by omega)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairTermCol, if_pos h46]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_full.lean:494:8: error: Function expected at
+  card_image_of_injective ?m.150 ?m.151
+but this term has type
+  #(image ?m.148 ?m.150) = #?m.150
+
+Note: Expected a function because this term is being applied to the argument
+  Fin.val_injective
+n2b_full.lean:481:84: error: unsolved goals
+n : ℕ
+l : List ℕ
+hnd : l.Nodup
+hlt : ∀ x ∈ l, x < n
+himg : image Fin.val {r | ↑r ∈ l} = l.toFinset
+⊢ #{r | ↑r ∈ l} = l.length
+n2b_full.lean:514:13: warning: This simp argument is unused:
+  stairNEcoverOK
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Bool.or_eq_true, decide_eq_true_eq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_full.lean:547:41: error: Type mismatch
+  stairTermM_apply x₁ y₁ x₂ y₂ t r c
+has type
+  stairTermM x₁ y₁ x₂ y₂ t r c = stairTermN x₁ y₁ x₂ y₂ ↑t ↑r ↑c
+but is expected to have type
+  stairTermN x₁ y₁ x₂ y₂ ↑t ↑r ↑c = stairTermM x₁ y₁ x₂ y₂ t r c
+n2b_full.lean:582:20: error: Function expected at
+  hr (↑↑r) hmem ?m.231
+but this term has type
+  ↑↑r ∈ b.R0
+
+Note: Expected a function because this term is being applied to the argument
+  hrR
+n2b_full.lean:590:20: error: Function expected at
+  hc (↑↑c) hmem ?m.280
+but this term has type
+  ↑↑c ∈ b.C0
+
+Note: Expected a function because this term is being applied to the argument
+  hcC
+n2b_full.lean:600:8: error: `StaircasePort.Stair.stairNE_rk_le` has already been declared
+EXIT=1

@@ -1,0 +1,137 @@
+n2b_full.lean:44:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:132:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:132:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:264:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:23: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:34: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:266:34: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:10: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:21: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:313:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:313:18: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:314:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:314:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:359:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:414:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:421:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:422:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:425:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:426:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:456:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:459:31: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:459:50: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:459:4: error: unsolved goals
+case inr.inl
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+t : Fin 47
+i : ℕ
+hi : i < 45
+h : i ∉ stairNESr.getD ↑t []
+hmem : ¬(↑t < 23 ∧ ↑t ∈ stairLsndN i ∨ 23 ≤ ↑t ∧ ↑t < 46 ∧ ↑t - 23 ∈ stairLfstN i ∨ 46 ≤ ↑t)
+h23 : ↑t ≥ 23
+h46 : ↑t < 46
+⊢ (if ↑t < 23 then -stairUl x₁ (↑t) i else 0) = 0
+n2b_full.lean:459:31: warning: This simp argument is unused:
+  if_neg (by omega)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairTermRow, if_pos h46]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_full.lean:471:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:474:31: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:474:50: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:474:4: error: unsolved goals
+case inr.inl
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+t : Fin 47
+j : ℕ
+hj : j < 45
+h : j ∉ stairNESc.getD ↑t []
+hmem : ¬(↑t < 23 ∧ ↑t ∈ stairRsndN j ∨ 23 ≤ ↑t ∧ ↑t < 46 ∧ ↑t - 23 ∈ stairRfstN j ∨ 46 ≤ ↑t)
+h23 : ↑t ≥ 23
+h46 : ↑t < 46
+⊢ (if ↑t < 23 then stairVl y₁ (↑t) j else 0) = 0
+n2b_full.lean:474:31: warning: This simp argument is unused:
+  if_neg (by omega)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairTermCol, if_pos h46]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_full.lean:494:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  #?m.151
+in the target expression
+  #{r | ↑r ∈ l} = l.length
+
+n : ℕ
+l : List ℕ
+hnd : l.Nodup
+hlt : ∀ x ∈ l, x < n
+himg : image Fin.val {r | ↑r ∈ l} = l.toFinset
+⊢ #{r | ↑r ∈ l} = l.length
+n2b_full.lean:514:13: warning: This simp argument is unused:
+  stairNEcoverOK
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Bool.or_eq_true, decide_eq_true_eq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+n2b_full.lean:579:4: error: unsolved goals
+case refine_2.inl
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+b : StairNEBlock
+hi : b.i < 45
+hj : b.j < 45
+hcard : b.R0.length + b.C0.length + b.T0.length = b.cut
+hndR : b.R0.Nodup
+hndC : b.C0.Nodup
+hndT : b.T0.Nodup
+hltR : ∀ r ∈ b.R0, r < 45
+hltC : ∀ c ∈ b.C0, c < 45
+hltT : ∀ t ∈ b.T0, t < 47
+hcover :
+  ∀ t ∈ List.range 47,
+    t ∉ b.T0 → (∀ r ∈ stairNESr.getD t [], r ≤ b.i → r ∈ b.R0) ∨ ∀ c ∈ stairNESc.getD t [], b.j ≤ c → c ∈ b.C0
+hcard' : #(stairBlockR0 b) + #(stairBlockC0 b) + #(stairBlockT0 b) ≤ b.cut
+t : Fin 47
+ht : t ∉ stairBlockT0 b
+htT : ↑t ∉ b.T0
+hr : ∀ r ∈ stairNESr.getD ↑t [], r ≤ b.i → r ∈ b.R0
+r : { r // ↑r < b.i + 1 }
+hrR : ↑r ∉ stairBlockR0 b
+hnotsr : ↑↑r ∉ stairNESr.getD ↑t []
+hrow : stairTermRow x₁ y₁ x₂ y₂ ↑t ⟨↑↑r, ⋯⟩ = 0
+c : { c // b.j ≤ ↑c }
+⊢ 0 = 0 c
+EXIT=1

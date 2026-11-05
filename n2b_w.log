@@ -1,0 +1,90 @@
+n2b_w.lean:39:40: error: No goals to be solved
+n2b_w.lean:108:62: error: unsolved goals
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+a b : Pr 23
+⊢ kroneckerMap (fun x1 x2 => x1 * x2) (1 - vecMulVec x₁ y₁) (1 - vecMulVec x₂ y₂) a b =
+    ((if a.1 = b.1 then 1 else 0) - x₁ a.1 * y₁ b.1) * ((if a.2 = b.2 then 1 else 0) - x₂ a.2 * y₂ b.2)
+n2b_w.lean:109:25: warning: This simp argument is unused:
+  Matrix.kronecker_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairPairM, Matrix.sub_apply, Matrix.vecMulVec_apply, Matrix.one_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_w.lean:109:49: warning: This simp argument is unused:
+  Matrix.sub_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairPairM, Matrix.kronecker_apply, Matrix.vecMulVec_apply, Matrix.one_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_w.lean:109:67: warning: This simp argument is unused:
+  Matrix.vecMulVec_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairPairM, Matrix.kronecker_apply, Matrix.sub_apply, Matrix.one_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_w.lean:110:4: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [stairPairM, Matrix.kronecker_apply, Matrix.sub_apply, Matrix.vecMulVec_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+n2b_w.lean:160:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_w.lean:160:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_w.lean:165:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_w.lean:165:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_w.lean:240:14: error(lean.unknownIdentifier): Unknown identifier `stairLR_disjoint`
+n2b_w.lean:234:85: error: unsolved goals
+i j : ℕ
+hi : i < 45
+hj : j < 45
+t : ℚ × Pr 23
+ht : t ∈ RtermsStair j
+ha :
+  (List.map (fun s => s.1 * stairT1 s t * t.1) (LtermsStair i)).sum ∈
+    List.map (fun t => (List.map (fun s => s.1 * stairT1 s t * t.1) (LtermsStair i)).sum) (RtermsStair j)
+s : ℚ × Pr 23
+hs : s ∈ LtermsStair i
+hb : s.1 * stairT1 s t * t.1 ∈ List.map (fun s => s.1 * stairT1 s t * t.1) (LtermsStair i)
+⊢ s.1 * stairT1 s t * t.1 = 0
+n2b_w.lean:279:6: warning: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+n2b_w.lean:279:22: warning: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+n2b_w.lean:284:53: warning: `dif_neg` has been deprecated: Use `dite_eq_right` instead
+n2b_w.lean:285:4: warning: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+n2b_w.lean:283:84: error: unsolved goals
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+k : Fin 23
+i j : ℕ
+⊢ -(stairUk x₂ ⟨23 + ↑k - 23, ⋯⟩ i * stairVk y₂ ⟨23 + ↑k - 23, ⋯⟩ j) = -(stairUk x₂ k i * stairVk y₂ k j)
+n2b_w.lean:290:53: warning: `dif_neg` has been deprecated: Use `dite_eq_right` instead
+n2b_w.lean:291:4: warning: `dif_neg` has been deprecated: Use `dite_eq_right` instead
+EXIT=1

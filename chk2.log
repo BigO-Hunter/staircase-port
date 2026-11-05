@@ -1,0 +1,30 @@
+chk2.lean:3:8: error(lean.unknownIdentifier): Unknown constant `List.map_congr`
+@List.map_congr_left : ∀ {α : Type u_1} {l : List α} {α_1 : Type u_2} {f g : α → α_1},
+  (∀ a ∈ l, f a = g a) → List.map f l = List.map g l
+@List.sum_eq_zero : ∀ {M : Type u_1} [inst : AddMonoid M] {l : List M}, (∀ x ∈ l, x = 0) → l.sum = 0
+@sum_eq_single : ∀ {ι : Type u_1} {M : Type u_2} [inst : AddCommMonoid M] {s : Finset ι} {f : ι → M} (a : ι),
+  (∀ b ∈ s, b ≠ a → f b = 0) → (a ∉ s → f a = 0) → ∑ x ∈ s, f x = f a
+@Fin.sum_univ_eq_sum_range : ∀ {α : Type u_1} [inst : AddCommMonoid α] (f : ℕ → α) (n : ℕ),
+  ∑ i, f ↑i = ∑ i ∈ range n, f i
+@sum_range_add_sum_Ico : ∀ {M : Type u_1} [inst : AddCommMonoid M] (f : ℕ → M) {m n : ℕ},
+  m ≤ n → ∑ k ∈ range m, f k + ∑ k ∈ Ico m n, f k = ∑ k ∈ range n, f k
+@sum_Ico_eq_sum_range : ∀ {M : Type u_1} [inst : AddCommMonoid M] (f : ℕ → M) (m n : ℕ),
+  ∑ k ∈ Ico m n, f k = ∑ k ∈ range (n - m), f (m + k)
+@rank_vecMulVec_le : ∀ {m : Type u_1} {n : Type u_2} {R : Type u_3} [inst : Fintype n] [inst_1 : CommSemiring R]
+  [StrongRankCondition R] (w : m → R) (v : n → R), (vecMulVec w v).rank ≤ 1
+@vecMulVec_apply : ∀ {m : Type u_2} {n : Type u_3} {α : Type u_1} [inst : Mul α] (w : m → α) (v : n → α) (i : m)
+  (j : n), vecMulVec w v i j = w i * v j
+@Matrix.sum_apply : ∀ {m : Type u_1} {n : Type u_2} {α : Type u_3} {β : Type u_4} [inst : AddCommMonoid α] (i : m)
+  (j : n) (s : Finset β) (g : β → Matrix m n α), (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j
+@submatrix_apply : ∀ {l : Type u_2} {m : Type u_3} {n : Type u_4} {o : Type u_5} {α : Type u_1} (A : Matrix m n α)
+  (r : l → m) (c : o → n) (i : l) (j : o), A.submatrix r c i j = A (r i) (c j)
+@Finset.sum_apply : ∀ {ι : Type u_1} {α : Type u_2} {M : α → Type u_3} [inst : (a : α) → AddCommMonoid (M a)] (a : α)
+  (s : Finset ι) (g : ι → (a : α) → M a), (∑ c ∈ s, g c) a = ∑ c ∈ s, g c a
+@Matrix.one_apply : ∀ {n : Type u_2} {α : Type u_1} [inst : DecidableEq n] [inst_1 : Zero α] [inst_2 : One α] {i j : n},
+  1 i j = if i = j then 1 else 0
+@kronecker_apply : ∀ {α : Type u_1} {l : Type u_2} {m : Type u_3} {n : Type u_4} {p : Type u_5} [inst : Mul α]
+  (A : Matrix l m α) (B : Matrix n p α) (i₁ : l) (i₂ : n) (j₁ : m) (j₂ : p),
+  kroneckerMap (fun x1 x2 => x1 * x2) A B (i₁, i₂) (j₁, j₂) = A i₁ j₁ * B i₂ j₂
+@Matrix.sub_apply : ∀ {m : Type u_2} {n : Type u_3} {α : Type u_1} [inst : Sub α] (A B : Matrix m n α) (i : m) (j : n),
+  (A - B) i j = A i j - B i j
+EXIT=1

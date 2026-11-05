@@ -1,0 +1,7 @@
+blocks: 689
+(A) arbitrary M: 689/689 blocks VIOLATE the current statement; first 3: [(1, 24, 2, 1), (1, 25, 2, 1), (1, 26, 2, 1)]
+(B) pairM trial 0: 0/689 blocks violate; 609/689 tight (rank == cut)
+(C) decomposition mismatches: 0 / 2025 entries
+(B) pairM trial 1: 0/689 blocks violate; 629/689 tight (rank == cut)
+(C) decomposition mismatches: 0 / 2025 entries
+(D) producer cut_bound reproduces all 689 pinned values: True

@@ -1,0 +1,44 @@
+n2b_full.lean:44:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:132:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:132:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:137:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:264:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:23: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:264:34: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:266:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:266:34: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:10: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:268:21: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:313:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:313:18: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:314:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:314:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:359:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:414:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:421:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:422:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:425:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:426:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+EXIT=0

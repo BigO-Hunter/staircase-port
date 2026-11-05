@@ -1,0 +1,128 @@
+n2b_full.lean:38:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:126:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:126:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:131:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:131:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:258:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:258:23: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:258:34: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:260:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:260:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:260:34: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:262:10: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:262:21: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:305:34: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:305:61: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:305:82: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:308:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:308:18: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:309:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:309:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:311:34: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:311:61: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:312:19: error: Function expected at
+  Pr
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  23
+
+Hint: The identifier `Pr` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:320:4: error: Function expected at
+  corStairQ
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (stairPairM x₁ y₁ x₂ y₂)
+
+Hint: The identifier `corStairQ` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:321:31: error: Function expected at
+  stairTermN
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  x₁
+
+Hint: The identifier `stairTermN` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+n2b_full.lean:323:12: error: Function expected at
+  corStairQ
+but this term has type
+  x✝¹
+
+Note: Expected a function because this term is being applied to the argument
+  (stairPairM x₁ y₁ x₂ y₂)
+n2b_full.lean:324:10: error(lean.unknownIdentifier): Unknown identifier `RtermsStair`
+n2b_full.lean:321:63: error: unsolved goals
+x✝¹ : Sort u_1
+corStairQ : x✝¹
+x✝ : Sort u_2
+stairTermN : x✝
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+⊢ sorry = ∑ t ∈ Finset.range 47, ?m.28
+EXIT=1

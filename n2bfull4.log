@@ -1,0 +1,249 @@
+n2b_full.lean:38:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:126:35: warning: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:126:41: warning: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:131:32: warning: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:131:38: warning: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+n2b_full.lean:258:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:258:23: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:258:34: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:260:12: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:260:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:260:34: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:262:10: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:262:21: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:307:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:307:18: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:308:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:308:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:327:4: error: Tactic `apply` failed: could not unify the conclusion of `@funext`
+  ?f = ?g
+with the goal
+  List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2) (LtermsStair i)).sum * t.1)
+      (RtermsStair j) =
+    List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+      (RtermsStair j)
+
+Note: The full type of `@funext` is
+  ∀ {α : Sort ?u.61} {β : α → Sort ?u.60} {f g : (x : α) → β x}, (∀ (x : α), f x = g x) → f = g
+
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+⊢ List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2) (LtermsStair i)).sum * t.1)
+      (RtermsStair j) =
+    List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+      (RtermsStair j)
+n2b_full.lean:351:33: error(lean.unknownIdentifier): Unknown constant `List.sum_map_sub`
+n2b_full.lean:341:78: error: unsolved goals
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+h1 :
+  corStairQ (stairPairM x₁ y₁ x₂ y₂) i j =
+    (List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+        (RtermsStair j)).sum
+t : ℚ × Pr 23
+⊢ (List.map
+          (fun s =>
+            ((if s.2 = t.2 then s.1 * t.1 else 0) - if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) -
+              if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0)
+          (LtermsStair i)).sum +
+      (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum =
+    (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum -
+          (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum -
+        (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum +
+      (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum
+n2b_full.lean:356:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:411:29: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:408:71: error: unsolved goals
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+h1 :
+  corStairQ (stairPairM x₁ y₁ x₂ y₂) i j =
+    (List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+        (RtermsStair j)).sum
+h2 :
+  ∀ (t : ℚ × Pr 23),
+    (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum =
+      (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum -
+            (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum -
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum +
+        (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum
+hA :
+  (List.map (fun t => (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    0
+hB :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j
+hC :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j
+hD :
+  (List.map (fun t => (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    stairPw x₁ x₂ i * stairQw y₁ y₂ j
+hB' : ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j = ∑ n ∈ range 23, stairUk x₂ n i * stairVk y₂ n j
+hC' : ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j = ∑ n ∈ range 23, stairUl x₁ n i * stairVl y₁ n j
+t : ℕ
+ht : t ∈ range 23
+⊢ -stairUl x₁ t i * stairVl y₁ t j = -(stairUl x₁ t i * stairVl y₁ t j)
+n2b_full.lean:416:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:417:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+n2b_full.lean:417:36: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 23
+  0 ≤ b ≤ 44
+  0 ≤ a ≤ 44
+where
+ a := ↑i
+ b := ↑j
+ c := ↑t
+n2b_full.lean:413:71: error: unsolved goals
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+h1 :
+  corStairQ (stairPairM x₁ y₁ x₂ y₂) i j =
+    (List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+        (RtermsStair j)).sum
+h2 :
+  ∀ (t : ℚ × Pr 23),
+    (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum =
+      (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum -
+            (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum -
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum +
+        (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum
+hA :
+  (List.map (fun t => (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    0
+hB :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j
+hC :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j
+hD :
+  (List.map (fun t => (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    stairPw x₁ x₂ i * stairQw y₁ y₂ j
+hB' : ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j = ∑ n ∈ range 23, stairUk x₂ n i * stairVk y₂ n j
+hC' : ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j = ∑ n ∈ range 23, stairUl x₁ n i * stairVl y₁ n j
+e1 : ∑ t ∈ range 23, stairTermN x₁ y₁ x₂ y₂ t i j = -∑ t ∈ range 23, stairUl x₁ t i * stairVl y₁ t j
+t : ℕ
+x✝ : t ∈ range 23
+⊢ (if 23 + t < 46 then -stairUk x₂ t i * stairVk y₂ t j else stairPw x₁ x₂ i * stairQw y₁ y₂ j) =
+    -(stairUk x₂ t i * stairVk y₂ t j)
+n2b_full.lean:419:29: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:420:8: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+n2b_full.lean:424:31: error(lean.unknownIdentifier): Unknown constant `List.sum_map_sub`
+n2b_full.lean:425:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (List.map (fun t => (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum) (RtermsStair j)).sum
+in the target expression
+  (List.map
+          (fun s =>
+            (List.map (fun s_1 => if s_1.2 = s.2 then s_1.1 * s.1 else 0) (LtermsStair i)).sum -
+                (List.map (fun s_1 => if s_1.2.1 = s.2.1 then s_1.1 * x₂ s_1.2.2 * (s.1 * y₂ s.2.2) else 0)
+                    (LtermsStair i)).sum -
+              (List.map (fun s_1 => if s_1.2.2 = s.2.2 then s_1.1 * x₁ s_1.2.1 * (s.1 * y₁ s.2.1) else 0)
+                  (LtermsStair i)).sum)
+          (RtermsStair j)).sum +
+      (List.map
+          (fun s =>
+            (List.map (fun s_1 => s_1.1 * x₁ s_1.2.1 * x₂ s_1.2.2 * (s.1 * y₁ s.2.1 * y₂ s.2.2)) (LtermsStair i)).sum)
+          (RtermsStair j)).sum =
+    ∑ t ∈ range 47, stairTermN x₁ y₁ x₂ y₂ t i j
+
+x₁ y₁ x₂ y₂ : Fin 23 → ℚ
+i j : ℕ
+hi : i < 45
+hj : j < 45
+h1 :
+  corStairQ (stairPairM x₁ y₁ x₂ y₂) i j =
+    (List.map (fun t => (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum)
+        (RtermsStair j)).sum
+h2 :
+  ∀ (t : ℚ × Pr 23),
+    (List.map (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1) (LtermsStair i)).sum =
+      (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum -
+            (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum -
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum +
+        (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum
+hA :
+  (List.map (fun t => (List.map (fun s => if s.2 = t.2 then s.1 * t.1 else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    0
+hB :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.1 = t.2.1 then s.1 * x₂ s.2.2 * (t.1 * y₂ t.2.2) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j
+hC :
+  (List.map
+        (fun t =>
+          (List.map (fun s => if s.2.2 = t.2.2 then s.1 * x₁ s.2.1 * (t.1 * y₁ t.2.1) else 0) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j
+hD :
+  (List.map (fun t => (List.map (fun s => s.1 * x₁ s.2.1 * x₂ s.2.2 * (t.1 * y₁ t.2.1 * y₂ t.2.2)) (LtermsStair i)).sum)
+        (RtermsStair j)).sum =
+    stairPw x₁ x₂ i * stairQw y₁ y₂ j
+hB' : ∑ k, stairUk x₂ (↑k) i * stairVk y₂ (↑k) j = ∑ n ∈ range 23, stairUk x₂ n i * stairVk y₂ n j
+hC' : ∑ l, stairUl x₁ (↑l) i * stairVl y₁ (↑l) j = ∑ n ∈ range 23, stairUl x₁ n i * stairVl y₁ n j
+hR :
+  ∑ t ∈ range 47, stairTermN x₁ y₁ x₂ y₂ t i j =
+    -∑ n ∈ range 23, stairUl x₁ n i * stairVl y₁ n j - ∑ n ∈ range 23, stairUk x₂ n i * stairVk y₂ n j +
+      stairPw x₁ x₂ i * stairQw y₁ y₂ j
+⊢ (List.map
+          (fun s =>
+            (List.map (fun s_1 => if s_1.2 = s.2 then s_1.1 * s.1 else 0) (LtermsStair i)).sum -
+                (List.map (fun s_1 => if s_1.2.1 = s.2.1 then s_1.1 * x₂ s_1.2.2 * (s.1 * y₂ s.2.2) else 0)
+                    (LtermsStair i)).sum -
+              (List.map (fun s_1 => if s_1.2.2 = s.2.2 then s_1.1 * x₁ s_1.2.1 * (s.1 * y₁ s.2.1) else 0)
+                  (LtermsStair i)).sum)
+          (RtermsStair j)).sum +
+      (List.map
+          (fun s =>
+            (List.map (fun s_1 => s_1.1 * x₁ s_1.2.1 * x₂ s_1.2.2 * (s.1 * y₁ s.2.1 * y₂ s.2.2)) (LtermsStair i)).sum)
+          (RtermsStair j)).sum =
+    ∑ t ∈ range 47, stairTermN x₁ y₁ x₂ y₂ t i j
+EXIT=1
