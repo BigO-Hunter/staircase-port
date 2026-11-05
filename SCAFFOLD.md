@@ -167,3 +167,63 @@ n3_t1_kernel_entry.lean n3_t2_kernel_row.lean n3_t4_kernel_chk.lean n3_axcheck.l
 extract/n3_corner_stats.py. No shared-file change requests.
 Next for successors: N2c (stairCorner_pivots_witness) and N5-2 flagBasis_stair hcert can now
 consume stair_data_cert; nothing blocked on N3.
+## N2b NOTES (2026-11-05/06, sp-n2b-r2 — recovery agent after the kernel panic)
+STATUS: PROVED + MERGED. `stairNE_rk_le` in StaircasePort/Pivot.lean is no longer sorry.
+
+### THE STATEMENT-SHAPE FINDING (the scaffold's N2b statement was FALSE)
+`∀ M : Matrix (Pr 23) (Pr 23) ℚ, rk (stairCornerQOf M) (i+1) j ≤ cut` is refuted:
+`corStairQ M` is only BILINEAR in `M`, so at block (1,24) (pinned cut = 1) corner row 0 reads
+only the M-cells ((0,0),·) and row 1 only ((1,1),·). Explicit witness (exact ℚ,
+extract/counterexample_check.py): M[(0,0),(2,3)] = 1/7, M[(1,1),(3,4)] = 1/13, rest 0 gives a
+2x2 block minor [[1,0],[0,7/13]], rank 2 > 1.
+HONEST FORM (what is proved, and what N2c/N2d actually consume):
+  theorem stairNE_rk_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
+      ∀ t ∈ stairNEBlocks, rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (t.1+1) t.2.1 ≤ t.2.2.2
+  stairPairM x₁ y₁ x₂ y₂ := (1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂)
+Found INDEPENDENTLY twice (this agent's numeric check + the predecessor's counterexample in
+RESCUE_RESUME.md), so it is not a measurement artefact.
+
+### NEBlocks.lean INTERFACE (regenerated here; predecessor's version was lost/was NOT built)
+My regen differs from the predecessor's rescued blueprint and is BETTER for the proof: instead
+of zip-aligned `stairNECutR0/C0/T0 : List (List ℕ)` (which forces `getD`-by-index bridges) the
+cut sets are CARRIED IN the block:
+  structure StairNEBlock := (i j rho cut : ℕ) (R0 C0 T0 : List ℕ)
+  stairNEBlocksX : List StairNEBlock                     -- 689 entries
+  stairNESr / stairNESc : List (List ℕ)                  -- 47 term supports
+  stairNEBlocksX_map : stairNEBlocksX.map (i,j,rho,cut) = stairNEBlocks   -- rfl, no axioms
+  stairNE_cuts_card  : stairNEBlocksX.all stairNEcardOK = true            -- kernel decide
+  stairNE_cuts_cover : stairNEBlocksX.all stairNEcoverOK = true           -- kernel decide
+  stairNEcardOK/stairNEcoverOK : Bool predicates (bridged by *_spec lemmas in Pivot.lean)
+Existing value pins (`stairNEBlocks`, `stairNEBlocks_length`, `stairNEBlocks_cut_ge_rho`) are
+byte-identical; no native_decide added. stairNE_cuts_cover axioms: [propext, Quot.sound].
+RENAME LEDGER vs the rescue blueprint: stairNECutR0/C0/T0 (getD lists) -> StairNEBlock fields;
+`stairNE_rk_le_block (n : Fin 689)` -> `stairNE_block_le (b : StairNEBlock)` (no index
+arithmetic); the `getD_eq_getElem_of_lt` bridge is GONE (List.mem_map + stairNEBlocksX_map
+substitutes the block directly).
+
+### PHASE-1 EXTRACTION (re-run here, verified)
+extract/extract_cuts.py (predecessor's, recovered): 689/689 clone flows == pinned cut values ==
+producer check_stair.cut_bound, |R0|+|C0|+|T0| == flow in every block. T0 = {46} in all 689,
+plus {23} in 289 of them; max |T0| = 2; |R0| ≤ 35, |C0| ≤ 20.
+
+### PROOF ARCHITECTURE (all in Pivot.lean, namespace StaircasePort.Stair)
+P1 List-sum kit (sum_map_add/sub/four/mul_right/congr, sum_sum_mul, sum_sum_ite_eq_group
+= the algebraic heart); stairPairM + stairPairM_apply; the 4 δ-pieces stairT1..T4 and
+stairPairM_expand; Nat-indexed factor sums stairUl/Vl/Uk/Vk/Pw/Qw (the pin data form — this is
+what makes `Fin.sum_univ_eq_sum_range` fire); stairTermN/Row/Col/M (each M is literally a
+vecMulVec, so rank ≤ 1 by Matrix.rank_vecMulVec_le); CORNER IDENTITY
+corStairQ_stairPairM_sumN (range-47 split: 23 l-groups + 23 k-groups + the whole term; the
+diagonal piece dies on stairLR_disjoint); coherence accessors stairNESr_iff/stairNESc_iff;
+vanishing lemmas; card_filter_mem_fin (|filter of Fin 45 by raw list| = list length);
+stairBlockR0/C0/T0/Terms; stairBlock_hsum; stairNE_block_le (rank_le_support_cut, TERM MODE);
+stairNE_rk_le (689 blocks via List.mem_map on stairNEBlocksX_map).
+LANDMINES HIT (for successors): (a) appending after a file's trailing `end` silently puts your
+declarations OUTSIDE the namespace — the symptom is `Pr`/`RtermsStair` "unknown identifier"
+with autoImplicit binding `Pr` as an implicit variable; (b) `List.sum_map_sub` does NOT exist
+in Mathlib d13f23b7 (nor `List.map_congr`; `List.sum_map_congr` is free to define);
+(c) `Finset.card_image_of_injective` takes (f) (hf) with s implicit — `_ _ f_inj` misfires;
+(d) `funext` will not close a `List.map = List.map` goal (use List.map_congr_left);
+(e) `Matrix.vecMulVec_apply` on a goal whose RHS is the zero FUNCTION leaves `0 = 0 c` — close
+with `simp`, not `ring`; (f) stairTermRow/stairTermCol take the index as `Fin 45`, not `ℕ`.
+### NEXT
+N2c (stairCorner_pivots_witness) then N2d; nothing in N2b blocks them.
