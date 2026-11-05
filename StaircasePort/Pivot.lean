@@ -917,7 +917,7 @@ set_option maxHeartbeats 0
 /-! ### N2c — the rightmost-pivot lower bound at the extracted witness (check_stair item 3)
 
 `stairPC` is the extracted rightmost-pivot pattern (staircase_data.json `pc`), a permutation
-of `0..44`; the corner runs are exactly its graph (`stairCornerRuns45_pairs`, kernel
+of `0..44`; the corner runs are exactly its graph (`stairCornerRuns45_toFinset`, kernel
 `decide`). For row `i` the four NE blocks around `(i, pc i)` have
 
   A = rk q i (pc i) = k,     B = rk q (i+1) (pc i) = k+1,
