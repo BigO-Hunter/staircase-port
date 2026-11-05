@@ -1,0 +1,485 @@
+⚠ [8925/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs1
+warning: Definitions/Def_IntMul_Kappa_K_Defs1.lean:652:19: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs1.lean:658:19: `if_false` has been deprecated: Use `ite_false` instead
+⚠ [8926/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs2
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:132:71: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:133:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:135:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:150:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:150:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:152:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:152:34: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:158:71: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:159:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:161:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:192:13: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:192:39: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:203:26: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:211:15: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:211:32: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:211:70: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:213:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:213:58: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:214:15: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:214:38: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:216:12: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:218:17: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:218:43: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:222:12: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:295:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:310:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1138:14: This simp argument is unused:
+  Matrix.mul_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Zm, Fin.sum_univ_two, Butterfly.ca, Butterfly.cb]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1138:32: This simp argument is unused:
+  Fin.sum_univ_two
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Zm, Matrix.mul_apply, Butterfly.ca, Butterfly.cb]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1159:0: automatically included section variable(s) unused in theorem `Butterfly.tensF_smul`:
+  [DecidableEq ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1190:24: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1193:18: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1185:0: automatically included section variable(s) unused in theorem `Butterfly.diag2_tens`:
+  [DecidableEq ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs2.lean:1200:0: automatically included section variable(s) unused in theorem `Butterfly.prod_phase`:
+  [DecidableEq ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+⚠ [8927/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs3
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:731:8: This simp argument is unused:
+  List.map_map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:731:22: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [List.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:733:22: Variable name `hK` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hK
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:1113:19: Variable name `t` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _t
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:1164:10: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:1291:19: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs3.lean:1291:28: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8928/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs4
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:187:15: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:244:99: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:254:81: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:425:11: Variable name `x` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:426:12: Variable name `g` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _g
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:452:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:452:45: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:466:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:469:44: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:554:80: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:568:19: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:568:28: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:593:4: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:596:49: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:620:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:628:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:628:22: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:628:34: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:635:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:635:22: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:635:34: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:636:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:641:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:641:19: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:652:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:652:19: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:657:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:657:19: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:687:9: Variable name `hj` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hj
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:754:35: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:774:19: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:793:6: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs4.lean:812:6: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+⚠ [8929/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs5
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:370:33: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:413:78: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:419:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:422:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:426:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:428:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:441:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:442:40: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:464:52: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:464:72: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:467:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:472:71: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:713:45: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:713:55: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:717:45: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:717:55: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs5.lean:755:71: `if_true` has been deprecated: Use `ite_true` instead
+⚠ [8930/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs6
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:86:23: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:90:23: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:96:23: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:100:25: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:102:25: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:369:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:403:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:429:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:430:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:443:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:444:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:464:82: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:466:39: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:481:82: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:483:39: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:499:53: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:516:53: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs6.lean:617:6: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+⚠ [8931/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs7
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:311:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:311:35: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:316:18: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:320:18: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:1098:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:1099:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs7.lean:1102:88: Variable name `hs` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hs
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8932/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs8
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:229:9: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:229:18: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:231:61: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:231:71: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:260:19: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:260:19: Unused tactic linter: `with_reducible exact HasON_Pp' hh (hcard _)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:270:9: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:270:18: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:272:61: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:272:71: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:326:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:326:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:328:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:328:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:333:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:333:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:335:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:335:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:340:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:340:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:342:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:342:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:357:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:357:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:359:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:359:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:364:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:364:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:366:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:366:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:371:11: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:371:20: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:373:63: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:373:73: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:756:6: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:831:83: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:888:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:890:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:894:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:895:29: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:895:41: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:896:41: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1086:11: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1177:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1414:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1414:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1415:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs8.lean:1415:42: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8951/8997] Replayed Definitions.Def_IntMul_HvdH_MachineRef
+warning: Definitions/Def_IntMul_HvdH_MachineRef.lean:46:4: Variable name `n` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _n
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8952/8997] Replayed Definitions.Def_IntMul_HvdH_M_Defs1
+warning: Definitions/Def_IntMul_HvdH_M_Defs1.lean:1069:28: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_HvdH_M_Defs1.lean:1077:28: `if_false` has been deprecated: Use `ite_false` instead
+warning: Definitions/Def_IntMul_HvdH_M_Defs1.lean:1096:28: Variable name `hk` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hk
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_HvdH_M_Defs1.lean:1259:72: This simp argument is unused:
+  Fin.ext_iff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tin, tout]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [8953/8997] Replayed Definitions.Def_IntMul_HvdH_M_Defs2
+warning: Definitions/Def_IntMul_HvdH_M_Defs2.lean:921:9: Variable name `i` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _i
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_HvdH_M_Defs2.lean:1083:27: Variable name `k` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _k
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8957/8997] Replayed Definitions.Def_IntMul_HvdH_M_Defs6
+warning: Definitions/Def_IntMul_HvdH_M_Defs6.lean:768:10: Variable name `T` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _T
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8970/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs20
+warning: Definitions/Def_IntMul_Kappa_K_Defs20.lean:95:12: Ambiguous namespace `RS`: it is interpreted as `_root_.NLogN.KFW.RS` because this `open` occurs inside `namespace NLogN.KFW`, while `_root_.NLogN.RS` is silently not opened. Specify the namespace unambiguously, e.g. `_root_.NLogN.KFW.RS`. The warning can sometimes also be addressed by moving the `open` outside of the surrounding `namespace`.
+
+Note: This linter can be disabled with `set_option linter.ambiguousOpen false`
+⚠ [8974/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs21
+warning: Definitions/Def_IntMul_Kappa_K_Defs21.lean:689:10: Variable name `hi` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hi
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs21.lean:741:29: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs21.lean:748:49: `if_false` has been deprecated: Use `ite_false` instead
+⚠ [8975/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs22
+warning: Definitions/Def_IntMul_Kappa_K_Defs22.lean:929:12: Ambiguous namespace `RS`: it is interpreted as `_root_.NLogN.KFW.RS` because this `open` occurs inside `namespace NLogN.KFW`, while `_root_.NLogN.RS` is silently not opened. Specify the namespace unambiguously, e.g. `_root_.NLogN.KFW.RS`. The warning can sometimes also be addressed by moving the `open` outside of the surrounding `namespace`.
+
+Note: This linter can be disabled with `set_option linter.ambiguousOpen false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs22.lean:990:12: Ambiguous namespace `RS`: it is interpreted as `_root_.NLogN.KFW.RS` because this `open` occurs inside `namespace NLogN.KFW`, while `_root_.NLogN.RS` is silently not opened. Specify the namespace unambiguously, e.g. `_root_.NLogN.KFW.RS`. The warning can sometimes also be addressed by moving the `open` outside of the surrounding `namespace`.
+
+Note: This linter can be disabled with `set_option linter.ambiguousOpen false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs22.lean:1127:12: Ambiguous namespace `RS`: it is interpreted as `_root_.NLogN.KFW.RS` because this `open` occurs inside `namespace NLogN.KFW`, while `_root_.NLogN.RS` is silently not opened. Specify the namespace unambiguously, e.g. `_root_.NLogN.KFW.RS`. The warning can sometimes also be addressed by moving the `open` outside of the surrounding `namespace`.
+
+Note: This linter can be disabled with `set_option linter.ambiguousOpen false`
+⚠ [8976/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs23
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:311:49: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:382:15: `if_true` has been deprecated: Use `ite_true` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:385:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:389:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:392:12: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:395:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:395:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs23.lean:397:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8980/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs27
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:32:61: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:67:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:67:31: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:85:50: `dif_neg` has been deprecated: Use `dite_eq_right` instead
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:78:54: This simp argument is unused:
+  ← pow_succ'
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [rrBasis_apply, mul_sum, mul_smul_comm]
+
+Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:82:29: This simp argument is unused:
+  yR_pow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_last, Fin.val_castSucc, Fin.val_succ, Fin.val_zero, pow_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Definitions/Def_IntMul_Kappa_K_Defs27.lean:88:48: This simp argument is unused:
+  one_smul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [← pow_succ', smul_neg, neg_smul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [8985/8997] Replayed Definitions.Def_IntMul_Kappa_K_Defs32
+warning: Definitions/Def_IntMul_Kappa_K_Defs32.lean:1243:12: Ambiguous namespace `RS`: it is interpreted as `_root_.NLogN.KFW.RS` because this `open` occurs inside `namespace NLogN.KFW`, while `_root_.NLogN.RS` is silently not opened. Specify the namespace unambiguously, e.g. `_root_.NLogN.KFW.RS`. The warning can sometimes also be addressed by moving the `open` outside of the surrounding `namespace`.
+
+Note: This linter can be disabled with `set_option linter.ambiguousOpen false`
+⚠ [8987/8997] Replayed Definitions.Def_IntMul_Kappa_R6_Defs4
+warning: Definitions/Def_IntMul_Kappa_R6_Defs4.lean:888:26: Variable name `hi` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hi
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Definitions/Def_IntMul_Kappa_R6_Defs4.lean:888:47: Variable name `hj` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hj
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8991/8997] Replayed StaircasePort.Cert
+warning: StaircasePort/Cert.lean:113:59: Variable name `hab` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hab
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Cert.lean:151:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Cert.lean:151:41: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8992/8997] Replayed StaircasePort.Nonvan
+warning: StaircasePort/Nonvan.lean:89:57: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: StaircasePort/Nonvan.lean:92:57: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: StaircasePort/Nonvan.lean:150:52: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: StaircasePort/Nonvan.lean:150:52: Unused tactic linter: `norm_num` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: StaircasePort/Nonvan.lean:154:52: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: StaircasePort/Nonvan.lean:154:52: Unused tactic linter: `norm_num` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [8993/8997] Replayed StaircasePort.Top
+warning: StaircasePort/Top.lean:33:8: declaration uses `sorry`
+⚠ [8994/8997] Built StaircasePort.Pivot (116s)
+warning: StaircasePort/Pivot.lean:59:8: declaration uses `sorry`
+warning: StaircasePort/Pivot.lean:69:8: declaration uses `sorry`
+warning: StaircasePort/Pivot.lean:79:8: declaration uses `sorry`
+warning: StaircasePort/Pivot.lean:93:8: declaration uses `sorry`
+warning: StaircasePort/Pivot.lean:303:8: declaration uses `sorry`
+warning: StaircasePort/Pivot.lean:343:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:431:35: Variable name `y₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Pivot.lean:431:41: Variable name `y₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Pivot.lean:436:32: Variable name `x₁` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₁
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Pivot.lean:436:38: Variable name `x₂` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _x₂
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Pivot.lean:563:12: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:563:23: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:563:34: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:565:12: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:565:23: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:565:34: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:567:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:567:21: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:612:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:612:18: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:613:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:613:18: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:658:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:713:29: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:720:29: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:721:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:724:29: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:725:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:755:29: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:759:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:759:47: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:771:29: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:775:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Pivot.lean:775:47: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: StaircasePort/Pivot.lean:817:13: This simp argument is unused:
+  stairNEcoverOK
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Bool.or_eq_true, decide_eq_true_eq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: StaircasePort/Pivot.lean:863:5: Variable name `hi` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hi
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: StaircasePort/Pivot.lean:863:21: Variable name `hj` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hj
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8995/8997] Built StaircasePort.Signature (5.9s)
+warning: StaircasePort/Signature.lean:99:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Signature.lean:103:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: StaircasePort/Signature.lean:258:8: declaration uses `sorry`
+✔ [8996/8997] Built StaircasePort (4.0s)
+Build completed successfully (8997 jobs).
+EXIT=0
