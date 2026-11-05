@@ -911,6 +911,9 @@ theorem stairNE_rk_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
     (stairNEcoverOK_spec b hb)
 
 
+set_option maxRecDepth 20000 in
+set_option maxHeartbeats 0 in
+
 /-! ### N2c — the rightmost-pivot lower bound at the extracted witness (check_stair item 3)
 
 `stairPC` is the extracted rightmost-pivot pattern (staircase_data.json `pc`), a permutation
