@@ -911,8 +911,8 @@ theorem stairNE_rk_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
     (stairNEcoverOK_spec b hb)
 
 
-set_option maxRecDepth 20000 in
-set_option maxHeartbeats 0 in
+set_option maxRecDepth 20000
+set_option maxHeartbeats 0
 
 /-! ### N2c — the rightmost-pivot lower bound at the extracted witness (check_stair item 3)
 
