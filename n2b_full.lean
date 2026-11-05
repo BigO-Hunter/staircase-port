@@ -431,4 +431,184 @@ theorem corStairQ_stairPairM_sumN (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (i j : 
   rw [hA, hB, hC, hD, hB', hC', hR]
   ring
 
+/-! ## P4: the block bound and the 689-block instantiation -/
+
+/-- Coherence accessor: the pinned row support is exactly the family coordinate set. -/
+lemma stairNESr_iff (t i : ℕ) (ht : t < 47) (hi : i < 45) :
+    (i ∈ stairNESr.getD t [] ↔ ((t < 23 ∧ t ∈ stairLsndN i) ∨
+      (23 ≤ t ∧ t < 46 ∧ t - 23 ∈ stairLfstN i) ∨ 46 ≤ t)) :=
+  of_decide_eq_true (List.all_eq_true.mp
+    (List.all_eq_true.mp stairNESr_coh t (List.mem_range.mpr ht)) i (List.mem_range.mpr hi))
+
+lemma stairNESc_iff (t j : ℕ) (ht : t < 47) (hj : j < 45) :
+    (j ∈ stairNESc.getD t [] ↔ ((t < 23 ∧ t ∈ stairRsndN j) ∨
+      (23 ≤ t ∧ t < 46 ∧ t - 23 ∈ stairRfstN j) ∨ 46 ≤ t)) :=
+  of_decide_eq_true (List.all_eq_true.mp
+    (List.all_eq_true.mp stairNESc_coh t (List.mem_range.mpr ht)) j (List.mem_range.mpr hj))
+
+/-- Row factor of term `t` vanishes off its structural row support. -/
+lemma stairTermRow_eq_zero (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (t : Fin 47) (i : ℕ) (hi : i < 45)
+    (h : i ∉ stairNESr.getD t.val []) : stairTermRow x₁ y₁ x₂ y₂ t.val ⟨i, hi⟩ = 0 := by
+  have hmem : ¬((t.val < 23 ∧ t.val ∈ stairLsndN i) ∨
+      (23 ≤ t.val ∧ t.val < 46 ∧ t.val - 23 ∈ stairLfstN i) ∨ 46 ≤ t.val) :=
+    fun hc => h ((stairNESr_iff t.val i t.isLt hi).mpr hc)
+  rcases Nat.lt_or_ge t.val 23 with h23 | h23
+  · simp only [stairTermRow, if_pos h23]
+    rw [stairUl_eq_zero x₁ t.val i (fun hm => hmem (Or.inl ⟨h23, hm⟩)), neg_zero]
+  · rcases Nat.lt_or_ge t.val 46 with h46 | h46
+    · simp only [stairTermRow]
+      rw [if_neg (show ¬ t.val < 23 by omega), if_pos h46,
+        stairUk_eq_zero x₂ (t.val - 23) i
+          (fun hm => hmem (Or.inr (Or.inl ⟨h23, h46, hm⟩))), neg_zero]
+    · exact absurd (Or.inr (Or.inr h46)) hmem
+
+/-- Col factor of term `t` vanishes off its structural col support. -/
+lemma stairTermCol_eq_zero (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (t : Fin 47) (j : ℕ) (hj : j < 45)
+    (h : j ∉ stairNESc.getD t.val []) : stairTermCol x₁ y₁ x₂ y₂ t.val ⟨j, hj⟩ = 0 := by
+  have hmem : ¬((t.val < 23 ∧ t.val ∈ stairRsndN j) ∨
+      (23 ≤ t.val ∧ t.val < 46 ∧ t.val - 23 ∈ stairRfstN j) ∨ 46 ≤ t.val) :=
+    fun hc => h ((stairNESc_iff t.val j t.isLt hj).mpr hc)
+  rcases Nat.lt_or_ge t.val 23 with h23 | h23
+  · simp only [stairTermCol, if_pos h23]
+    rw [stairVl_eq_zero y₁ t.val j (fun hm => hmem (Or.inl ⟨h23, hm⟩))]
+  · rcases Nat.lt_or_ge t.val 46 with h46 | h46
+    · simp only [stairTermCol]
+      rw [if_neg (show ¬ t.val < 23 by omega), if_pos h46,
+        stairVk_eq_zero y₂ (t.val - 23) j
+          (fun hm => hmem (Or.inr (Or.inl ⟨h23, h46, hm⟩)))]
+    · exact absurd (Or.inr (Or.inr h46)) hmem
+
+/-- Cardinality of a `Fin n`-filter against a raw Nat list. -/
+lemma card_filter_mem_fin {n : ℕ} {l : List ℕ} (hnd : l.Nodup) (hlt : ∀ x ∈ l, x < n) :
+    ((Finset.univ : Finset (Fin n)).filter (fun r => r.val ∈ l)).card = l.length := by
+  classical
+  have himg : ((Finset.univ : Finset (Fin n)).filter (fun r => r.val ∈ l)).image Fin.val
+      = l.toFinset := by
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨r, hr, rfl⟩ := Finset.mem_image.mp hx
+      exact List.mem_toFinset.mpr (Finset.mem_filter.mp hr).2
+    · intro hx
+      have hx' : x ∈ l := List.mem_toFinset.mp hx
+      exact Finset.mem_image.mpr
+        ⟨⟨x, hlt x hx'⟩, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hx'⟩, rfl⟩
+  have h1 : ((Finset.univ : Finset (Fin n)).filter (fun r => r.val ∈ l)).card
+      = (((Finset.univ : Finset (Fin n)).filter (fun r => r.val ∈ l)).image Fin.val).card :=
+    (Finset.card_image_of_injective _ Fin.val_injective).symm
+  rw [h1, himg, List.toFinset_card_of_nodup hnd]
+
+/-- Bridge: the bulk `decide` card pin, per block. -/
+theorem stairNEcardOK_spec (b : StairNEBlock) (hb : b ∈ stairNEBlocksX) :
+    (b.R0.length + b.C0.length + b.T0.length = b.cut) ∧ b.i < 45 ∧ b.j < 45 ∧
+    (∀ r ∈ b.R0, r < 45) ∧ (∀ c ∈ b.C0, c < 45) ∧ (∀ t ∈ b.T0, t < 47) ∧
+    b.R0.Nodup ∧ b.C0.Nodup ∧ b.T0.Nodup := by
+  have h := List.all_eq_true.mp stairNE_cuts_card b hb
+  simp only [stairNEcardOK, Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true] at h
+  obtain ⟨⟨⟨⟨⟨⟨⟨⟨h1, h2⟩, h3⟩, h4⟩, h5⟩, h6⟩, h7⟩, h8⟩, h9⟩ := h
+  exact ⟨h1, h2, h3, h4, h5, h6, h7, h8, h9⟩
+
+/-- Bridge: the bulk `decide` cover pin (cut_bound's certificate loop), per block. -/
+theorem stairNEcoverOK_spec (b : StairNEBlock) (hb : b ∈ stairNEBlocksX) :
+    ∀ t ∈ List.range 47, t ∉ b.T0 →
+      (∀ r ∈ stairNESr.getD t [], r ≤ b.i → r ∈ b.R0) ∨
+      (∀ c ∈ stairNESc.getD t [], b.j ≤ c → c ∈ b.C0) := by
+  intro t ht hT
+  have h := List.all_eq_true.mp (List.all_eq_true.mp stairNE_cuts_cover b hb) t ht
+  simp only [stairNEcoverOK, Bool.or_eq_true, decide_eq_true_eq] at h
+  rcases h with (hT0 | hr) | hc
+  · exact absurd hT0 hT
+  · left
+    intro r hr' hle
+    have hb' := List.all_eq_true.mp hr r hr'
+    simpa [hle] using hb'
+  · right
+    intro c hc' hjc
+    have hb' := List.all_eq_true.mp hc c hc'
+    simpa [hjc] using hb'
+
+/-! ## P4: the block cut sets, the block bound, and the 689-block instantiation -/
+
+noncomputable def stairBlockR0 (b : StairNEBlock) : Finset (Fin 45) :=
+  Finset.univ.filter fun r => r.val ∈ b.R0
+
+noncomputable def stairBlockC0 (b : StairNEBlock) : Finset (Fin 45) :=
+  Finset.univ.filter fun c => c.val ∈ b.C0
+
+noncomputable def stairBlockT0 (b : StairNEBlock) : Finset (Fin 47) :=
+  Finset.univ.filter fun t => t.val ∈ b.T0
+
+noncomputable def stairBlockTerms (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (X Y : ℕ) :
+    Fin 47 → Matrix {r : Fin 45 // r.val < X} {c : Fin 45 // Y ≤ c.val} ℚ :=
+  fun t => (stairTermM x₁ y₁ x₂ y₂ t).submatrix Subtype.val Subtype.val
+
+/-- Entrywise form of the corner identity (what `hsum` consumes). -/
+theorem stairCornerQOf_pair_entry (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (r c : Fin 45) :
+    stairCornerQOf (stairPairM x₁ y₁ x₂ y₂) r c = ∑ t : Fin 47, stairTermM x₁ y₁ x₂ y₂ t r c := by
+  show corStairQ (stairPairM x₁ y₁ x₂ y₂) r.val c.val = _
+  rw [corStairQ_stairPairM_sumN x₁ y₁ x₂ y₂ r.val c.val r.isLt c.isLt]
+  rw [← Fin.sum_univ_eq_sum_range (fun n => stairTermN x₁ y₁ x₂ y₂ n r.val c.val) 47]
+  exact Finset.sum_congr rfl (fun t _ => (stairTermM_apply x₁ y₁ x₂ y₂ t r c).symm)
+
+/-- `hsum`: the restricted block is the sum of the restricted terms. -/
+theorem stairBlock_hsum (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (X Y : ℕ) :
+    (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)).submatrix
+        (fun r : {r : Fin 45 // r.val < X} => r.1) (fun c : {c : Fin 45 // Y ≤ c.val} => c.1)
+      = ∑ t : Fin 47, stairBlockTerms x₁ y₁ x₂ y₂ X Y t := by
+  ext r c
+  simp only [Matrix.submatrix_apply, Matrix.sum_apply, stairBlockTerms]
+  exact stairCornerQOf_pair_entry x₁ y₁ x₂ y₂ r.1 c.1
+
+/-- **The generic block bound**: every NE block of the pair-matrix corner obeys its cut. -/
+theorem stairNE_block_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (b : StairNEBlock)
+    (hi : b.i < 45) (hj : b.j < 45)
+    (hcard : b.R0.length + b.C0.length + b.T0.length = b.cut)
+    (hndR : b.R0.Nodup) (hndC : b.C0.Nodup) (hndT : b.T0.Nodup)
+    (hltR : ∀ r ∈ b.R0, r < 45) (hltC : ∀ c ∈ b.C0, c < 45) (hltT : ∀ t ∈ b.T0, t < 47)
+    (hcover : ∀ t ∈ List.range 47, t ∉ b.T0 →
+      (∀ r ∈ stairNESr.getD t [], r ≤ b.i → r ∈ b.R0) ∨
+      (∀ c ∈ stairNESc.getD t [], b.j ≤ c → c ∈ b.C0)) :
+    rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (b.i + 1) b.j ≤ b.cut := by
+  have hcard' : (stairBlockR0 b).card + (stairBlockC0 b).card + (stairBlockT0 b).card ≤ b.cut := by
+    rw [stairBlockR0, stairBlockC0, stairBlockT0, card_filter_mem_fin hndR hltR,
+      card_filter_mem_fin hndC hltC, card_filter_mem_fin hndT hltT, hcard]
+  refine (rank_le_support_cut (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (b.i + 1) b.j
+    (stairBlockR0 b) (stairBlockC0 b) (stairBlockT0 b)
+    (stairBlockTerms x₁ y₁ x₂ y₂ (b.i + 1) b.j) ?_ ?_ ?_).trans hcard'
+  · exact stairBlock_hsum x₁ y₁ x₂ y₂ (b.i + 1) b.j
+  · intro t ht
+    have htT : t.val ∉ b.T0 := fun hmem =>
+      ht (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmem⟩)
+    rcases hcover t.val (List.mem_range.mpr t.isLt) htT with hr | hc
+    · left
+      intro r hrR
+      have hnotsr : r.1.val ∉ stairNESr.getD t.val [] := fun hmem =>
+        hrR (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hr r.1.val hmem (by omega)⟩)
+      have hrow := stairTermRow_eq_zero x₁ y₁ x₂ y₂ t r.1.val r.1.isLt hnotsr
+      funext c
+      simp only [stairBlockTerms, Matrix.submatrix_apply, stairTermM, Matrix.vecMulVec_apply]
+      rw [hrow]; simp
+    · right
+      intro c hcC r
+      have hnotsc : c.1.val ∉ stairNESc.getD t.val [] := fun hmem =>
+        hcC (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hc c.1.val hmem (by omega)⟩)
+      have hcol := stairTermCol_eq_zero x₁ y₁ x₂ y₂ t c.1.val c.1.isLt hnotsc
+      simp only [stairBlockTerms, Matrix.submatrix_apply, stairTermM, Matrix.vecMulVec_apply]
+      rw [hcol]; simp
+  · intro t _
+    simp only [stairBlockTerms, stairTermM, submatrix_vecMulVec]
+    exact Matrix.rank_vecMulVec_le _ _
+
+/-- **N2b — `stairNE_rk_le`**: every nontrivial NE block of the symbolic staircase corner
+obeys its extracted min-cut bound, for ARBITRARY labels. -/
+theorem stairNE_rk_le_proof (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
+    ∀ t ∈ stairNEBlocks, rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (t.1 + 1) t.2.1 ≤ t.2.2.2 := by
+  intro t ht
+  have hmem : t ∈ stairNEBlocksX.map (fun b => (b.i, b.j, b.rho, b.cut)) := by
+    rw [stairNEBlocksX_map]; exact ht
+  obtain ⟨b, hb, rfl⟩ := List.mem_map.mp hmem
+  obtain ⟨hcard, hi, hj, hltR, hltC, hltT, hndR, hndC, hndT⟩ := stairNEcardOK_spec b hb
+  exact stairNE_block_le x₁ y₁ x₂ y₂ b hi hj hcard hndR hndC hndT hltR hltC hltT
+    (stairNEcoverOK_spec b hb)
+
 end StaircasePort.Stair
