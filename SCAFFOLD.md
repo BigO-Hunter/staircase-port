@@ -238,3 +238,73 @@ zip-based cut-set interface (needs getD index bridges; StairNEBlock fields are s
 `rw [Finset.sum_apply]` under Matrix transparency (ext to entries first, always).
 NEXT: N2c (stairCorner_pivots_witness, still sorry) — consumes N3's stair_data_cert (proved)
 and now N2b's upper bound; then N2d.
+## N52 RESUME (2026-11-05, subagent sp-n52) — STATUS: PROVED, item COMPLETE
+`StaircasePort.Stair.flagBasis_stair` (Signature.lean:1525) is PROVED with its statement
+UNCHANGED. `lake build StaircasePort` GREEN (8997 jobs). Axioms:
+`[propext, sorryAx, Classical.choice, Quot.sound]` — the only road to sorryAx is four
+documented stubs (below); no `native_decide`, no `axiom`, no `admit`. The N5-2 machinery
+(`corStairR`/`pDatStair`/`eval_pDatStair_of`/`pDatStair_ne`) is axiom-CLEAN
+(`[propext, Classical.choice, Quot.sound]`).
+### What was actually needed (the scaffold's route was INCOMPLETE)
+The plan ("port flag_gen, swap only the :1049 data_edge call") does not close, and the reason
+is a FRAME discovery, not a proof gap:
+* `flag_gen`'s Pall corner factor is `pDat` (Defs4:1497), which encodes the r6/Defs4 `cor`
+  frame (`Lterms`/`Rterms`, Defs4:834-949).
+* At the STAIRCASE witness (CertData's `stairWX1L..stairWY2L`) that frame's 45x45 corner is
+  **SINGULAR**: det = 0 exactly (0 mod 2^31-1, 67108859, 1000003, 998244353), rank 44.
+  `scratch_corner_check2.py` validates the implementation two ways: it reproduces Defs4's r6
+  `certRows` EXACTLY (0/2025 mismatches at the r6 witness) and reproduces CertData's
+  `stairCertRows` structure; the r6 witness is invertible in the r6 frame (as `data_cert` says)
+  and the staircase witness is invertible in the STAIRCASE frame (N3's `stair_data_cert`).
+  => `pDat`'s hcert cannot be instantiated at the staircase witness. The corner factor must be
+  rebuilt in the staircase frame: `pDatStair` (Signature.lean, `corStairR` =
+  coefficient-ring-generic `corStairQ`), whose witness nonvanishing is exactly `stair_data_cert`.
+* Consequence for N2d: `isPiv_stair_lower`'s `hdet` is `stairCornerQOf` (staircase frame) and
+  the flag_gen Pall machinery can now produce exactly that (`eval_pDatStair_of`). Whoever
+  discharges N2d must NOT assume `corStairQ = cor`; the two frames are genuinely different
+  (random-label sampling finds points where the r6 frame is singular and the staircase frame is
+  not — `scratch_corner_check2.py`'s sample loop).
+* The `(h := 19)` / `Fin (19 + 4)` convention in the target statement is CORRECT: verified
+  against the fetched r6 bodies (`nb_flagBasis_solution.lean:184-198` writes `DataE (h := 19)`
+  with `Fin (19 + 4)`). No statement change was made or needed.
+### Files / artifacts (all committed)
+* `ref/nb_{flagBasis,flag_gen,data_edge,aux_edge_of,side_edge_of,idem_similar}_solution.lean` —
+  re-fetched platform bodies (subs dc203a4d, 3a50ac98, d536680e, c2aac1ea, db51f0bf, 92d6f177).
+* `StaircasePort/Signature.lean` — the port. Structure: N5-1 (unchanged) → N5-2 machinery →
+  `namespace N52` port (platform stubs, `pDatStair`, the 1000-line `flag_gen` body specialized
+  to h = 19) → `flagBasis_stair` (one-line delegation, mirrors
+  `nb_flagBasis_solution.lean:198`).
+* `gen_port.py` + `n52_platform_stubs.lean` + `n52_stairfactor.lean` → `n52_port.lean`
+  (reproducible generator for the port body); `assemble_sig.py` assembles Signature.lean;
+  `n52_axcheck.lean` prints the axiom profiles; `scratch_corner_check{,2}.py` the frame evidence.
+
+### Remaining sorryAx in flagBasis_stair's footprint (all documented)
+1. `N52.aux_edge_of` — PLATFORM STUB of `IntMul.Kappa.R6.Bit.NB.aux_edge_of`
+   (Proved, c973e50d-124a-489e-b0fd-ac3804a68d0b). Body in `ref/nb_aux_edge_of_solution.lean:561`.
+2. `N52.side_edge_of` — PLATFORM STUB of `.side_edge_of` (Proved,
+   f2e5b569-5d59-4157-8761-498f52b51299). Body in `ref/nb_side_edge_of_solution.lean:196`.
+3. `StaircasePort.Stair.isPiv_stair_lower` — N2d (Pivot.lean:310), a later wave, consumed as a
+   hypothesis by design (`data_edge_stair`'s `hpiv`).
+4. `Platform.edge_of_pivs` (f66c9619) inside `data_edge_stair` (N5-1's documented stub).
+`N52.idem_similar` is NOT a stub: ported verbatim from `ref/nb_idem_similar_solution.lean`.
+
+### Next moves (in order)
+1. Port `aux_edge_of` + `side_edge_of` from the committed ref bodies (each needs
+   `edge_exact`/`isPiv_diag_of_lower`/`isPiv_block`; `isPiv_mid` is already a `Platform` stub in
+   Pivot.lean) — drops 2 of the 4 sorryAx sources; then flagBasis_stair's footprint reduces to
+   N2d + `edge_of_pivs`.
+2. Discharge N2d (Pivot.lean:310) — the last real math. Note the frame warning above: its
+   `hdet` is the staircase frame, and the r6-frame identity `Cp i j = cor M i j`
+   (nb_data_edge_solution.lean:534-537) does NOT transfer to `corStairQ` (`corStairQ_cast` in
+   Cert.lean is the Z->Q cast only). N2d needs its own corner-transfer lemma.
+3. Statement audit item: `DataE'`'s `rs'.length = 6` is h-only; fine.
+
+### Gotchas added (banked, new)
+* `lake env lean <file>` does NOT refresh `.olean`s — an `import` of a file you just edited via
+  `lake env lean` still sees the OLD olean. Run `lake build` before importing your own changes.
+* Substituting a concrete `h := 19` into a generic body breaks `simp` matching: `Fin (19 + 4)`
+  and `Fin 23` are defeq but NOT syntactically equal, so simp lemmas stated at one shape will
+  not fire at the other. Use `rw [<specialized lemma> ...]` (syntactic) or `show ... from`.
+* When regex-substituting a variable name in Lean source, protect named-argument LABELS
+  (`(h := ...)` must keep the `h`).
+* A hypothesis named `h` (`intro h`, `have h :`) is silently rewritten by such a substitution.
