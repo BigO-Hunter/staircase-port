@@ -1,4 +1,4 @@
-/-!
+/-
 # N4 — hu/hv/hT analogues + flag-diagonal nonvanishing (check_stair item 1)
 
 check_stair.py item 1 (docstring :7-10, flag_factors :110-135): the sparse staircase flag

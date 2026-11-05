@@ -1,4 +1,4 @@
-/-!
+/-
 # N5 — the DataE → DataE' signature-swap points
 
 The FLAGBASIS BODY VERDICT (REPORT.md) localized the corner to ONE specialized step; this

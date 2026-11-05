@@ -1,4 +1,4 @@
-/-!
+/-
 # Top-level target: the r7 leaf, restated against the real QHNet definitions
 
 formal_statement (platform e27d1a90-cfee-4b83-9b0b-b6c6f0ab652d, fetched verbatim to

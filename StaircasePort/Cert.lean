@@ -1,4 +1,4 @@
-/-!
+/-
 # N3 — kernel certificate for the staircase data corner + the staircase flag family
 
 Mirrors nb_flagBasis_solution.lean:95-147 (Cert section: MZ / cert_chk / cert_entries /

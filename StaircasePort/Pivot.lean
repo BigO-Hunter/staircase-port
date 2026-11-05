@@ -1,4 +1,4 @@
-/-!
+/-
 # N2 — the staircase-B pivot lemmas (the only new math) + platform restatements
 
 ## Platform restatements (verbatim formal_statements fetched 2026-11-04 from prove2.me

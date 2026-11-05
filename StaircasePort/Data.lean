@@ -1,4 +1,4 @@
-/-!
+/-
 # N1 — staircase data definitions: `stairDataRuns`, `stairSingles`, `DataE'`
 
 The staircase entrance corner of witness-1 (PR#62 producer, Jain certificate_round7.py:26-33,

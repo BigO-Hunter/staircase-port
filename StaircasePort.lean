@@ -1,4 +1,4 @@
-/-!
+/-
 # StaircasePort — skeleton for the bounded first increment of the bitNetR7_mom proof
 (r7 leaf e27d1a90, staircase witness-1). Definitions + sorry'd statements + extracted data;
 see SCAFFOLD.md for the N1..N5 map, fan-out independence, and proof routes.
