@@ -12,3 +12,4 @@ import StaircasePort.Pivot
 import StaircasePort.Nonvan
 import StaircasePort.Signature
 import StaircasePort.Top
+import StaircasePort.Projector

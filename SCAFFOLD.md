@@ -620,3 +620,148 @@ lemma for the middle clause; corner runs then ride on N2c lifted + isPiv_block i
 frame (N2d RESUME honest route). Cross-check pointers for N6: extract/out/midrun_r6frame.json
 (per-position A,B,C,D), extract/out/midrun_orders.json (4 orders × 2 primes + 3 generic
 controls).
+## N6 NOTES (2026-11-05, subagent sp-n6) — the R7/staircase PROJECTOR exists
+### What was built (deliverables 1-3)
+`StaircasePort/Projector.lean` (NEW, owned by N6) is the object `## N2d RESUME` asked for: the
+analogue of r6's `Tm`/`Ti`/`flagEquiv`/`qM` built from `LtermsStair`/`RtermsStair`. The
+construction was DERIVED and then verified numerically before any Lean was written
+(`n6_proj_probe.py`), because two scaffold statements had already turned out false:
+* **anchors** `aLsStair i` / `bLsStair j` = the FIRST listed term of `LtermsStair i` /
+  `RtermsStair j` — the coordinate that carries the family vector's LEADING coefficient;
+* **`NsStair`** has only **23** nonzero entries (the staircase row family is multi-term only at
+  `i = 22`, the column family only at `j = 22..43`), each = (other term)/(leading term);
+* **`NsStair * NsStair = 0`** by two structural no-2-path lemmas (targets `(r,r+1)` are not
+  sources `(s+1,s)`, and `(0,22)` is not a source) — so `TiStair * TmStair = 1`;
+* the staircase LEADING COEFFICIENTS ARE NOT 1 (`al`, `a_r`), which is the one place the r6
+  pattern does not port verbatim: the row of `TmStair` at an anchor is `LtermsStair i / leadL i`.
+  A diagonal scaling `dv` (`leadL` on the row anchors, `leadR⁻¹` on the column anchors, 1
+  elsewhere) with `PmStair = diagonal dv * TmStair`, `QmStair = TiStair * diagonal dv⁻¹`
+  (`QmStair * PmStair = 1`) makes the corner EXACT:
+  **`qMStair_corner : qMStair M ⟨i⟩ ⟨529-45+j⟩ = corStairQ M i j`** (i, j < 45).
+That identity is what `qM_corner` can never be (N2d's `n2d_frame_delta`): with it the corner of
+the projector the consumer applies `isPiv_mid` to IS the `corStairQ` frame, so `hdet` =
+`stairCornerQOf`'s determinant = `stair_data_cert` at the witness.
+### Deliverable 1 — numeric prototype (GREEN, `n6_proj_probe.py` + `n6_midrun.py`)
+At the extracted witness (`extract/out/cert_data.json`), exact `Fraction` and mod-p:
+* corner == `corStairQ`: **2025/2025** entries; r6-frame control reproduces `cor` 2025/2025;
+* staircase corner rank **45**, 39/39 claimed corner pivots, pivot set = the extracted
+  permutation `pc` (45/45); **r6-frame control rank 44, 21/21** (N2d's frame delta reproduced);
+* **middle run, full 529x529 projector, ALL 439 positions: 439/439 pivots**
+  (`extract/out/n6_midrun.json`) — this answers N2d's open question in the new frame;
+* cross-check vs the independent arm (sp-midrun): its r6-frame headline (437/439, failing
+  (464,464) and (483,483)) is reproduced by an independent re-implementation here
+  (`n6_xcheck_r6frame.py`: r6 run 21/21, r6-frame middle 437/439 failing exactly 464, 483).
+  **No disagreement.** Its producer-convention finding (no order-free middle claim
+  producer-side) is consistent: `isPiv_stairMid` below is order-free in the middle.
+### Deliverable 3 (part 1) — the MIDDLE RUN, PROVED: `isPiv_stairMid`
+`isPiv_stairMid : h₁ → h₂ → hdet → ∀ i, 45 ≤ i → i < 484 → IsPiv (qMStair M) i i` for
+`M = (1-x₁y₁) ⊗ₖ (1-x₂y₂)`, discharged by `Platform.isPiv_mid` with
+`hk` (2·45 ≤ 529), `hp = qMStair_idem`, `hrank` (trace: `qMStair_trace` + `trace M = 22² = 484`),
+`hC` (via `qMStair_cornerBlock` + `hdet`). **`hu`/`hv`/`hT` are NOT needed for this clause.**
+
+### Deliverable 3 (part 2) — the 39 CORNER positions: route identified, NOT yet proved
+`isPiv_stairR7` = middle run (PROVED above) ∧ corner runs (open). The r6 corner step
+(`nb_data_edge_solution.lean:534-552`) goes through `isPiv_rank1_lower` on a rank-one
+above-the-diagonal block; N2b/N2d showed the r6-frame version is false for the staircase. The
+NEW frame's structure was measured instead of assumed (`n6_struct_probe.py`, r6 control in the
+same run): with `B i γ := cornerStair[i][off+γ]` and the identity region `i < γ`, the number of
+nonzero 2x2 minors is **0 in both frames** for BOTH blocks
+* `off = 22`: `B i γ = corner[i][22+γ]`, i,γ ∈ 1..21  → the `(1,507,21)` run via
+  `isPiv_rank1_lower B` (l = 1..21, `hT` from the boundary diagonal) then `isPiv_block` twice;
+* `off = 2`: `B k γ = corner[25+k][2+γ]`, k,γ ∈ 0..17 → the `(25,486,18)` run, EXCEPT k = 0
+  (corner position `(25,2)`): `isPiv_rank1_lower` needs `1 ≤ l`, so that one position needs a
+  shifted block (e.g. `corner[24+i][1+γ]`) — that block's rank-one property is **not yet
+  measured**.
+Remaining work is therefore: two `data_upper`-style support computations in the staircase frame
+(`corStairQ M i (22+γ) = u_i·v_γ` for `i < γ`, and the `off = 2` analogue), plus the shifted
+block for `(25,2)`, plus the nonvanishing factors those two identities need (the analogues of
+`hu`/`hv`/`hT`; N4's `stair_f_nonvanishing` + `stair_hu/hv/hT` are the candidates).
+
+### Deliverable 4 — REWIRE SPEC for the N7 wave (call sites; nothing shared was edited here)
+1. `data_edge_stair` (Signature.lean:197): restate its conclusion AND its `hpiv` hypothesis in
+   the staircase frame — `IsPiv (qMStair M)` / `EdgeQ e (qMStair M)` instead of `qM M`
+   (`qMStair`, `flagEquivStair` from `StaircasePort.Projector`). Then:
+   * `hpiv` is supplied by `isPiv_stairR7` (middle run: `isPiv_stairMid`; corner runs: the
+     block route above — the only open piece);
+   * the corner step `have hCe : Cp i j = cor M i.val j.val` (:534-537) becomes
+     `= corStairQ M i.val j.val` by `qMStair_corner` — TRUE now (was the unsound swap);
+   * `hdet` is `stair_data_cert` at the witness (N3), a hypothesis in general;
+   * `hrank` = `qMStair_trace` + the trace computation of :521-531, unchanged;
+   * the `isPiv_mid` step (:554-555) is unchanged, `hC` = `hdet` via `qMStair_cornerBlock`.
+2. `flagBasis_stair` (Signature.lean:~1525): its `data_edge` call site (:1498-1499) currently
+   applies a false lemma; it must call the restated `data_edge_stair` above, i.e. the whole
+   DataE clause moves to `qMStair`. The Pall corner factor `pDatStair` + `stair_data_cert`
+   (N5-2) already matches the frame, so no change there.
+3. `Platform.isPiv_mid` stays as-is (generic). `isPiv_stair_lower` (Pivot.lean) must NOT be
+   used — it stays as the REFUTED record, replaced by `isPiv_stairR7`.
+4. `isPiv_block` (nb_data_edge_solution.lean:227-238) is generic and ports unchanged: it is
+   what transfers block pivots to `qMStair`'s corner coordinates.
+
+### Files
+* Lean: `StaircasePort/Projector.lean` (NEW; no shared file touched — `lake build StaircasePort`
+  picks it up; NO edit to Signature/Pivot/Cert/Nonvan/NEBlocks/Data).
+* Scratch: `n6_proj_probe.py`, `n6_struct_probe.py`, `n6_midrun.py`, `n6_xcheck_r6frame.py`,
+  `n6_dbg*.py`, `n6_axcheck.lean`, `n6_chk.lean`, `extract/out/n6_midrun.json`.
+
+## N6 RESUME (2026-11-05, subagent sp-n6) — STATUS: the projector is BUILT and the middle run is
+PROVED; the 39 corner positions are the remaining gap
+
+**Stopping point.** `StaircasePort/Projector.lean` is complete, typechecks clean, and its axiom
+footprint is exactly `[propext, Classical.choice, Quot.sound]` on every construction lemma and
+`[propext, sorryAx, Classical.choice, Quot.sound]` on `isPiv_stairMid` — the only `sorryAx` road
+is `Platform.isPiv_mid`'s documented stub (Pivot.lean:69), which IS the intended proof channel.
+Nothing is in flight; `lake build StaircasePort` runs detached (~/bigo-campaign/sp-n6/.build_full.log).
+
+**Delivered.**
+1. `qMStair M = (PmStair * M * QmStair).submatrix flagEquivStair flagEquivStair`, with
+   `aLsStair`/`bLsStair` (family-first-term anchors), `NsStair` (23 entries),
+   `NsStair_sq : NsStair * NsStair = 0`, `TmStair = 1 - N`, `TiStair = 1 + N`,
+   `TmStair_row`/`TiStair_col` (family rows/cols up to the leading coefficient),
+   `dv` (`leadL` on row anchors, `leadR⁻¹` on column anchors), `PmStair`/`QmStair`,
+   `QmStair_mul_PmStair : QmStair * PmStair = 1`, `qMStair_idem`, `qMStair_trace`.
+2. **`qMStair_corner : qMStair M ⟨i⟩ ⟨529-45+j⟩ = corStairQ M i j`** (i, j < 45) and
+   `qMStair_cornerBlock` (the 45x45 top-right block IS `stairCornerQOf M`) — the corner-transfer
+   identity the whole campaign needed, and the thing `qM_corner` could never be restated into.
+3. **`isPiv_stairMid : h₁ → h₂ → hdet → ∀ i, 45 ≤ i → i < 484 → IsPiv (qMStair M) i i`** — the
+   439 middle-run positions, discharged verbatim by `Platform.isPiv_mid` (hk, hp = idem,
+   hrank = 484 from the trace, hC via `qMStair_cornerBlock` + `hdet`). Matches the independent
+   arm's spec (h₁ h₂ hdet only; hu/hv/hT unneeded).
+4. Numerics: corner == `corStairQ` 2025/2025; 39/39 corner pivots; staircase-frame middle run
+   **439/439** on the full 529x529 projector (`extract/out/n6_midrun.json`); r6-frame
+   **437/439 failing exactly [464, 483]** reproduced independently (`n6_xcheck_r6frame.py`) —
+   agreement with sp-midrun, no disagreement anywhere.
+5. Rewire spec for the N7 wave is in `## N6 NOTES` above (deliverable 4).
+
+**The stuck goal, verbatim** (the only open item): prove the CORNER clause for the new object,
+i.e. for `M = (1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂)`,
+`IsPiv (qMStair M) (1+t) (529-45+23+t)` for `t < 21` and `IsPiv (qMStair M) (25+t) (529-45+2+t)`
+for `t < 18`, given `h₁ h₂ hu hv hT hdet` (the `isPiv_stairR7` remainder).
+
+**Next move (measured, not guessed).** Two `data_upper`-style support computations in the
+staircase frame plus `isPiv_rank1_lower` + `isPiv_block` (generic, nb_data_edge_solution:227-238):
+* `data_upper_stair_a : corStairQ M i (22+γ) = u_i * v_γ` for `i < γ` — then
+  `isPiv_rank1_lower` on `B i γ = corner[i][22+γ]` gives `IsPiv B l l` (l = 1..21), and two
+  `isPiv_block`s give the whole `(1,507,21)` run. Numerics: that block has **0** nonzero 2x2
+  minors in the identity region at the witness, in BOTH frames (`n6_struct_probe.py`), so the
+  identity is expected to be provable by the same `simp`/`split_ifs` recipe as `data_upper`
+  (ref/nb_data_edge_solution.lean:398-420).
+* `data_upper_stair_b : corStairQ M (25+k) (2+γ) = u_k * v_γ` for `k < γ` (0 minors measured
+  too) covers `(25+t, 2+t)` for `t ≥ 1`; the `t = 0` position `(25,2)` needs a shifted block
+  (`corner[24+i][1+γ]`) because `isPiv_rank1_lower` demands `1 ≤ l` — MEASURE that block first.
+* the two identities' nonvanishing factors (the `hu`/`hv`/`hT` analogues) are the remaining
+  unknown; N4's `stair_f_nonvanishing` / `stair_hu/hv/hT` are the candidates.
+
+**Do not redo:** `qM M`-based anything (refuted: corner rank 44 at the witness, middle run
+437/439 with failures [464,483]); `isPiv_stair_lower` as stated (N2d); the corner-transfer
+identity read as `cor` (N2d's `n2d_frame_delta`). The new object resolves all three.
+
+### N6 NOTES addendum (measured after the RESUME was written): the (25,2) obstacle is GONE
+`n6_struct_probe.py`'s shifted-block probes: in the STAIRCASE frame the blocks
+`C[24+k][1+g]` (k<g), `C[25+k][2+g]` and `C[23+k][0+g]` each have **0** nonzero 2x2 minors in
+the identity region — so the corner position `(25,2)` (which `isPiv_rank1_lower` cannot reach on
+`C[25+k][2+g]`, since that block needs `l = 0`) IS reachable as `l = 1` of the block
+`C[24+k][1+g]`. Offsets 0, 1 and 2 are all rank-one in the staircase frame, which suggests ONE
+identity `corStairQ M i (c0+γ) = u_i·v_γ` for `i < γ` at several offsets rather than a
+block-by-block computation. (The r6 control gives 0 for the `(i,22+g)` block it uses and 816
+nonzero minors for the shifted blocks — the r6 frame's rank-one region is different, which is
+exactly N2d's frame delta; that is a control that the probe DISCRIMINATES, not a discrepancy.)
