@@ -238,3 +238,61 @@ zip-based cut-set interface (needs getD index bridges; StairNEBlock fields are s
 `rw [Finset.sum_apply]` under Matrix transparency (ext to entries first, always).
 NEXT: N2c (stairCorner_pivots_witness, still sorry) — consumes N3's stair_data_cert (proved)
 and now N2b's upper bound; then N2d.
+## N2c NOTES (2026-11-05, subagent sp-n2c)
+STATUS: PROVED (build verification in progress at write time; see N2c RESUME below).
+
+### THE STATEMENT IS TRUE AS SCAFFOLDED — and the route is NOT the r6 corner route
+`stairCorner_pivots_witness` (∀ x ∈ runPairs stairCornerRuns45, IsPiv stairCornerQ x.1 x.2)
+is true; verified independently twice (the producer check_stair.py --ij run, and here by a
+fresh mod-P recomputation: extract/n2c_struct2.py reproduces max|entry| 331316300630710586
+302386325809570540 = cert_data's max_abs, and the FULL 46x46 rank profile rk(X,Y) =
+#{r<X : pc_r >= Y} from pc = [44,23..43,22,21,20,2..19,1,0]).
+
+### WHY r6's corner step does not port
+r6's accepted body got the corner pivots from `isPiv_rank1_lower` (hB : B i j = u i * v j
+for i < j) — a rank-one-above-diagonal structure. The staircase corner is DENSE (2025/2025
+nonzero entries) and its pivot pattern is the PERMUTATION pc, not the diagonal, so there is
+no such hypothesis. Worse: contiguous minors in the late-row blocks are ALL SINGULAR
+(e.g. every 26x26 minor rows rlo..rlo+25 x cols clo..clo+25 inside block (38,14) is 0 mod
+stairCertP, while rank(38,14) = 26) — minors must be found by ECHELON over F_P, not by
+guessing windows. That is the single most important discovery here.
+
+### THE PROOF SHAPE (all in Pivot.lean, namespace StaircasePort.Stair)
+IsPiv q i j := rk q (i+1) j + rk q i (j+1) = rk q i j + rk q (i+1) (j+1) + 1, where
+rk q X Y = rank of the NE block (rows < X, cols >= Y). With j = pc i and
+k = #{r < i | pc r >= pc i}:
+  A = rk q i j = k, B = rk q (i+1) j = k+1, C = rk q i (j+1) = k, D = rk q (i+1)(j+1) = k.
+UPPERS (all four): trivial `min(#rows,#cols)` (rk_le_height/rk_le_width) or N2b's cut table
+(`rkQ_le_of_block`, a 3-line restatement of stairNE_rk_le for stairCornerQ). LOWER B:
+a nonzero (k+1)-minor inside (i+1, j). LOWER C: a nonzero k-minor inside (i, j+1) — which
+also gives D >= k (block inclusion) and A >= k (block inclusion). Then
+`isPiv_of_bounds` derives A = D = k by monotonicity and closes with omega.
+KEY SIMPLIFICATION: only TWO lower bounds per position are needed (not four), and the
+UNIVERSAL inequality B + C <= A + D + 1 is never needed as a lemma — the four exact values
+make IsPiv pure arithmetic.
+
+### THE CERTIFICATE MECHANISM (reuses N3 verbatim)
+Each minor is certified by the N3 `certChk` product check mod stairCertP (rows x inverse-
+transpose = 1), NOT by computing a determinant: `n2cChk<k>` (decide +kernel) plus
+`n2cEnt<k>` pinning the minor's entries against corZStair stairMZ (decide +kernel), then
+`n2c_rank_lower` casts Z -> Q (corStairQ_cast + RingHom.map_det) exactly as
+stair_data_cert does. 47 certificates: sizes 1, 2x21, 22, 23, 24, 25, 26x18, 43, 44, 45.
+Cover was minimised by a greedy variant search; 18 of the 26s are PROVABLY necessary (each
+i in 25..42 forces maxR <= i and minC >= pc i, and rank(i+1, pc i - 1) < 26 blocks any
+shared shape).
+
+### LANDMINES HIT (for successors)
+(a) Splice order: the block consumes `stairNE_rk_le`, which lives at the END of Pivot.lean —
+the N2c block must be spliced before the final `end Stair`, not at the scaffold theorem's
+site (otherwise "Unknown identifier stairNE_rk_le").
+(b) `runPairs stairCornerRuns45` emits pairs in RUN order, so an equality with
+`(List.range 45).map ...` is FALSE — pin `... .toFinset` equality by decide instead
+(stairCornerRuns45_toFinset / _mem).
+(c) `Fintype.card_le_of_embedding` lands on `Fintype.card (Fin X)`; close with `simpa`.
+(d) `rkQ_le_of_block` needs an explicit `1 ≤ X` for Nat.sub_add_cancel.
+(e) `Int.castRingHom p x` is not syntactically `↑x`: rewrite with bare `eq_intCast` first,
+   then `← ZMod.intCast_mod` (N3's chain), else rw silently fails to match.
+(f) In `n2c_rank_lower` the column indices need BOTH a lower (≥ Y) and an upper (< 45)
+   bound as hypotheses — omega cannot conjure `< 45` from `Y ≤ c`.
+(g) `simpa` alone will not rewrite a matrix form into a hypothesis; build the goal's exact
+   matrix with a `rfl`-checked `heq` and rw both.
