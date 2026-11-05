@@ -1,0 +1,12 @@
+stairNEBlocksX : List StairNEBlock
+stairNE_cuts_cover : stairNEBlocksX.all stairNEcoverOK = true
+stairNE_cuts_card : stairNEBlocksX.all stairNEcardOK = true
+stairNEBlocksX_map : List.map (fun b => (b.i, b.j, b.rho, b.cut)) stairNEBlocksX = stairNEBlocks
+stairNESr : List (List ℕ)
+'StaircasePort.Stair.stairNE_cuts_cover' depends on axioms: [propext, Quot.sound]
+'StaircasePort.Stair.stairNE_cuts_card' does not depend on any axioms
+'StaircasePort.Stair.stairNEBlocksX_map' does not depend on any axioms
+chk_nb.lean:11:41: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+EXIT=1
