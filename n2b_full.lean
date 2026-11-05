@@ -21,6 +21,12 @@ lemma List.sum_map_add {α : Type*} (l : List α) (f g : α → ℚ) :
   | nil => simp
   | cons s ss ih => simp only [List.map_cons, List.sum_cons, ih]; abel
 
+lemma List.sum_map_sub {α : Type*} (l : List α) (f g : α → ℚ) :
+    (l.map fun s => f s - g s).sum = (l.map f).sum - (l.map g).sum := by
+  induction l with
+  | nil => simp
+  | cons s ss ih => simp only [List.map_cons, List.sum_cons, ih]; ring
+
 lemma List.sum_map_mul_right {α : Type*} (l : List α) (f : α → ℚ) (c : ℚ) :
     (l.map fun s => f s * c).sum = (l.map f).sum * c := by
   induction l with
@@ -323,12 +329,9 @@ theorem corStairQ_stairPairM_sumN (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (i j : 
       = ((RtermsStair j).map fun t =>
           ((LtermsStair i).map fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1).sum).sum := by
     simp only [corStairQ]
-    congr 1
-    funext t
-    rw [← List.sum_map_mul_right]
-    congr 1
-    funext s
-    ring
+    refine congrArg List.sum (List.map_congr_left (fun t _ => ?_))
+    exact (List.sum_map_mul_right (LtermsStair i)
+      (fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2) t.1).symm
   -- (2) the per-t four-piece split
   have h2 : ∀ t : ℚ × Pr 23,
       ((LtermsStair i).map fun s => s.1 * stairPairM x₁ y₁ x₂ y₂ s.2 t.2 * t.1).sum
@@ -409,12 +412,15 @@ theorem corStairQ_stairPairM_sumN (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (i j : 
       rw [← Finset.sum_neg_distrib]
       refine Finset.sum_congr rfl (fun t ht => ?_)
       simp only [stairTermN, if_pos (Finset.mem_range.mp ht)]
+      ring
     have e2 : (∑ t ∈ Finset.range 23, stairTermN x₁ y₁ x₂ y₂ (23 + t) i j)
         = -(∑ t ∈ Finset.range 23, stairUk x₂ t i * stairVk y₂ t j) := by
       rw [← Finset.sum_neg_distrib]
-      refine Finset.sum_congr rfl (fun t _ => ?_)
+      refine Finset.sum_congr rfl (fun t ht => ?_)
+      have ht23 : t < 23 := Finset.mem_range.mp ht
       simp only [stairTermN, if_neg (show ¬ (23 + t < 23) by omega),
         if_pos (show 23 + t < 46 by omega), Nat.add_sub_cancel_left]
+      ring
     have e3 : stairTermN x₁ y₁ x₂ y₂ 46 i j = stairPw x₁ x₂ i * stairQw y₁ y₂ j := by
       simp only [stairTermN, if_neg (show ¬ (46 < 23) by omega),
         if_neg (show ¬ (46 < 46) by omega)]
