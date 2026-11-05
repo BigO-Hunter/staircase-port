@@ -1,0 +1,12 @@
+'StaircasePort.Stair.stairCorner_pivots_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairPivAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairCornerRuns45_toFinset' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.stairCornerRuns45_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.rk_ge_of_det' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.isPiv_of_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.rkQ_le_of_block' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.n2c_rank_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.Stair.n2cChk0' depends on axioms: [propext]
+'StaircasePort.Stair.n2cEnt0' depends on axioms: [propext, Quot.sound]
+'StaircasePort.Stair.n2cPiv22' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0

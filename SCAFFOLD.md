@@ -296,3 +296,49 @@ site (otherwise "Unknown identifier stairNE_rk_le").
    bound as hypotheses — omega cannot conjure `< 45` from `Y ≤ c`.
 (g) `simpa` alone will not rewrite a matrix form into a hypothesis; build the goal's exact
    matrix with a `rfl`-checked `heq` and rw both.
+## N2c RESUME (2026-11-05, subagent sp-n2c) — STATUS: PROVED, item COMPLETE
+Stopping point: NOTHING in flight for N2c. `stairCorner_pivots_witness` is PROVED and
+spliced into StaircasePort/Pivot.lean (at the END of `namespace Stair`, after
+`stairNE_rk_le`); `lake build StaircasePort` GREEN (8997 jobs, 0 errors, build_n2c.log —
+~6 min at host load). Axioms (n2c_axcheck.lean): stairCorner_pivots_witness / stairPivAt /
+n2c_rank_lower / rkQ_le_of_block / isPiv_of_bounds / rk_ge_of_det /
+stairCornerRuns45_toFinset/_mem ALL `[propext, Classical.choice, Quot.sound]`; the kernel
+pins n2cChk0 `[propext]`, n2cEnt0 `[propext, Quot.sound]`. NO sorryAi, NO native_decide,
+NO `sorry` in the block (the 6 remaining sorries in Pivot.lean are the 4 Platform
+restatements + N2d `isPiv_stair_lower` — all pre-existing).
+
+Files changed: StaircasePort/Pivot.lean (the N2c block: stairPC, 5 generic rank lemmas +
+isPiv_of_exact/isPiv_of_bounds, rkQ_le_of_block, n2c_rank_lower, 47 certificate data
+triples + chk/ent pins, n2cPiv0..44, stairPivAt, stairCorner_pivots_witness).
+Scratch at clone root: n2c_struct2.py (independent mod-P reproduction of the corner +
+46x46 profile), n2c_plan.py (upper-bound coverage audit), n2c_emit2.py (generator:
+minors by echelon over F_P, cert cover, Lean emission), n2c_splice.py, n2c_probe1.lean +
+log (the 2-position probe that validated all generic plumbing before the full build),
+n2c_axcheck.lean, n2c_cert_search*.py, n2c_gen.py, n2c_struct.py.
+NO shared-file change requests. Nothing blocked on N2c: N2d can consume it as-is.
+
+### N2d STATUS: NOT STARTED (ran out of this agent's budget) — findings that save the next mind days
+1. STATEMENT SHAPE IS CONFIRMED CORRECT and needs NO delta: the consumer
+   (~/bigo-campaign/sp-n52/StaircasePort/Signature.lean:1499) calls
+   `isPiv_stair_lower _ _ _ _ h₁' h₂' (mul_ne_zero (hx1 _) (hx2 _)) (mul_ne_zero hy1 hy2) ?_ ?_`
+   — exactly the scaffold's 9 arguments, in order, with `hdet` = the STAIRCASE-frame corner
+   det (`stairCornerQOf (...)`), i.e. exactly what N3's stair_data_cert and the N5-2
+   course update say. So the frame correction the N5-2 agent measured (corStairQ ≠ cor,
+   r6 frame singular) does not change N2d's SIGNATURE; it changes only the PROOF, because
+   the corner-transfer identity `Cp i j = cor M i j` (nb_data_edge_solution.lean:534-537)
+   must be re-proved in the staircase frame.
+2. The middle run (45,45,439) is the easy half: Platform.isPiv_mid (m = 529, k = 45,
+   p = qM M) needs hk (`2*45 ≤ 529`), hp (`p*p = p`, from DEPort.qM_idem + the
+   Kronecker-of-idempotents identity already used verbatim in
+   sp-n52/Signature.lean:204-210), hrank (`(qM M).rank = 484`, the trace computation
+   :211-217) and hC (the 45x45 corner at rows 0..44 / cols 484..528 = the transfer
+   identity, staircase frame). Positions produced: (i,i) for 45 ≤ i < 484.
+3. The two corner runs (1,507,21) and (25,486,18) need: isPiv_block
+   (nb_data_edge_solution.lean:227-238, PROVED with a full proof in
+   ~/bigo-campaign/sp-n52/ref/) + N2c lifted from the concrete witness to generic labels.
+   The lift is the flag_gen Zariski/Pall product route (nb_flag_gen_solution.lean:977-993);
+   N4's stair_f_nonvanishing + stair_hu/hv/hT are built for precisely that product, so
+   compose with them rather than re-deriving.
+4. isPiv_block also needs `i < j`-shaped side hypotheses on the B/A blocks (the r6 lemma's
+   hB/hBd/hA/hAd) — those are the sparse-family facts, and the staircase family's versions
+   are LtermsStair/RtermsStair support facts (a `decide`/`simp` on the concrete lists).
