@@ -765,3 +765,72 @@ identity `corStairQ M i (c0+γ) = u_i·v_γ` for `i < γ` at several offsets rat
 block-by-block computation. (The r6 control gives 0 for the `(i,22+g)` block it uses and 816
 nonzero minors for the shifted blocks — the r6 frame's rank-one region is different, which is
 exactly N2d's frame delta; that is a control that the probe DISCRIMINATES, not a discrepancy.)
+
+## N7 NOTES (2026-11-05, subagent sp-n7) — rewire plan + two structural discoveries
+### Discovery 1 — the rewire CANNOT live in Signature.lean (import cycle)
+`StaircasePort/Projector.lean` (qMStair) imports `StaircasePort.Signature`; Signature cannot
+import it back. The N6 rewire spec ("take qMStair from StaircasePort.Projector") therefore
+requires the qMStair-consuming statements to live in a file AFTER Projector. Following the N6
+precedent (Projector.lean was itself a NEW file, no shared file touched), the rewired
+`data_edge_stair` + `flag_gen_stair_aux` + `flagBasis_stair` move to a NEW file
+`StaircasePort/Rewire.lean` (imports Data/Cert/Pivot/Signature/Projector; one import line
+added to the StaircasePort root). `flagBasis_stair`'s statement stays BYTE-IDENTICAL (S/Sinv
+are existential witnesses; the new proof picks the staircase frame's SbStair/SbiStair —
+see Discovery 2). The old r6-route copies are deleted from Signature.lean; DEPort, the N5-2
+machinery (corStairR/pDatStair/eval_*), the conj algebra and the pA/pT condition-polynomial
+machinery STAY (consumed via import).
+### Discovery 2 — the DataE clause cannot move alone: one S forces ALL clauses to move
+flagBasis_stair binds ONE witness pair (S, Sinv) for AuxE + SideE + DataE'. With S := Sb
+(r6 frame, Sb_conj) the data clause is DataE' (qM M) — the refuted route. So S must become
+the staircase frame's S := SbStair U V := TeStair * (Uᵀ ⊗ₖ Vᵀ), SbiStair := (U⁻¹ᵀ ⊗ₖ V⁻¹ᵀ) *
+TeStair', with TeStair := PmStair.submatrix flagEquivStair id, TeStair' := QmStair.submatrix
+id flagEquivStair (r6 Te/Te' analogues; PmStair*QmStair = 1 AND QmStair*PmStair = 1 since
+dv*dv⁻¹ = 1 and TmStair*TmStair⁻¹ = 1). Then SbStair_conj : SbStair * (A ⊗ₖ B) * SbiStair =
+qMStair ((UᵀAU⁻¹ᵀ) ⊗ₖ (VᵀBV⁻¹ᵀ)) — the verbatim Sb_conj analogue — and the Aux/Side clauses
+must ALSO be restated at qMStair (new staircase-generic aux_edge_of/side_edge_of with
+qMStair_corner/corStairQ; the generic pivots isPiv_mid/isPiv_side/edge_of_pivs stay Platform
+stubs unchanged). The r6-frame N52.aux_edge_of/N52.side_edge_of stubs are ported for real
+(ref/nb_aux_edge_of_solution.lean:561 + ref/nb_side_edge_of_solution.lean:196 bodies) — their
+statement is untouched; the port needs isPiv_block (ref :227), rk_block (:196), isPiv_lt
+(:156), rank_submatrix_range (:83), edge_exact (:527) — all in the fetched bodies — and
+isPiv_diag_of_lower (aux ref :309), whose proof needs the platform's isPiv_iff (body NOT
+fetched); the local port instead proves the needed instances directly: rk_upper_zero
+(rows<X ≤ cols≥Y submatrix of an upper-zero matrix is 0) + rk_diag_one (the (l+1,l) subblock
+of an upper-zero matrix with nonzero (l,l) has rank 1, via DEPort-style rank_eq_of_range_rows
++ rank_le_card_width/rank_transpose), which give IsPiv Cp l l for lower-triangular-nonzero-diag
+Cp without isPiv_iff.
+### Staircase aux/side support facts — MEASURED GREEN (n7_auxside_probe.py, exact Fraction)
+At generic labels (all x_β ≠ 0, all y_l ≠ 0, y·x = 1), staircase functional corStairQ:
+* aux1 M=1⊗ₖ(1-xyᵀ): corStairQ M β (22+γ) = 0 for all β<γ<23 (upper) and diag values
+  = -(stairAZL.getD β 0)·x_β·y_{β+1} (β<22; measured diag[8]=60565243/32 = A[8]·x_8·y_9 EXACT),
+  β=21: -(A 21)·x_21·y_22, β=22: -stairAlZ·x_0·y_22 — all ≠ 0 given stairAZL_ne/stairAlZ_ne +
+  label facts. aux2 (roles via 2nd factor): diag = -(stairBZL.getD β 0)·x_β·y_{β+1} EXACT.
+* side1 B-block (TeStair*Cx x): upper 0, diag = x_β (β<22), stairAlZ·x_0 (β=22);
+  A-block (Ry y*TeStair'): upper 0, diag = stairAZL.getD γ 0·y_{γ+1} (γ<22), y_22 (γ=22).
+  side2: diag = x_β / stairBeZ·x_0 (B) and stairBZL.getD γ 0·y_{γ+1} / y_22 (A). All ≠ 0.
+  r6-frame control values reproduce (aux1 diag = -x_β y_22 etc.) — harness validated.
+### Label-fact extension (the staircase needs y_l ≠ 0 for l ≤ 21, r6 needed only y_22)
+The r6 diag values read y_22 (Rterms (22+β) carry the (·,22) coordinate); the staircase
+RtermsStair carry (·,β+1), so the aux/side diag nonvanishing needs y_l ≠ 0 for l = 1..22 —
+NOT implied by the r6 label facts ((V⁻¹p.2) 22 ≠ 0 only). Fix INSIDE the Pall mechanism
+(Nonvan.lean anticipated "absorbs any extra factors structurally"): pA_all_ne : pA XU P β l ≠ 0
+for EVERY β, l — same proof as pA_U_ne with the witness P' := vecMulVec (fun _ => 1)
+(Pi.single l 1) (idempotent, trace 1, wP_l β l = 1 ∀β; conj_wit applies verbatim). Pall's pA
+factor widens from ∏_β to ∏_{β,l}; hlab/labU/labV strengthen to (∀β, x'_β ≠ 0) ∧ (∀l, y'_l ≠ 0).
+No platform statement changes; flag_gen_stair_aux's signature is unchanged.
+### Corner-hole contract (composition contract — the exact type data_edge_stair consumes)
+The corner agent's brief shape is consumed VERBATIM, no delta:
+`theorem isPiv_stairCorner_contract (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (h₁ : y₁ ⬝ᵥ x₁ = 1)
+ (h₂ : y₂ ⬝ᵥ x₂ = 1) (hdet : (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)).det ≠ 0) :
+ ∀ p ∈ runPairs (stairCornerRuns 23 529), IsPiv (qMStair (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2`
+(local sorry placeholder in Rewire.lean = the ONLY new sorryAx; qMStair from
+StaircasePort.Projector, stairPairM from Pivot.lean:400, stairCornerRuns from Data.lean:37 =
+the 21-run + 18-run = the 39 corner positions).
+### data_edge_stair statement delta (recorded)
+Conclusion → `DataE' (qMStair (stairPairM x₁ y₁ x₂ y₂))` (N6 spec). The hpiv slot is replaced
+by (hdet, hcorner): hdet = staircase-frame corner det (= stair_data_cert at the witness),
+hcorner = the corner-hole contract above. Rationale: the middle clause isPiv_stairMid
+(Projector.lean:426, PROVED) and the corner contract have EXACTLY these hypotheses, so
+data_edge_stair derives hpiv internally (middle run via isPiv_stairMid, corner runs via
+hcorner, case-split by the DEPort run toolkit). hu/hv/hT become UNUSED (the old
+isPiv_stair_lower fuel); pT factors stay in Pall (harmless).
