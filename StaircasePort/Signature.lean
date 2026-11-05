@@ -45,6 +45,7 @@ import Definitions.Def_IntMul_Kappa_R6_Defs4
 import StaircasePort.Data
 import StaircasePort.Cert
 import StaircasePort.Pivot
+set_option maxRecDepth 20000
 
 namespace StaircasePort.Stair
 

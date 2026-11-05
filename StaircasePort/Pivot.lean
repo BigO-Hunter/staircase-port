@@ -237,7 +237,7 @@ theorem rank_le_support_cut {K : Type*} [Field K] {a b : ℕ} (A : Matrix (Fin a
       constructor
       · intro h1
         rcases Finset.mem_union.mp h1 with h2 | h2
-        · exact (memSrow.mp h2).1
+        · exact ((memSrow t).mp h2).1
         · exact (Finset.mem_sdiff.mp h2).1
       · intro h1
         by_cases h2 : t ∈ Srow
@@ -254,19 +254,21 @@ theorem rank_le_support_cut {K : Type*} [Field K] {a b : ℕ} (A : Matrix (Fin a
         (le_of_eq (by rw [Finset.sum_const, nsmul_eq_mul, mul_one, Nat.cast_id])))
   have hP : (∑ t ∈ Srow, M t).rank ≤ R₀.card :=
     RankKit.rank_le_card_row_support R₀ Subtype.val Subtype.val_injective _
-      (fun r hr => Finset.sum_eq_zero fun t ht => (memSrow.mp ht).2 r hr)
+      (fun r hr => (Finset.sum_apply r Srow M).trans
+        (Finset.sum_eq_zero fun t ht => ((memSrow t).mp ht).2 r hr))
   have hQ : (∑ t ∈ Scol, M t).rank ≤ C₀.card :=
     RankKit.rank_le_card_col_support C₀ Subtype.val Subtype.val_injective _
-      (fun c hc r => by
-        rw [Finset.sum_apply, Finset.sum_apply]
-        exact Finset.sum_eq_zero fun t ht => by
-        have htS : t ∈ Sc \ Srow := ht
-        have htSc : t ∈ Sc := (Finset.mem_sdiff.mp htS).1
-        have htSrow : t ∉ Srow := (Finset.mem_sdiff.mp htS).2
-        have htT : t ∉ T₀ := (Finset.mem_sdiff.mp htSc).2
-        rcases hcut t htT with hrow | hcol
-        · exact absurd (memSrow.mpr ⟨htSc, hrow⟩) htSrow
-        · exact hcol c hc r)
+      (fun c hc r =>
+        (congrFun (Finset.sum_apply r Scol M) c).trans
+          ((Finset.sum_apply c Scol fun t => M t r).trans
+            (Finset.sum_eq_zero fun t ht => by
+              have htS : t ∈ Sc \ Srow := ht
+              have htSc : t ∈ Sc := (Finset.mem_sdiff.mp htS).1
+              have htSrow : t ∉ Srow := (Finset.mem_sdiff.mp htS).2
+              have htT : t ∉ T₀ := (Finset.mem_sdiff.mp htSc).2
+              rcases hcut t htT with hrow | hcol
+              · exact absurd ((memSrow t).mpr ⟨htSc, hrow⟩) htSrow
+              · exact hcol c hc r)))
   calc ((∑ t ∈ T₀, M t) + (∑ t ∈ Srow, M t + ∑ t ∈ Scol, M t)).rank
       ≤ (∑ t ∈ T₀, M t).rank + (∑ t ∈ Srow, M t + ∑ t ∈ Scol, M t).rank :=
         RankKit.rank_add_le _ _
