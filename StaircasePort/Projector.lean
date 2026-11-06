@@ -43,6 +43,7 @@ Every theorem here is `[propext, Classical.choice, Quot.sound]`; the only `sorry
 import Definitions.Def_IntMul_Kappa_R6_Defs4
 import StaircasePort.Cert
 import StaircasePort.Signature
+import StaircasePort.Corner
 
 namespace StaircasePort.Stair
 
