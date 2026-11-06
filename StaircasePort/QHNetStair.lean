@@ -242,8 +242,9 @@ theorem netS_T : D2.Tmp = 3217907 := rfl
 
 theorem auxRunOK : ∀ ρ ∈ auxRuns 19, RunOK 529 ρ := by
   intro ρ hρ
-  simp only [auxRuns, List.mem_cons, List.mem_singleton] at hρ
-  rcases hρ with rfl | rfl
+  have h1 : ρ = (0, 506, 23) ∨ ρ = (23, 23, 483) := by
+    simpa [auxRuns] using hρ
+  rcases h1 with rfl | rfl
   · (unfold RunOK; decide)
   · (unfold RunOK; decide)
 
@@ -252,12 +253,16 @@ theorem sideRunOK (r : ℕ) (hr : r ≤ 23) : ∀ ρ ∈ sideRuns 23 529 r, RunO
   by_cases hcond : 23 < 2 * r
   · rw [if_pos hcond]
     intro ρ hρ
-    simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
-    subst hρ
-    exact ⟨Nat.sub_pos_of_lt hcond, by omega, by omega, by omega⟩
+    have hρ' : ρ = (23 - r, 529 - r, 2 * r - 23) := by simpa using hρ
+    subst hρ'
+    have e1 : (23 - r, 529 - r, 2 * r - 23).2.2 = 2 * r - 23 := rfl
+    have e2 : (23 - r, 529 - r, 2 * r - 23).1 = 23 - r := rfl
+    have e3 : (23 - r, 529 - r, 2 * r - 23).2.1 = 529 - r := rfl
+    unfold RunOK
+    refine ⟨Nat.sub_pos_of_lt hcond, by omega, by omega, by omega⟩
   · rw [if_neg hcond]
     intro ρ hρ
-    exact absurd hρ (List.not_mem_nil ρ)
+    exact absurd hρ (by simp)
 
 /-- Edge classification for the schedule (R8 `prog_fam` pattern); the side class carries
 its rank membership. -/
@@ -266,7 +271,7 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
   intro e he
   obtain ⟨i, hi, hie⟩ := List.mem_filterMap.1 he
   rw [show netS.prog = progS ++ d2Ops.flatMap gatesOf from rfl] at hi
-  unfold progS edgeSched at hi
+  simp only [progS, edgeSched] at hi
   rcases List.mem_append.1 hi with h | h
   · rcases List.mem_append.1 h with h | h
     · obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
@@ -286,7 +291,8 @@ theorem netS_RunsOK : netS.RunsOK := by
   · rw [dataE_runs] at hρ; exact stairRunOK ρ hρ
   · rw [auxE_runs] at hρ; exact auxRunOK ρ hρ
   · have hr23 : r ≤ 23 := by
-      have h := List.mem_range'.1 (by simpa [sideRanks] using hrm)
+      have h : r ∈ List.range' 12 11 := by simpa [sideRanks] using hrm
+      have h2 := List.mem_range'.1 h
       omega
     rw [sideE_runs r] at hρ; exact sideRunOK r hr23 ρ hρ
   · exact absurd hρ (by simp [dfltE])
@@ -362,20 +368,23 @@ theorem edgeOK_at_of_edgeQ {m : ℕ} (e : Edge m)
     · exact (((hq.coprime_iff_not_dvd).2
         (Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr (Rat.num_ne_zero.mpr hr))
           (lt_of_le_of_lt hn hqb))).symm.pow_right f)
-  exact ⟨hQ.2.1, hQ.2.2.2.1, fun i =>
-    unit_of_bound _ (hQ.2.2.1 i) (den_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _)
-      (num_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _),
-    fun i =>
-    unit_of_bound _ (hQ.2.2.2.2.1 i) (den_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)
-      (num_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)⟩
+  have hU1 : ∀ i, IsUnit (redQ (q ^ f) (e.E₁ i i)) := fun i =>
+    unit_of_bound _ (hQ.2.2.1 i)
+      ((den_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _))
+      ((num_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _))
+  have hU2 : ∀ i, IsUnit (redQ (q ^ f) (e.E₂ i i)) := fun i =>
+    unit_of_bound _ (hQ.2.2.2.2.1 i)
+      ((den_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _))
+      ((num_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _))
+  exact ⟨hQ.2.1, hQ.2.2.2.1, hU1, hU2⟩
 
-theorem foldr_max_bound {α : Type*} (f : α → ℕ) :
-    ∀ (l : List α) (x : α), x ∈ l → f x ≤ l.foldr max 0
+theorem foldr_max_bound {α : Type*} (g : α → ℕ) :
+    ∀ (l : List α) (x : α), x ∈ l → g x ≤ (l.map g).foldr max 0
   | [], _, h => absurd h (by simp)
   | a :: l, x, h => by
     rcases List.mem_cons.1 h with rfl | h
     · exact Nat.le_max_left _ _
-    · exact (foldr_max_bound f l x h).trans (Nat.le_max_right _ _)
+    · exact (foldr_max_bound g l x h).trans (Nat.le_max_right _ _)
 
 /-- Uniform good-prime clearance over the net's edge schedule. -/
 theorem netS_EdgesOK_large :
@@ -395,8 +404,14 @@ theorem netS_EdgesOK_large :
 /-- Edge power-sum moment: `EMq q e = ∑_{ρ ∈ e.runs} ρ.2.2 ^ q`. -/
 def EMq (q : ℕ) (e : Edge 529) : ℕ := (e.runs.map fun ρ => ρ.2.2 ^ q).sum
 
+theorem sum_flatMap {α : Type*} {M : Type*} [AddCommMonoid M] (f : α → List M) (l : List α) :
+    (l.flatMap f).sum = (l.map fun x => (f x).sum).sum := by
+  induction l with
+  | nil => simp
+  | cons a l ih => simp [List.flatMap_cons, List.map_cons, List.sum_append, ih, add_assoc]
+
 theorem powSum_eq_edges (q : ℕ) :
-    Mom.powSum q (QHNet.hist netS) = ((QHNet.edges netS).map (EMq q)).sum := by
+    Mom.powSum q (QHNet.hist netS) = ((QHNet.edges netS).map fun e => EMq q e).sum := by
   simp [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq, sum_flatMap]
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
@@ -416,12 +431,6 @@ theorem EMq_side_pos (E₁ E₂ : QMat2 529) (q : ℕ) (r : ℕ) (hr : 23 < 2 * 
 theorem EMq_side_neg (E₁ E₂ : QMat2 529) (q : ℕ) (r : ℕ) (hr : ¬ 23 < 2 * r) :
     EMq q (Edge.mk E₁ (sideRuns 23 529 r) E₂) = 0 := by
   simp [EMq, sideRuns, hr]
-
-theorem sum_flatMap {α : Type*} {M : Type*} [AddCommMonoid M] (f : α → List M) (l : List α) :
-    (l.flatMap f).sum = (l.map fun x => (f x).sum).sum := by
-  induction l with
-  | nil => simp
-  | cons a l ih => simp [List.flatMap_cons, List.map_cons, List.sum_append, ih, add_assoc]
 
 /-- Grouped-vs-expanded histogram moments agree (the `(w, n_w)` list and its
 `n_w`-fold child expansion carry the same `histMoment`). -/
