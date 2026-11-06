@@ -765,3 +765,61 @@ identity `corStairQ M i (c0+γ) = u_i·v_γ` for `i < γ` at several offsets rat
 block-by-block computation. (The r6 control gives 0 for the `(i,22+g)` block it uses and 816
 nonzero minors for the shifted blocks — the r6 frame's rank-one region is different, which is
 exactly N2d's frame delta; that is a control that the probe DISCRIMINATES, not a discrepancy.)
+## D2 RESUME (2026-11-05, subagent sp-d2) — STATUS: COMPLETE (build GREEN, axcheck clean)
+Dataset regen for the QHNet construction — DONE. Commit chain f7ff8db -> 0347289 -> ca32679 ->
+f89b9ac -> 4c68249. Workspace clone at e1953eb; producer pin c05adfe untouched.
+
+### What the QHNet agent consumes (namespace StaircasePort.D2)
+- Geometry: h=23 v=1771 Rslots=28866 N=3136441 W=108516254 Tmp=3217907 m=529, wEnt=3542
+  wAuxEnd=32408 NL=32431 (decide-pinned identities W=2N+2vR, T=46v+N, N=v^2, m=h^2); wire
+  bases wX/wY/wS/wT/wU, IsSlot/IsTgt, rho_n (WireLayout shape).
+- 22 packed streams (packL 65536-bit limbs + fieldOf decoders, platform GenData/ChkBitArg
+  style; 846 limbs, 13.2MB): d2OPS (stage-1 word, 82983 ops: src/add/fan), d2HOLDLENS+d2HOLD
+  (slot node-lines), d2START, d2READOUT+d2SIGMA (11565 deferred readout frames, primitive
+  int bases, rows x 23, 5-bit bias-16; the other R-11565 slots read at F0), d2VLEAFSLOTS+
+  d2VLEAFSTART (11374 V-gate starts), d2XSN+d2XSU (1771 X_S chains), d2LATEV (5116 deferred
+  V gates), d2NODEDIMS (64042 dims), d2LDN/d2LDLEN/d2LDLT/d2LDD (1396 late-copy dims),
+  d2ARGS (node DAG), d2JKEYS/d2J (56460 lift levels), d2LEAF, d2LINKS, d2FLAG (23x23),
+  d2LATE, d2YLEV (level bitmaps), d2XD (chain deltas), d2WOUTC/T/N (5313 outputs).
+- Clear tables: d2CORNER [21,18,1^6], d2CORNERPLAIN, d2RET, d2RETNODE, d2HIST (37 pairs),
+  d2RANKS (design-B chain ranks), d2RANKSBASE (base word == witness claims).
+- THE DECISIVE PIN: `d2HIST_eq_bitR7 : d2HIST = IntMul.Kappa.Jain.bitR7 := by decide`
+  — depends on NO axioms. rankSum 57403754177 / childCount 1905413587 decide-pinned.
+  27 kernel spot-decode pins on the packed limbs (`fieldOf d2X w i = v := by decide`).
+
+### PND-GATE (GAP 9): 33/33 PASS — extract/d2_regen.py rerunnable (~25s)
+A1-A10: hist(staircase) == Jain.bitR7 value-equal; both corners' a_b/kappa == producer
+claims (plain 12599/200000000 = D.claimed; staircase 31987/500000000); s == Wm-N+L (L=1792252).
+B1-B20: structural invariants (bijections, op well-formedness src 11374/add 62271/fan 9338,
+node_dims keys 1..64042, late_dims == all late suffix keys, corner ranks == sigma frame-lens,
+leaf == C(23,3), flag 23x23, ylev levels 1..22, W.claimed.R == D.R == 28866).
+C1-C3: producer battery RE-RUN IN THIS CLONE: check_lifted (base R == claim 28866, base
+chain-rank hist == claim) + check_word + check_frames ALL PASS incl. 5 negative controls
+(logs extract/out/d2_check_*.log, d2_battery_DONE).
+NOTE (not a defect, documented): witness_23.claimed.{a_b,rk} describe the BASE (pre-reorder)
+word (check_lifted-verified); they intentionally differ from the design-B corners.
+
+### Build + axioms
+`lake build StaircasePort` GREEN (9003 jobs; ~/bigo-campaign/sp-d2-build.log). d2_axcheck.lean:
+d2HIST_eq_bitR7 no axioms; 5 sum/count pins + 27 spot pins + geometry [propext] max;
+NO native_decide, NO sorryAx in anything D2 added. Root import line added in StaircasePort.lean.
+
+### GOTCHAS for successors (build-driven)
+1. `def x : Nat := packL` + `[\n...]` on the NEXT LINE parses as `x := packL` then a stray
+   `[` — the `[` must be on the def line (`packL [ ... ]`).
+2. A 1396+-deep nested List literal (esp. with inner lists) exceeds parser maxRecDepth 20000
+   -> big tables go in as PACKED streams, never List literals (d2WOUT*/d2LD*).
+3. Python packL: pack in 2^16-field chunks with EXACT per-chunk bit counts; a growing
+   accumulator is O(n^2) (SIGMA 4.8M fields: 2100s -> 8s). Round-trip-check per limb.
+4. Full lean of D2Data.lean standalone ~3min (elab of 13MB literals); `lake env lean` needs
+   LEAN_TOOLCHAIN exported (nohup gotcha, known).
+5. Host kills build workers under load (SIGTERM 143 seen twice on Pivot/an ending lake) —
+   retry loop `for i in 1..6; do lake build StaircasePort && break; sleep 20; done` lands it.
+
+### NEXT (QHNet construction agent)
+Consume D2 exactly as the R8 opp-bank construction consumes Defs51/52+GenData: build prog
+(chunks from d2OPS + W1F/W2F shapes) and edges (readout runs from d2SIGMA frames, dims from
+d2NODEDIMS/d2LD*), prove RunsOK; then EdgesOK (generic edgesOK_large_of_edgeQ, one
+application), FormalOK (GoodPrimes pattern from r6 accepted solution), then the T=3217907
+structural confirmation and the histMoment dominance vs d2HIST (= bitR7, already pinned).
+D3 (moment equality) needs nothing more from D2: rankSum/childCount are kernel-pinned.
