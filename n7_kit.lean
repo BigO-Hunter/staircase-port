@@ -196,6 +196,13 @@ lemma isPiv_diag_of_lower [DecidableEq K] {k : ℕ} (C : Matrix (Fin k) (Fin k) 
     rk_upper_zero C hC (X := l.val) (Y := l.val + 1) (by omega),
     rk_diag_one C hC hd l]
 
+
+/-- Ported ref/nb_side_edge_of_solution.lean:92-95 (qM_fac). -/
+lemma qM_fac (C : Matrix (Pr (19 + 4)) (Pr (19 + 4)) ℚ) (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)
+    (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ) :
+    qM (C * A * R) = (Te (h := 19) * C) * A * (R * Te' (h := 19)) := by
+  rw [qM_eq]; simp only [Matrix.mul_assoc]
+
 /-- Ported nb_aux_edge_of_solution.lean:527-534 (edge_exact). -/
 theorem edge_exact {m : ℕ} (hm : 1 < m) (q : Matrix (Fin m) (Fin m) ℚ) (hq : q * q = q)
     (rs : List (ℕ × ℕ × ℕ)) (hok : ∀ ρ ∈ rs, RunOK m ρ) (hnd : (runPairs rs).Nodup)
