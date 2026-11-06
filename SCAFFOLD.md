@@ -834,3 +834,96 @@ hcorner = the corner-hole contract above. Rationale: the middle clause isPiv_sta
 data_edge_stair derives hpiv internally (middle run via isPiv_stairMid, corner runs via
 hcorner, case-split by the DEPort run toolkit). hu/hv/hT become UNUSED (the old
 isPiv_stair_lower fuel); pT factors stay in Pall (harmless).
+
+## N7 RESUME (2026-11-05, subagent sp-n7) — STATUS: REWIRE COMPLETE (PROVED modulo the corner hole)
+**The rewire is LANDED and `lake build StaircasePort` is GREEN (8999 jobs).**
+`flagBasis_stair`'s statement is BYTE-IDENTICAL to the audited N5-2 version (diff-verified
+against e1953eb). Axioms of data_edge_stair/flagBasis_stair:
+`[propext, sorryAx, Classical.choice, Quot.sound]`; the sorryAx roads are EXACTLY
+(i) the corner-hole contract below and (ii) the documented Platform stubs
+(Platform.isPiv_mid, Platform.edge_of_pivs, Platform.isPiv_side — all consumed generically);
+`native_decide` count unchanged; no new axioms.
+
+**Rewire checklist (all 6 N6-NOTES deltas executed, with two recorded deviations):**
+1. data_edge_stair restated: conclusion `DataE' (qMStair M)` ✓. DELTA A: the `hpiv` slot is
+   REPLACED by `(hdet, hcorner)` — hdet = staircase-frame corner det (hypothesis;
+   stair_data_cert at the witness), hcorner = the corner contract. Reason: isPiv_stairMid
+   (PROVED) and the corner agent's brief shape have exactly these hypotheses, so the middle
+   clause is derived internally (isPiv_stairMid) and hcorner is consumed verbatim. hu/hv/hT
+   are no longer consumed (pT factors stay in Pall; harmless).
+2. Corner transfer: the old hCe swap is UNNECESSARY by construction — the corner agent's brief
+   shape is already stated at `qMStair` (IsPiv (qMStair (stairPairM ...))), and inside the
+   staircase aux_edge_of_Stair the r6 hCe step became `qMStair_corner` (EXACT, no transfer
+   lemma). isPiv_block + isPiv_diag_of_lower ported for real.
+3. hrank via qMStair_trace + rank_eq_trace ✓ (both middle-run in isPiv_stairMid and the
+   aux/side rank_kron_vmv_Stair).
+4. The isPiv_mid step: the middle clause comes from isPiv_stairMid (Projector.lean, PROVED);
+   the aux/side classes' own middle runs use Platform.isPiv_mid (k := 23 / 23-r) verbatim.
+5. flagBasis_stair: the :1498 call now instantiates the restated data_edge_stair with
+   hdet (from pDatStair/eval_pDatStair_of, staircase frame ✓) + hcorner
+   (isPiv_stairCorner_contract). DELTA B (structural, anticipated by N6-NOTES but not spelled
+   out): ONE witness pair (S, Sinv) serves AuxE + SideE + DataE', so the data clause's move to
+   qMStair forces `S := SbStair U V` (TeStair = PmStair.submatrix flagEquivStair id,
+   TeStair' = QmStair.submatrix id flagEquivStair; PmStair*QmStair = 1 proven; SbStair_conj /
+   SbStair_inv verbatim Sb_conj/Sb_inv analogues). The AuxE/SideE clauses therefore ALSO live
+   at qMStair: new staircase-generic aux_edge_of_Stair/side_edge_of_Stair (r6 bodies,
+   qM_corner → qMStair_corner, cor → corStairQ) + staircase support computations
+   (aux1/aux2 upper+diag, side1/side2 B/A upper+diag over LtermsStair/RtermsStair —
+   MEASURED GREEN first, n7_auxside_probe.py; diag values = monomials
+   -stairAZL.getD β 0·x β·y (β+1), -stairAlZ·x 0·y 22, etc.).
+6. isPiv_stair_lower UNUSED ✓ (untouched in Pivot.lean; the REFUTED record stays).
+
+**Label-fact extension (N7's one genuinely new idea):** the staircase diag values read
+y_(β+1) (r6 read y_22 only), so the aux/side clauses need y'_l ≠ 0 for ALL l. Obtained INSIDE
+the Pall mechanism: new `pA_all_ne`/`pA_all_ne_V` — pA XU/XV P β l ≠ 0 for EVERY (β, l) —
+same proof as pA_U_ne with the witness `wPl n hn l := vecMulVec (fun _ => 1) (Pi.single l 1)`
+(idempotent, trace 1, (β, l)-entry = 1 ∀β; conj_wit applies verbatim). Pall's pA factor widened
+to ∏_{β, l}; hlab/labU/labV strengthened to (∀β, x'β ≠ 0) ∧ (∀l, y'l ≠ 0).
+
+**Stub ports (BOTH landed, no longer stubs):** N52.aux_edge_of + N52.side_edge_of are real
+proofs (verbatim fetched bodies, h = 19). Toolkit landed with them in Signature.lean
+(namespace N52): rank_eq_of_range_rows/cols, rank_submatrix_range, rk_congr/not_isPiv_*/isPiv_lt,
+rk_block, isPiv_block, edge_exact, qM_fac — all PROVED except they consume Platform.edge_of_pivs
+(documented). NEW: isPiv_diag_of_lower proved DIRECTLY (rk_upper_zero + rk_diag_one via
+span/finrank_span_singleton) — the platform proof's isPiv_iff dependency is NOT fetched, so the
+N7 route computes the four rk values at (l,l) instead; axiom-clean
+[propext, Classical.choice, Quot.sound]. N52.aux_edge_of/N52.side_edge_of sorryAx footprint =
+Platform.isPiv_mid/edge_of_pivs/isPiv_side only.
+
+**THE CORNER HOLE — the composition contract (exact type, verbatim the corner agent's brief):**
+```
+theorem isPiv_stairCorner_contract (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (h₁ : y₁ ⬝ᵥ x₁ = 1) (h₂ : y₂ ⬝ᵥ x₂ = 1)
+    (hdet : (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)).det ≠ 0) :
+    ∀ p ∈ runPairs (stairCornerRuns 23 529),
+      IsPiv (qMStair (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2
+```
+(local `sorry` in Rewire.lean = the ONLY new sorryAx; qMStair from Projector.lean,
+stairPairM from Pivot.lean:400, stairCornerRuns 23 529 = [(1,507,21),(25,486,18)]).
+NO DELTA vs the brief. When the corner proof lands: replace this one declaration by the import
+(or a re-export), build — data_edge_stair and flagBasis_stair need NO further change.
+
+**File changes:** NEW `StaircasePort/Rewire.lean` (~900 ln; imports Data/Cert/Pivot/Signature/
+Projector — the qMStair-consuming statements CANNOT live in Signature.lean: Projector imports
+it, so the cycle forces the new file; N6 precedent). Signature.lean: data_edge_stair,
+flag_gen_stair_aux, flagBasis_stair DELETED (moved+restated in Rewire.lean); N52 toolkit +
+the two real stub ports added; everything else untouched. StaircasePort.lean root: one import
+line (StaircasePort.Rewire, after Projector). Pivot.lean/Projector.lean/Cert.lean/Data.lean:
+UNTOUCHED (other agents' files). Aux/side support computations live in Rewire.lean as
+*_Stair twins; the r6-frame aux1_edge etc. remain in Signature.lean (verbatim port record,
+now unused by flag_gen).
+
+**Gotchas banked (new):** `Matrix.submatrix_mul (M N e₁ e₂ e₃) (he₂ : Bijective e₂)` — 5 args
++ ONE bijectivity proof (e₂'s), and its LHS is (M*N).submatrix e₁ e₃ (rw direction!).
+omega does NOT reduce Fin.val of literals inside Fin.ext goals — use
+`simp only [Fin.mk.injEq]; omega`. `simp (disch := omega)` errors "no progress" if a branch
+closes before the disch runs — guard closers with `try`. autoImplicit is OFF in
+Signature.lean — ported generic lemmas need explicit `{a b : ℕ}` binders. The harness kills
+nohup'd process GROUPS on host restarts — spawn builds via python subprocess.Popen(...,
+start_new_session=True) (R2125605543 recipe; survived 3 restarts here).
+
+**Next steps:** (1) coordinator composes the corner proof (replace
+isPiv_stairCorner_contract's sorry — then data_edge_stair/flagBasis_stair are fully proved
+modulo the DOCUMENTED Platform stubs); (2) the submission wave swaps Platform.* sorries for
+the platform children; (3) N52.aux_edge_of/side_edge_of are now importable proofs for the
+submission build. Nothing in flight; clone tree clean at the commit below.
