@@ -1,4 +1,5 @@
 import StaircasePort.Pivot
+import StaircasePort.Projector
 
 namespace StaircasePort.Stair
 
@@ -300,7 +301,70 @@ theorem isPiv_stairCorner_rk_witness :
   isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
     n7_hM1_witness n7_hM2_witness
 
+/-! #### block transfer -/
+
+/-- NE-block ranks transfer through a top-left block reindexing: `B` is `C`'s rows
+`0..a'-1` and cols `c0..c0+b'-1`, so the NE blocks agree and so do the ranks. -/
+lemma n7_rk_block {a b a' b' c0 X Y : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b) (hX : X ≤ a')
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b)) :
+    rk C X (c0 + Y) = rk B X Y := by
+  rw [rk, rk]
+  have hSB : (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)
+      = (C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a' // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, r.2⟩ : {r : Fin a // r.val < X}))
+        (fun c : {c : Fin b' // Y ≤ c.val} =>
+          (⟨⟨c0 + c.1.val, by have := c.1.isLt; omega⟩,
+            by have := c.1.isLt; have := c.2; omega⟩ :
+            {c : Fin b // c0 + Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    exact hCB r.1 c.1
+  have hSC : ((C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1))
+      = (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ :
+            {r : Fin a' // r.val < X}))
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} =>
+          (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+            by have := c.2; have := c.1.isLt; omega⟩ :
+            {c : Fin b' // Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    rw [← hCB (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ : Fin a')
+      (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+        by have := c.2; have := c.1.isLt; omega⟩ : Fin b')]
+    congr 1
+    exact Fin.ext (by have := c.2; have := c.1.isLt; omega)
+  exact le_antisymm
+    (by rw [hSC]; exact Matrix.rank_submatrix_le _ _)
+    (by rw [hSB]; exact Matrix.rank_submatrix_le _ _)
+
+/-- **`isPiv_block` (ported from nb_data_edge_solution.lean:227-238)**: a pivot of the
+top-left block `B` is a pivot of `C` at the shifted column. -/
+lemma n7_isPiv_block {a b a' b' c0 : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b)
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b))
+    {i j : ℕ} (hi : i < a') (h : IsPiv B i j) : IsPiv C i (c0 + j) := by
+  unfold IsPiv at h ⊢
+  rw [show c0 + j + 1 = c0 + (j + 1) from by omega,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB]
+  exact h
+
 end StaircasePort.Stair
+
 
 
 /-! #### run 2: the 18 below-diagonal positions (25+t, 2+t) -/
@@ -449,7 +513,70 @@ theorem isPiv_stairCorner_rk_witness :
   isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
     n7_hM1_witness n7_hM2_witness
 
+/-! #### block transfer -/
+
+/-- NE-block ranks transfer through a top-left block reindexing: `B` is `C`'s rows
+`0..a'-1` and cols `c0..c0+b'-1`, so the NE blocks agree and so do the ranks. -/
+lemma n7_rk_block {a b a' b' c0 X Y : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b) (hX : X ≤ a')
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b)) :
+    rk C X (c0 + Y) = rk B X Y := by
+  rw [rk, rk]
+  have hSB : (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)
+      = (C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a' // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, r.2⟩ : {r : Fin a // r.val < X}))
+        (fun c : {c : Fin b' // Y ≤ c.val} =>
+          (⟨⟨c0 + c.1.val, by have := c.1.isLt; omega⟩,
+            by have := c.1.isLt; have := c.2; omega⟩ :
+            {c : Fin b // c0 + Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    exact hCB r.1 c.1
+  have hSC : ((C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1))
+      = (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ :
+            {r : Fin a' // r.val < X}))
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} =>
+          (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+            by have := c.2; have := c.1.isLt; omega⟩ :
+            {c : Fin b' // Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    rw [← hCB (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ : Fin a')
+      (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+        by have := c.2; have := c.1.isLt; omega⟩ : Fin b')]
+    congr 1
+    exact Fin.ext (by have := c.2; have := c.1.isLt; omega)
+  exact le_antisymm
+    (by rw [hSC]; exact Matrix.rank_submatrix_le _ _)
+    (by rw [hSB]; exact Matrix.rank_submatrix_le _ _)
+
+/-- **`isPiv_block` (ported from nb_data_edge_solution.lean:227-238)**: a pivot of the
+top-left block `B` is a pivot of `C` at the shifted column. -/
+lemma n7_isPiv_block {a b a' b' c0 : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b)
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b))
+    {i j : ℕ} (hi : i < a') (h : IsPiv B i j) : IsPiv C i (c0 + j) := by
+  unfold IsPiv at h ⊢
+  rw [show c0 + j + 1 = c0 + (j + 1) from by omega,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB]
+  exact h
+
 end StaircasePort.Stair
+
 
 
 /-! #### run 2: the 18 below-diagonal positions (25+t, 2+t) -/
@@ -601,5 +728,122 @@ theorem isPiv_stairCorner_rk_witness :
   isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
     n7_hM1_witness n7_hM2_witness
 
+/-! #### block transfer -/
+
+/-- NE-block ranks transfer through a top-left block reindexing: `B` is `C`'s rows
+`0..a'-1` and cols `c0..c0+b'-1`, so the NE blocks agree and so do the ranks. -/
+lemma n7_rk_block {a b a' b' c0 X Y : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b) (hX : X ≤ a')
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b)) :
+    rk C X (c0 + Y) = rk B X Y := by
+  rw [rk, rk]
+  have hSB : (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)
+      = (C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a' // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, r.2⟩ : {r : Fin a // r.val < X}))
+        (fun c : {c : Fin b' // Y ≤ c.val} =>
+          (⟨⟨c0 + c.1.val, by have := c.1.isLt; omega⟩,
+            by have := c.1.isLt; have := c.2; omega⟩ :
+            {c : Fin b // c0 + Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    exact hCB r.1 c.1
+  have hSC : ((C.submatrix (fun r : {r : Fin a // r.val < X} => r.1)
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} => c.1))
+      = (B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+        (fun c : {c : Fin b' // Y ≤ c.val} => c.1)).submatrix
+        (fun r : {r : Fin a // r.val < X} =>
+          (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ :
+            {r : Fin a' // r.val < X}))
+        (fun c : {c : Fin b // c0 + Y ≤ c.val} =>
+          (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+            by have := c.2; have := c.1.isLt; omega⟩ :
+            {c : Fin b' // Y ≤ c.val})) := by
+    ext r c
+    simp only [Matrix.submatrix_apply]
+    rw [← hCB (⟨⟨r.1.val, by have := r.2; omega⟩, by have := r.2; omega⟩ : Fin a')
+      (⟨⟨c.1.val - c0, by have := c.2; have := c.1.isLt; omega⟩,
+        by have := c.2; have := c.1.isLt; omega⟩ : Fin b')]
+    congr 1
+    exact Fin.ext (by have := c.2; have := c.1.isLt; omega)
+  exact le_antisymm
+    (by rw [hSC]; exact Matrix.rank_submatrix_le _ _)
+    (by rw [hSB]; exact Matrix.rank_submatrix_le _ _)
+
+/-- **`isPiv_block` (ported from nb_data_edge_solution.lean:227-238)**: a pivot of the
+top-left block `B` is a pivot of `C` at the shifted column. -/
+lemma n7_isPiv_block {a b a' b' c0 : ℕ} (C : Matrix (Fin a) (Fin b) ℚ)
+    (B : Matrix (Fin a') (Fin b') ℚ) (ha : a' ≤ a) (hb : c0 + b' = b)
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C (⟨i.val, by have := i.isLt; omega⟩ : Fin a)
+        (⟨c0 + j.val, by have := j.isLt; omega⟩ : Fin b))
+    {i j : ℕ} (hi : i < a') (h : IsPiv B i j) : IsPiv C i (c0 + j) := by
+  unfold IsPiv at h ⊢
+  rw [show c0 + j + 1 = c0 + (j + 1) from by omega,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB,
+    n7_rk_block C B ha hb (by omega) hCB]
+  exact h
+
 end StaircasePort.Stair
 
+
+
+/-! #### the projector-level clause (N7 rewire contract) -/
+
+namespace StaircasePort.Stair
+
+/-- **N7 — `isPiv_stairCorner`: the 39-position CORNER CLAUSE on the staircase
+projector** (the statement the N7 rewire consumes; global coordinates, corner runs
+(1,507,21) and (25,486,18) of `stairDataRuns 23 529`).
+
+Hypotheses (all dischargeable at the extracted witness — see
+`isPiv_stairCorner_witness`): `hu`, `hv`, the 21 run-1 diagonal deviations `hT`,
+`hM1` (top 25 corner rows independent on cols >= 20; witness: N2c cert 1), and `hM2`
+(row `25+t` independent on cols >= `2+t` for `t < 18`; witness: N2c's 26-certs).
+Note: `h₁`/`h₂` (`y·x = 1`) and `hdet` are NOT needed here — they are the middle-run's
+fuel (`isPiv_stairMid`). -/
+theorem isPiv_stairCorner (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (hu : x₁ ⟨0, by omega⟩ * x₂ ⟨0, by omega⟩ ≠ 0)
+    (hv : y₁ ⟨22, by omega⟩ * y₂ ⟨22, by omega⟩ ≠ 0)
+    (hT : ∀ l, 1 ≤ l → l ≤ 21 →
+      stairRunA l * x₂ ⟨l, by omega⟩ * y₂ ⟨l + 1, by omega⟩
+        + stairRunB l * x₁ ⟨l, by omega⟩ * y₁ ⟨l + 1, by omega⟩ ≠ 0)
+    (hM1 : 25 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) 25 20)
+    (hM2 : ∀ t : ℕ, t < 18 →
+      26 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (26 + t) (2 + t)) :
+    ∀ p ∈ runPairs [(1, 507, 21), (25, 486, 18)],
+      IsPiv (qMStair (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2 := by
+  intro p hp
+  rw [runPairs, List.mem_flatMap] at hp
+  obtain ⟨ρ, hρ, hp2⟩ := hp
+  obtain ⟨i, j, r⟩ := ρ
+  rw [List.mem_cons, List.mem_cons, List.mem_nil] at hρ
+  rcases hρ with rfl | rfl | hr
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    refine n7_isPiv_block _ _ (by omega) (by omega) (fun l m => ?_) ?_ (by omega)
+    · rw [show (484 : ℕ) + m.val = 529 - 45 + m.val from by omega]
+      exact qMStair_corner (stairPairM x₁ y₁ x₂ y₂) l.val m.val l.isLt m.isLt
+    · rw [show 23 + k = 22 + (1 + k) from by omega]
+      exact n7_run1 x₁ y₁ x₂ y₂ hu hv hT (1 + k) (by omega) (by omega)
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    refine n7_isPiv_block _ _ (by omega) (by omega) (fun l m => ?_) ?_ (by omega)
+    · rw [show (484 : ℕ) + m.val = 529 - 45 + m.val from by omega]
+      exact qMStair_corner (stairPairM x₁ y₁ x₂ y₂) l.val m.val l.isLt m.isLt
+    · exact n7_run2 x₁ y₁ x₂ y₂ hM1 hM2 k hk
+  · exact absurd hr (by simp)
+
+/-- **The 39 corner positions at the witness through the symbolic clause** — every
+hypothesis discharged; the integration check for the N7 rewire. -/
+theorem isPiv_stairCorner_witness :
+    ∀ p ∈ runPairs [(1, 507, 21), (25, 486, 18)],
+      IsPiv (qMStair (stairPairM stairQX1 stairQY1 stairQX2 stairQY2)) p.1 p.2 :=
+  isPiv_stairCorner stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
+    n7_hM1_witness n7_hM2_witness
+
+end StaircasePort.Stair
