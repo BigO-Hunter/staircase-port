@@ -233,3 +233,86 @@ lemma n7_run1 (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
     exact hu
 
 end StaircasePort.Stair
+
+/-! #### run 2: the 18 below-diagonal positions (25+t, 2+t) -/
+
+/-- **Run 2** of the corner clause: `IsPiv q (25+t) (2+t)` for `t < 18`, from the two
+minor hypotheses `hM1` (top-right 25x25) and `hM2` (the 18 26x26 minors). -/
+lemma n7_run2 (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (hM1 : (Matrix.of fun i j : Fin 25 =>
+        stairCornerQOf (stairPairM x₁ y₁ x₂ y₂) (n7M1row i) (n7M1col j)).det ≠ 0)
+    (hM2 : ∀ t : ℕ, t < 18 → (Matrix.of fun i j : Fin 26 =>
+        stairCornerQOf (stairPairM x₁ y₁ x₂ y₂) (n7M2row t ‹t < 18› i) (n7M2col t j)).det ≠ 0) :
+    ∀ t, t < 18 → IsPiv (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (25 + t) (2 + t) := by
+  intro t ht
+  have hle : t ≤ 17 := by omega
+  refine isPiv_of_bounds (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (25 + t) (2 + t) 25
+    ?_ ?_ ?_ ?_ ?_ ?_
+  · -- A ≤ 25
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (25 + t) (2 + t)
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (25 + t) (2 + t) 25 25 (by omega)
+        (n7_mem_A2 t h hle)
+      rwa [show 25 + t - 1 = 24 + t from by omega] at hb
+  · -- B ≤ 26
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (26 + t) (2 + t)
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (26 + t) (2 + t) 26 26 (by omega)
+        (n7_mem_B2 t h hle)
+      rwa [show 26 + t - 1 = 25 + t from by omega] at hb
+  · -- C ≤ 25
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (25 + t) (3 + t)
+    · rcases Nat.lt_or_ge t 17 with h' | h'
+      · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (25 + t) (3 + t) 25 25 (by omega)
+          (n7_mem_C2 t h (by omega))
+        rwa [show 25 + t - 1 = 24 + t from by omega] at hb
+      · exact (rk_le_width _ (25 + t) (3 + t) (by omega)).trans (by omega)
+  · -- D ≤ 25
+    rcases Nat.lt_or_ge t 17 with h | h
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (26 + t) (3 + t) 25 25 (by omega)
+        (n7_mem_D2 t (by omega) h)
+      rwa [show 26 + t - 1 = 25 + t from by omega] at hb
+    · exact (rk_le_width _ (26 + t) (3 + t) (by omega)).trans (by omega)
+  · -- B ≥ 26: the 26x26 minor rows 0..24 ++ [25+t] × cols 2+t..27+t
+    refine rk_ge_of_det _ (26 + t) (2 + t) (n7R26 t ht) (n7C26 t) ?_
+    exact hM2 t ht
+  · -- C ≥ 25: hM1's 25x25 minor + monotonicity
+    have h1 := rk_ge_of_det (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) 25 20
+      (fun i : Fin 25 => ⟨n7M1row i, i.isLt⟩) (fun j : Fin 25 => ⟨n7M1col j, by omega⟩) hM1
+    exact h1.trans ((rk_rows_mono _ (by omega)).trans (rk_cols_mono _ (by omega)))
+
+/-! #### the corner-level clause -/
+
+/-- **N7 — the symbolic 39-position CORNER CLAUSE** (corner coordinates).
+
+For arbitrary labels, the 39 run positions of the two staircase corner runs are pivots of
+the pair-matrix corner, given: `hu`, `hv`, the 21 run-1 diagonal deviations, the
+top-right 25x25 minor `hM1`, and the 18 minors `hM2` (all dischargeable at the extracted
+witness by N2c's certificates). -/
+theorem isPiv_stairCorner_rk (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (hu : x₁ ⟨0, by omega⟩ * x₂ ⟨0, by omega⟩ ≠ 0)
+    (hv : y₁ ⟨22, by omega⟩ * y₂ ⟨22, by omega⟩ ≠ 0)
+    (hT : ∀ l, 1 ≤ l → l ≤ 21 →
+      stairRunA l * x₂ ⟨l, by omega⟩ * y₂ ⟨l + 1, by omega⟩
+        + stairRunB l * x₁ ⟨l, by omega⟩ * y₁ ⟨l + 1, by omega⟩ ≠ 0)
+    (hM1 : (Matrix.of fun i j : Fin 25 =>
+        stairCornerQOf (stairPairM x₁ y₁ x₂ y₂) (n7M1row i) (n7M1col j)).det ≠ 0)
+    (hM2 : ∀ t : ℕ, t < 18 → (Matrix.of fun i j : Fin 26 =>
+        stairCornerQOf (stairPairM x₁ y₁ x₂ y₂) (n7M2row t ‹t < 18› i) (n7M2col t j)).det ≠ 0) :
+    ∀ p ∈ runPairs [(1, 23, 21), (25, 2, 18)],
+      IsPiv (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2 := by
+  intro p hp
+  rw [runPairs, List.mem_flatMap] at hp
+  obtain ⟨ρ, hρ, hp2⟩ := hp
+  obtain ⟨i, j, r⟩ := ρ
+  rw [List.mem_cons, List.mem_cons, List.mem_nil] at hρ
+  rcases hρ with rfl | rfl | hr
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    rw [show 23 + k = 22 + (1 + k) from by omega]
+    exact n7_run1 x₁ y₁ x₂ y₂ hu hv hT (1 + k) (by omega) (by omega)
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    exact n7_run2 x₁ y₁ x₂ y₂ hM1 hM2 k hk
+  · exact absurd hr (by simp)
+
+end StaircasePort.Stair
