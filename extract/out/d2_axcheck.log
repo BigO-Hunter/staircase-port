@@ -1,0 +1,27 @@
+warning: mathlib: repository '/Users/dmitri.arkhipov/bigo-campaign/sp-d2/.lake/packages/mathlib' has local changes
+'StaircasePort.D2.d2HIST_eq_bitR7' does not depend on any axioms
+'StaircasePort.D2.d2HistChildCount_eq' depends on axioms: [propext]
+'StaircasePort.D2.d2HistRankSum_eq' depends on axioms: [propext]
+'StaircasePort.D2.d2RanksCount_eq' depends on axioms: [propext]
+'StaircasePort.D2.d2RanksBaseCount_eq' depends on axioms: [propext]
+'StaircasePort.D2.N_eq' does not depend on any axioms
+'StaircasePort.D2.W_eq' does not depend on any axioms
+'StaircasePort.D2.T_eq' does not depend on any axioms
+'StaircasePort.D2.m_eq' does not depend on any axioms
+'StaircasePort.D2.wAuxEnd_eq' does not depend on any axioms
+'StaircasePort.D2.pin_ops_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_ops_328711' depends on axioms: [propext]
+'StaircasePort.D2.pin_sigma_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_sigma_4822823' depends on axioms: [propext]
+'StaircasePort.D2.pin_nodedims_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_nodedims_64041' depends on axioms: [propext]
+'StaircasePort.D2.pin_ylev_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_ylev_1770' depends on axioms: [propext]
+'StaircasePort.D2.pin_args_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_args_128083' depends on axioms: [propext]
+'StaircasePort.D2.pin_flag_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_flag_528' depends on axioms: [propext]
+'StaircasePort.D2.pin_vleafstart_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_vleafstart_2617353' depends on axioms: [propext]
+'StaircasePort.D2.pin_xsu_0' depends on axioms: [propext]
+'StaircasePort.D2.pin_xsu_11373' depends on axioms: [propext]

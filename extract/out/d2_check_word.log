@@ -1,0 +1,13 @@
+[    1s] A. disjoint additions; out(c,T) = {S: S cap T = {c}}; retained(c) = star(c) (5313 outputs, 23 totals) PASS
+[    1s] A. schedule computes the DAG: 82983 ops, R = adds + outputs + totals - links = 28866, node lists follow the replay PASS
+[    2s] B. garbage coefficients by the transpose sweep: 1681205 nonzero over Z, 669262 odd                   PASS
+[    2s] C. deferred slots (11565, 5116 of them V leaves) untouched by phase 1 (10962 of 82983 ops); totals complete in phase 1 PASS
+[    2s] C. release rule: readouts by dim sigma_u, deferred V gates by dim s_i, X_S = early then deferred V gates PASS
+[    5s] D. scalar identity over F2 (3 random scratch/data): scratch restored, y_T += x_T and == definition sums PASS
+[    5s] D. scalar identity over Z, exact integer readout coefficients                                        PASS
+[    8s] D. NEG control drop               breaks the identity (F2, 8 trials; and Z)                          PASS
+[    9s] D. NEG control late_readout       breaks the identity (F2, 8 trials; and Z)                          PASS
+[   14s] D. NEG control V_before_readout   breaks the identity (F2, 8 trials; and Z)                          PASS
+[   16s] D. NEG control phase1_slot        breaks the identity (F2, 8 trials; and Z)                          PASS
+[   17s] D. NEG control F2 coefficients used over Z break the Z identity                                      PASS
+[   17s] ALL PASS
