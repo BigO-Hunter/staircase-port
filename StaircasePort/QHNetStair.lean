@@ -223,11 +223,14 @@ theorem dfltE_EdgeQ : EdgeQ dfltE 0 := by
 slot wires, childless exit edges on the R aux slots (R8 `blk1` exit shape). The class
 STRUCTURE is D2-pinned; per-class multiplicities beyond these class instances enter only
 the moment bridge (STUB 4) and are not separately claimed. -/
-noncomputable def edgeSched : List NI :=
-  (List.range D2.v).map (fun t => Instr.edge (ι (D2.wY t)) dataE) ++
-  (Instr.edge (ι (D2.wS 0)) auxE ::
-    sideRanks.map (fun r => Instr.edge (ι (D2.wS (r + 1))) (sideE r))) ++
-  (List.range D2.Rslots).map (fun s => Instr.edge (ι (D2.wS (s + 400))) dfltE)
+def part1 : List NI := (List.range D2.v).map fun t => Instr.edge (ι (D2.wY t)) dataE
+
+def part2 : List NI :=
+  Instr.edge (ι (D2.wS 0)) auxE :: sideRanks.map fun r => Instr.edge (ι (D2.wS (r + 1))) (sideE r)
+
+def part3 : List NI := (List.range D2.Rslots).map fun s => Instr.edge (ι (D2.wS (s + 400))) dfltE
+
+noncomputable def edgeSched : List NI := (part1 ++ part2) ++ part3
 
 /-- The staircase witness-1 program: edge schedule first, then the d2OPS gates. -/
 noncomputable def progS : List NI := edgeSched ++ d2Ops.flatMap gatesOf
@@ -277,17 +280,24 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
   · rcases List.mem_append.1 h with h | h
     · rcases List.mem_append.1 h with h | h
       · obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
+        have h4 : (Instr.edge (ι (D2.wY t)) dataE).edgeOf = some dataE := rfl
+        rw [h4] at hie
         exact Or.inl (Option.some.inj hie).symm
       · rcases List.mem_cons.1 h with rfl | h
-        · exact Or.inr (Or.inl (Option.some.inj hie).symm)
+        · have h4 : (Instr.edge (ι (D2.wS 0)) auxE).edgeOf = some auxE := rfl
+          rw [h4] at hie
+          exact Or.inr (Or.inl (Option.some.inj hie).symm)
         · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
+          have h4 : (Instr.edge (ι (D2.wS (r + 1))) (sideE r)).edgeOf = some (sideE r) := rfl
+          rw [h4] at hie
           exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩))
       · obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
+        have h4 : (Instr.edge (ι (D2.wS (s + 400))) dfltE).edgeOf = some dfltE := rfl
+        rw [h4] at hie
         exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
   · obtain ⟨op, hop, hiop⟩ := List.mem_flatMap.1 h
     have h0 := gatesOf_none op i hiop
-    rw [h0] at hie
-    exact absurd hie (by simp)
+    exact absurd (h0.symm.trans hie) (by simp)
 
 theorem netS_RunsOK : netS.RunsOK := by
   intro e he ρ hρ
@@ -416,23 +426,29 @@ theorem sum_flatMap {α : Type*} {M : Type*} [AddCommMonoid M] (f : α → List 
 
 theorem powSum_eq_edges (q : ℕ) :
     Mom.powSum q (QHNet.hist netS) = ((QHNet.edges netS).map fun e => EMq q e).sum := by
-  have hmap : ∀ (rs : List (ℕ × ℕ × ℕ)),
-      ((rs.map (fun ρ => ρ.2.2)).map fun w => w ^ q).sum = (rs.map fun ρ => ρ.2.2 ^ q).sum := by
+  have h1 : ∀ rs : List (ℕ × ℕ × ℕ),
+      (((rs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)).map
+          fun p => p.2 * p.1 ^ q).sum = (rs.map fun ρ => ρ.2.2 ^ q).sum := by
     intro rs
     induction rs with
     | nil => simp
-    | cons ρ rs ih => simp [Function.comp_apply, ih]
-  have h2 : ∀ ws : List ℕ,
-      ((ws.map fun w => (w, 1)).map fun p => p.2 * p.1 ^ q).sum = (ws.map fun w => w ^ q).sum := by
-    intro ws
-    induction ws with
+    | cons ρ rs ih =>
+        simp only [List.map_cons, List.sum_cons, one_mul]
+        rw [ih]
+  have key : ∀ es : List (Edge 529),
+      (((es.flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)).map
+          fun p => p.2 * p.1 ^ q).sum = (es.map fun e => (e.runs.map fun ρ => ρ.2.2 ^ q).sum).sum := by
+    intro es
+    induction es with
     | nil => simp
-    | cons w ws ih => simp [Function.comp_apply, ih]
+    | cons e es ih =>
+        simp only [List.flatMap_cons, List.map_append, List.map_cons, List.sum_cons]
+        rw [h1 e.runs, ih]
   show ((QHNet.hist netS).map (fun p => p.2 * p.1 ^ q)).sum = _
   rw [show QHNet.hist netS =
       ((QHNet.edges netS).flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)
-      from rfl, h2, sum_flatMap]
-  exact List.map_congr_left fun e _ => hmap e.runs
+      from rfl]
+  exact key (QHNet.edges netS)
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
     EMq q (Edge.mk E₁ D1 E₂) = 439 ^ q + 21 ^ q + 18 ^ q + 6 := by
