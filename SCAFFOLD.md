@@ -1131,3 +1131,82 @@ Deliverables (STAGE0_REPORT.md has full hash tables + the host-war notes):
    RESUME; D3's offline check against the frozen oracle is now `powSum q netHist =
    bitR7PowSum q` for q = 0..45. The data floor is frozen; nothing in Stage 0 blocks.
 
+
+## STAGE 1 RESUME (2026-11-06, lane-F5 sp-stage1) — QHNet constructed; RunsOK + EdgesOK_large
+## PROVED (modulo 5 documented stubs); moment bridge reduced to ONE stub; package build grinding
+New file: `StaircasePort/QHNetStair.lean` (namespace `StaircasePort.QS`, ~530 ln; root import
+added after MomOracle). Single-file check GREEN (f5i loop, CHECK_OK); package `lake build
+StaircasePort` was still grinding kills under the reaper at write time — verdict: grep
+"Build completed successfully" /tmp/f5_build.log (the loop /tmp/f5_build_loop.py retries
+20x; oleans accumulate — QHNetStair.olean was already landed at 884880 B).
+
+### What is PROVED (axcheck n5_axcheck.lean — run after the package build lands)
+1. **The object**: wire map `gw`/`ι`/`ρF` (ρn_lt_W proved), `netS : QHNet (ZMod 2) D2.W D2.Tmp
+   529` — W = 108516254, T = D2.Tmp = 3217907 (pinned; `netS_T`/`netS_W` rfl-pins). Program =
+   `part1 ++ part2 ++ part3` (data/aux+side/exit edge classes, explicit parens) ++ the d2OPS
+   gate schedule (`opsDec` fuel-decoder → `DOp` src/add/fan records → `gatesOf` XOR gates;
+   `gatesOf_none` proved — gates carry no edges).
+2. **`netS_RunsOK` PROVED**: family classification `prog_edges_fam` (every program edge is
+   dataE | auxE | sideE r∈sideRanks | dfltE) + per-class RunOK: data = `stairRunOK` (N1,
+   stairDataRuns 23 529 ++ stairSingles), aux = auxRuns 19 (decide), side = sideRuns 23 529 r
+   (r ∈ range' 12 11 ⇒ widths 2r-23 ∈ {1,3..21}), dfltE vacuous.
+3. **`netS_EdgesOK_large` PROVED**: `edgeOK_at_of_edgeQ` (good-prime clearance route ported
+   from the plain-line Thm_net0Pnd_EdgesOK.lean — edgeQMatBound/edgeQClearBound/
+   isUnit_redQ_of_coprime + foldr_max_bound over the mapped side list) + EdgeQ witnesses per
+   family via the pickE carrier. dfltE_EdgeQ PROVED (q=0, EdgeOK at every N).
+4. **D3 bridge REDUCED TO ONE STUB**: `powSum_eq_edges` (powSum q (hist netS) = Σ_e EMq q e,
+   via h1/key list inductions) + `EMq_data` (439^q+21^q+18^q+6), `EMq_aux` (23^q+483^q),
+   `EMq_side_pos/neg` ((2r-23)^q | 0) + `histMoment_expansion`/`powSum_expansion` (grouped ↔
+   expanded) — ALL PROVED. The single stub `netS_hist_eq` (hist netS = bitR7.flatMap
+   replicate-expansion) then gives `netS_powSum_eq` (the lane's `powSum q netHist =
+   bitR7PowSum q` shape, q arbitrary) AND `netS_dominance` (the leaf's moment clause) with NO
+   further math. Cross-ties `d2_childCount_eq_S0`/`d2_rankSum_eq_S1` PROVED (q=0,1 instances).
+5. **`staircase_leaf_mod_stubs`**: the exact BitNetMomStmtG ∃-shape with T=3217907, C=netS —
+   RunsOK + EdgesOK clauses proved (mod the EdgeQ-existence stubs), moment clause via stub 4.
+
+### The 5 documented stubs (Platform-stub pattern; every one names its route in-file)
+1. `exists_dataE` — ∃Q, EdgeQ data-edge Q ∧ runs = stairDataRuns++stairSingles. Route:
+   Rewire.data_edge_stair (proved mod corner+Platform) at witness labels, rs' := stairSingles.
+2. `exists_auxE` — runs = auxRuns 19. Route: aux_edge_of_Stair (ref/nb_aux_edge_of:561).
+3. `exists_sideE r` — runs = sideRuns 23 529 r. Route: ref/nb_side_edge_of:196 → qMStair.
+4. `netS_hist_eq` — child-width multiset = bitR7 expanded (producer readout-schedule
+   multiplicity port; the R8 line's identical residual = NetMom.MomEqStmt). d2YLEV/d2XD are
+   the hist-assembly inputs; per-class multiplicities are NOT claimed anywhere else.
+5. `netS_FormalOK` — formal-frame calculus port (Stage 2; flagBasis_stair half already proved
+   in Rewire).
+
+### Design decisions (for reviewers)
+- Edge classes carry `pickE` over (∃Q, EdgeQ ∧ runs = certified list) — the R8 ch0P pattern;
+  the runs are Data.lean/Defs4-pinned, NOT invented; gate wire map ι = gw (nodes 1..64042 < W
+  — semantic WOUT schedule is Stage 2's, gates carry no edges so RunsOK/EdgesOK/hist are
+  independent of it — documented in the file header).
+- `netS` is typed at `D2.W`/`D2.Tmp` (NOT the literals) — rw-keyed matching needs the
+  syntactic form; `netS_W`/`netS_T` pin the literals; the leaf assembly is defeq.
+- SIDE-RANK note: sideRanks = range' 12 11 ⇒ odd widths 1..21 ✓ (r ≤ 11 gives empty run
+  lists and is omitted); side-edge MULTIPLICITIES are stub-4 territory.
+
+### Landmines banked (this stage)
+- `++` binds LEFT in Lean 4 — write explicit parens and split appends accordingly
+  (this bit three times: classification, edgeSched, key's induction).
+- rw is keyed+reducible: a def (`D2.W`) vs its value (`108516254`) in the same term position
+  KILLS rw — keep net-like objects typed at the data-namespace forms.
+- `.1` on an Exists-in-Prop is illegal (projNonPropFromProp) — Classical.choose/choose_spec.
+- Partially-applied def args (`EMq q` eta) don't simp-unfold — eta-expand in statements.
+- `l.foldr max 0` needs Max α — state helper lemmas over the MAPPED list (α → ℕ).
+- tactic-`match` does not refine hypotheses — use `cases` on an inductive (DOp) instead of
+  list-pattern matches when proofs must follow.
+- `unfold DEF at h` can blow maxRecDepth through nested defs — `simp only [DEF] at h`.
+- absurd/rw across different instance spellings fails keyed matching — `Eq.trans` the
+  equations instead (`h0.symm.trans hie`).
+- `⟨...⟩.symm` parses the projection onto the anonymous constructor — parenthesize.
+
+### NEXT (in order)
+1. `grep "Build completed successfully" /tmp/f5_build.log` — if absent, relaunch
+   /tmp/f5_build_loop.py (20 attempts; never foreground >2 min; oleans accumulate).
+2. `LEAN_TOOLCHAIN=$(cat lean-toolchain) lake env lean n5_axcheck.lean` — record axiom
+   profiles (expect only the 5 stub sorryAx roads; RunsOK/EdgesOK proofs themselves clean
+   modulo those).
+3. Hand-off: stub 4 (schedule multiplicities) is the biggest remaining Stage-1.5 item —
+   the per-class counts must be read off the producer readout schedule (d2SIGMA frames /
+   d2VLEAFSLOTS / d2LATEV counts) and the EMq algebra here closes D3 mechanically.
+   Stubs 1-3 ride the Rewire integration (corner contract landed at 9e71a48).
