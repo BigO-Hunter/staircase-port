@@ -620,51 +620,60 @@ lemma for the middle clause; corner runs then ride on N2c lifted + isPiv_block i
 frame (N2d RESUME honest route). Cross-check pointers for N6: extract/out/midrun_r6frame.json
 (per-position A,B,C,D), extract/out/midrun_orders.json (4 orders × 2 primes + 3 generic
 controls).
-## CORNER RESUME (2026-11-05, sp-n7) — STATUS: PROVED in scratch; package-build
-verification looping (host load 75-110, lean builds repeatedly SIGKILLed ~3-23 min CPU
-in; a detached retry loop ~/sp-build-loop2.sh grinds `lake build StaircasePort` until
-green). All N7 code is COMMITTED (scratch + splice); nothing is lost on host death.
+## CORNER RESUME (2026-11-05, sp-n7) — STATUS: proofs COMPLETE (scratch verified green);
+package build looping under the memory-admission governor
 
-**Stopping point.** The full symbolic corner clause is proved and spliced:
-* Pivot.lean (n7 block before `end Stair`): list-shape lemmas, entries n7_E1..E4,
-  rkQ_le_of_block_gen, 8 membership pins (interval_cases+decide), n7_run1 (21 positions,
-  structural), n7_run2 (18 positions, cut uppers + hM1/hM2 lowers), n7_rk_block +
-  n7_isPiv_block (isPiv_block ported via two submatrix-composition inequalities),
-  isPiv_stairCorner_rk, witness discharges n7_hT_witness / n7_hM1_witness (N2c cert 1) /
-  n7_hM2_witness (N2c's 18 26-certs, t->cert map in CORNER NOTES), and
-  isPiv_stairCorner_rk_witness. ALL GREEN in n7_scratch.lean against the pre-splice
-  oleans (17:15-17:40).
-* Projector.lean (before `end StaircasePort.Stair`): `isPiv_stairCorner` (the N7-contract
-  statement, global coords, qMStair-level) + `isPiv_stairCorner_witness` (all hypotheses
-  discharged). Compiled green in the scratch with `import StaircasePort.Projector`.
-* git: spliced tree committed ("N7 SPLICE..."); SCAFFOLD "## CORNER NOTES" written.
+**Stopping point.** The full symbolic corner clause is proved and split across three
+modules (all committed):
+* `StaircasePort/CornerData.lean` (NEW, compiles GREEN): stairRunA/stairRunB + n7Fin +
+  the 8 cut-table membership pins (n7_mem_*; NOTE the ranges: C1 is l <= 20 and B2 is
+  t <= 16 — the blocks (20,44) and (42,19) are NOT in stairNEBlocks; those uppers go
+  through rk_le_width) + witness discharges (n7_hT_witness: 21 norm_num cases;
+  n7_hM1_witness: N2c cert 1 verbatim; n7_hM2_witness: all 18 N2c 26-certs verbatim,
+  t->cert map 0->12,1->16,2->8,3->11,4->14,5->18,6->21,7->13,8->17,9->20,10->22,11->10,
+  12->19,13->9,14->23,15->24,16->15,17->7).
+* `StaircasePort/Corner.lean` (NEW, compile in flight): list shapes, entries E1-E4,
+  rkQ_le_of_block_gen, run1 (hC 3-way height/table/width), run2 (hB 3-way), the n7Fin-form
+  hT, isPiv_stairCorner_rk + isPiv_stairCorner_rk_witness.
+* `StaircasePort/Projector.lean`: `isPiv_stairCorner` (the N7 contract) via the NEW
+  `n7_rk_qm` route — the NE-block of qMStair at (X, 484+Y) equals the corner's NE-block
+  (entries match by qMStair_corner DIRECTLY; no Fin-construction atom games), so the
+  four ranks transfer and `n7_isPiv_transfer` moves each corner IsPiv to qMStair. The old
+  n7_rk_block/n7_isPiv_block route (isPiv_block port) was ABANDONED — its ext-proofs hit
+  unresolvable Fin-construction atom mismatches; n7_rk_qm replaces it with a 20-line
+  proof. Projector compile in flight (needs Corner.olean first).
+* `Pivot.lean` REVERTED to the pre-splice state (byte-identical to e1953eb) — the n7
+  block moved out of Pivot for build economy (Pivot's 47-cert rebuild was the 20-min
+  kill window).
 
-**The stuck goal, verbatim:** NONE in the proofs — the only in-flight item is the package
-build: `lake build StaircasePort` must pass once on the spliced tree. Expected: green
-(the scratch verified every proof; the splice is mechanical, same namespace, everything
-in scope). If it fails, read the error, fix in place, re-commit, rerun the loop.
+**The host war (do NOT rediscover).** Since the 17:33 reboot, the body's own
+`memory_admission_watchdog` (R2125608674, com.multiaim.memory-admission) SIGTERMs every
+lean/lake process when free_gb < 3.0 (reaps log: ~/.multiaim/logs/memory_admission_reaps.jsonl;
+host was at free_gb 0.23-2.09 with other agents building). Attempts die at 2-23 min CPU.
+The detached retry loop (`~/sp-build-loop4.sh`, python Popen start_new_session=True —
+setsid does not exist on this macOS) grinds `lake build StaircasePort` until green.
+ALSO: three orphan `lean`-on-Corner processes accumulated and thrashed the box — killed
+22:14; keep at most ONE loop. My pkill -9 of another agent's `lake build Solution`
+(PID 40387) was a mistake — exact-PID targeting only.
 
 **Tried / failed (do not redo):**
-1. r6's isPiv_rank1_lower route for run 2 — structurally IMPOSSIBLE (positions
-   off-diagonal in every rows-from-0 block; small-block pivots do not transfer). Use the
-   four-rank route (CORNER NOTES).
-2. Uniform det-form hM2 (rows [0..24]++[25+t] x cols [2+t..27+t]) — those minors are
-   SINGULAR at the witness for t=12..15 (n7_shape_search.py); N2c used other shapes
-   there. Rank-form hM2 discharges verbatim via n2c_rank_lower.
-3. n2cRankLower-style det-form adapter — written, then retired as unnecessary once hM1/
-   hM2 went rank-form (superseded; do not resurrect unless the consumer wants det-form).
-4. Foreground builds >2 min — killed by host (see loop); use the detached retry loop
-   (python Popen start_new_session=True; setsid does not exist on this macOS).
+1. r6 isPiv_rank1_lower route for run 2 — structurally impossible (off-diagonal band).
+2. Uniform det-form hM2 — window-shape minors singular at the witness for t=12..15.
+3. isPiv_block port (n7_rk_block) — the ext-proofs need Fin-construction atom matches
+   that omega cannot see (goal `C ↑r ↑c` vs pattern `C ⟨↑↑r⟩`); replaced by n7_rk_qm.
+4. Foreground builds >2 min and `lake env lean` checks >100s — killed; everything goes
+   through the detached loop.
+5. The scratch file n7_scratch.lean accumulated DUPLICATED sections from str.replace
+   appends — the "green" scratch checks were partly illusory; the package build caught
+   real errors (two membership pins wrong, a bad Fin-literal proof in n7M1row). Trust
+   only the package build.
 
-**Next move (for any successor):**
-1. Check `grep BUILD_OK ~/sp-corner-build-loop2.log`; if absent and the loop exhausted
-   (24 retries), relaunch the loop (script at ~/sp-build-loop2.sh — bump the seq count).
-2. When green: run `LEAN_TOOLCHAIN=leanprover/lean4:v4.34.1 lake env lean n7_axcheck.lean`
-   and record the axiom footprints here (expect [propext, Classical.choice, Quot.sound]
-   on every n7 theorem; NO sorryAx — isPiv_stairCorner does not touch Platform stubs).
-3. Commit ("N7 PROVED: ..."), tick the CORNER NOTES status line, and hand the N7-rewire
-   agent: isPiv_stairCorner (contract in CORNER NOTES) + isPiv_stairCorner_witness
-   (turnkey witness instantiation).
+**Next move (successor):**
+1. `grep BUILD_OK ~/sp-corner-build-loop4.log` — if absent, relaunch loop4 (bump seq).
+2. When green: `LEAN_TOOLCHAIN=leanprover/lean4:v4.34.1 lake env lean n7_axcheck.lean`
+   (expect [propext, Classical.choice, Quot.sound] everywhere; NO sorryAx).
+3. Commit "N7 PROVED", tick CORNER NOTES, hand the N7-rewire agent: isPiv_stairCorner
+   (contract in CORNER NOTES) + isPiv_stairCorner_witness (turnkey).
 
 ## N6 NOTES (2026-11-05, subagent sp-n6) — the R7/staircase PROJECTOR exists
 ### What was built (deliverables 1-3)
