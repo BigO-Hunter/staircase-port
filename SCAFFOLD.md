@@ -1094,3 +1094,40 @@ available in this skeleton); `rkQ_le_of_block_gen` (symbolic cut wrapper);
 `isPiv_stairCorner` (global coords via qMStair_corner + n7_isPiv_block) and
 `isPiv_stairCorner_witness` (every hypothesis discharged at the witness).
 
+## STAGE 0 RESUME (2026-11-06, lane-F4 sp-stage0) — STATUS: COMPLETE (regen VERIFIED
+## deterministic; moment oracle FROZEN kernel-decided)
+Deliverables (STAGE0_REPORT.md has full hash tables + the host-war notes):
+1. **REGEN DETERMINISTIC**: `extract/d2_regen.py` re-run in full (~21s): every output
+   byte-identical to the committed pre-image (D2Data*.lean, D2Common.lean,
+   d2_streams.json, d2_data.json — sha256 table in the report). PND-GATE 33/33 PASS;
+   producer battery re-run in-clone (check_lifted/check_word/check_frames ALL PASS
+   incl. 5 negative controls). Provenance: producer pin c05adfe, inputs
+   witness_23.json.gz b2486aa2 / deferred_23.json.gz 8c38e947 / JainData.lean 5133d430.
+2. **ORACLE VERDICT: VERIFIED** — regenerated data checked against the INDEPENDENT frozen
+   oracle (producer certificates + platform-frozen Jain.bitR7); the decisive
+   `d2HIST_eq_bitR7` pin is zero-axiom kernel decide. NO defect found.
+3. **MOMENT ORACLE FROZEN**: `extract/out/bitR7_power_sums.json` (sha256 fa6375e4…)
+   + `StaircasePort/MomOracle.lean` — S_q = ∑ n_w·w^q over `Jain.bitR7`, q = 0..45,
+   46 theorems `by decide` (Nat only), elaborated GREEN in 45s, sampled pins
+   [propext]-only; S_0 = 1905413587, S_1 = 57403754177, S_45 = 130 digits. 37 distinct
+   widths ⇒ 46 sums over-pin the multiset (Newton) ⇒ histMoment equality at EVERY
+   τ ∈ (0,1] once D3's multiset equality lands. Cross-tie `MomOracleD2.lean`
+   (d2S0/d2S1 on the REGENERATED d2HIST) builds explicitly — see the host-war gotcha.
+   Commits: c2f00cc (regen evidence), 2d675f2 (oracle), + report/scaffold.
+4. **HOST-WAR GOTCHA (new, for every successor with a Lean build on this host)**: the
+   memory-admission reaper (R2125608674) SIGTERMs lean when free_gb < 3.0 — the session
+   saw free_gb 0.07–0.15 with 4–5 concurrent peer builds, killing 9 attempts (incl. two
+   that died AFTER the target module had already built). Countermeasures that worked:
+   (a) shrink the critical path — MomOracle imports ONLY Definitions (olean replays),
+   NOT D2Data; the 13MB D2Data chain is confined to MomOracleD2.lean, built explicitly
+   in a calm window; (b) detached python Popen(start_new_session=True) retry loop,
+   `LAKE_JOBS=1` (env var only — this lake has NO -j flag; "unknown short option '-j'"),
+   60s spacing, logs to files, verdict = grep "Build completed successfully";
+   (c) progress ACCUMULATES across kills (olean+trace persist; lake replays) — do not
+   restart from scratch, do not run two of your own drivers, never kill a peer's build
+   (exact-PID targeting only). MomOracle.olean + trace are cached in .lake — a plain
+   `lake build StaircasePort` replays them; the root build's remaining work is replays.
+5. **NEXT GATE**: Stage 1 (QHNet construction + RunsOK/EdgesOK) consumes D2 per the D2
+   RESUME; D3's offline check against the frozen oracle is now `powSum q netHist =
+   bitR7PowSum q` for q = 0..45. The data floor is frozen; nothing in Stage 0 blocks.
+
