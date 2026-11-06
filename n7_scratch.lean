@@ -232,7 +232,225 @@ lemma n7_run1 (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
     simp only [Matrix.of_apply, e1]
     exact hu
 
+/-! #### witness discharges (all hypotheses hold at the extracted witness) -/
+
+/-- hT at the witness: the 21 run-1 diagonal deviations are nonzero. -/
+theorem n7_hT_witness : ∀ l : ℕ, 1 ≤ l → l ≤ 21 →
+    stairRunA l * stairQX2 ⟨l, by omega⟩ * stairQY2 ⟨l + 1, by omega⟩
+      + stairRunB l * stairQX1 ⟨l, by omega⟩ * stairQY1 ⟨l + 1, by omega⟩ ≠ 0 := by
+  intro l h1 h2
+  interval_cases l <;>
+    simp only [stairRunA, stairRunB, stairQX1, stairQX2, stairQY1, stairQY2, stairWX1L,
+      stairWX2L, stairWY1L, stairWY2L, stairAZL, stairBZL, List.getD, List.getD_cons,
+      List.getD_nil, Int.cast_ofNat, Int.cast_one, Int.cast_neg] <;>
+    norm_num
+
+/-- hM1 at the witness: N2c certificate 1 verbatim. -/
+theorem n7_hM1_witness : 25 ≤ rk stairCornerQ 25 20 :=
+  n2c_rank_lower (by omega) n2cR1 n2cC1 (by decide) (by decide) (by decide)
+    n2cS1 n2cT1 n2cChk1 n2cEnt1
+
+/-- hM2 at the witness: N2c's 26-certificates verbatim (one per run-2 position). -/
+theorem n7_hM2_witness : ∀ t : ℕ, t < 18 → 26 ≤ rk stairCornerQ (26 + t) (2 + t) := by
+  intro t ht
+  interval_cases t
+  · exact n2c_rank_lower (by omega) n2cR12 n2cC12 (by decide) (by decide) (by decide)
+      n2cS12 n2cT12 n2cChk12 n2cEnt12
+  · exact n2c_rank_lower (by omega) n2cR16 n2cC16 (by decide) (by decide) (by decide)
+      n2cS16 n2cT16 n2cChk16 n2cEnt16
+  · exact n2c_rank_lower (by omega) n2cR8 n2cC8 (by decide) (by decide) (by decide)
+      n2cS8 n2cT8 n2cChk8 n2cEnt8
+  · exact n2c_rank_lower (by omega) n2cR11 n2cC11 (by decide) (by decide) (by decide)
+      n2cS11 n2cT11 n2cChk11 n2cEnt11
+  · exact n2c_rank_lower (by omega) n2cR14 n2cC14 (by decide) (by decide) (by decide)
+      n2cS14 n2cT14 n2cChk14 n2cEnt14
+  · exact n2c_rank_lower (by omega) n2cR18 n2cC18 (by decide) (by decide) (by decide)
+      n2cS18 n2cT18 n2cChk18 n2cEnt18
+  · exact n2c_rank_lower (by omega) n2cR21 n2cC21 (by decide) (by decide) (by decide)
+      n2cS21 n2cT21 n2cChk21 n2cEnt21
+  · exact n2c_rank_lower (by omega) n2cR13 n2cC13 (by decide) (by decide) (by decide)
+      n2cS13 n2cT13 n2cChk13 n2cEnt13
+  · exact n2c_rank_lower (by omega) n2cR17 n2cC17 (by decide) (by decide) (by decide)
+      n2cS17 n2cT17 n2cChk17 n2cEnt17
+  · exact n2c_rank_lower (by omega) n2cR20 n2cC20 (by decide) (by decide) (by decide)
+      n2cS20 n2cT20 n2cChk20 n2cEnt20
+  · exact n2c_rank_lower (by omega) n2cR22 n2cC22 (by decide) (by decide) (by decide)
+      n2cS22 n2cT22 n2cChk22 n2cEnt22
+  · exact n2c_rank_lower (by omega) n2cR10 n2cC10 (by decide) (by decide) (by decide)
+      n2cS10 n2cT10 n2cChk10 n2cEnt10
+  · exact n2c_rank_lower (by omega) n2cR19 n2cC19 (by decide) (by decide) (by decide)
+      n2cS19 n2cT19 n2cChk19 n2cEnt19
+  · exact n2c_rank_lower (by omega) n2cR9 n2cC9 (by decide) (by decide) (by decide)
+      n2cS9 n2cT9 n2cChk9 n2cEnt9
+  · exact n2c_rank_lower (by omega) n2cR23 n2cC23 (by decide) (by decide) (by decide)
+      n2cS23 n2cT23 n2cChk23 n2cEnt23
+  · exact n2c_rank_lower (by omega) n2cR24 n2cC24 (by decide) (by decide) (by decide)
+      n2cS24 n2cT24 n2cChk24 n2cEnt24
+  · exact n2c_rank_lower (by omega) n2cR15 n2cC15 (by decide) (by decide) (by decide)
+      n2cS15 n2cT15 n2cChk15 n2cEnt15
+  · exact n2c_rank_lower (by omega) n2cR7 n2cC7 (by decide) (by decide) (by decide)
+      n2cS7 n2cT7 n2cChk7 n2cEnt7
+
+/-- **The 39 corner positions at the witness, through the symbolic clause** — all five
+hypotheses of `isPiv_stairCorner_rk` discharged (integration check of the witness chain;
+the corner coordinates here match the global runs (1,507,21) and (25,486,18) shifted by
+484 = 23*23 - 45). -/
+theorem isPiv_stairCorner_rk_witness :
+    ∀ p ∈ runPairs [(1, 23, 21), (25, 2, 18)], IsPiv stairCornerQ p.1 p.2 :=
+  isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
+    n7_hM1_witness n7_hM2_witness
+
 end StaircasePort.Stair
+
+
+/-! #### run 2: the 18 below-diagonal positions (25+t, 2+t) -/
+
+/-- **Run 2** of the corner clause: `IsPiv q (25+t) (2+t)` for `t < 18`, from the two
+lower-bound hypotheses `hM1` (the top 25 rows are independent on cols >= 20: at the
+witness N2c certificate 1) and `hM2` (row `25+t` is independent on cols >= `2+t`: at the
+witness N2c's 26-certificates); the upper bounds are the unconditional cut table. -/
+lemma n7_run2 (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (hM1 : 25 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) 25 20)
+    (hM2 : ∀ t : ℕ, t < 18 →
+      26 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (26 + t) (2 + t)) :
+    ∀ t, t < 18 → IsPiv (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (25 + t) (2 + t) := by
+  intro t ht
+  have hle : t ≤ 17 := by omega
+  refine isPiv_of_bounds (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (25 + t) (2 + t) 25
+    ?_ ?_ ?_ ?_ ?_ ?_
+  · -- A ≤ 25
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (25 + t) (2 + t)
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (25 + t) (2 + t) 25 25 (by omega)
+        (n7_mem_A2 t h hle)
+      rwa [show 25 + t - 1 = 24 + t from by omega] at hb
+  · -- B ≤ 26
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (26 + t) (2 + t)
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (26 + t) (2 + t) 26 26 (by omega)
+        (n7_mem_B2 t h hle)
+      rwa [show 26 + t - 1 = 25 + t from by omega] at hb
+  · -- C ≤ 25
+    rcases Nat.lt_or_ge t 1 with h | h
+    · exact rk_le_height _ (25 + t) (3 + t)
+    · rcases Nat.lt_or_ge t 17 with h' | h'
+      · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (25 + t) (3 + t) 25 25 (by omega)
+          (n7_mem_C2 t h (by omega))
+        rwa [show 25 + t - 1 = 24 + t from by omega] at hb
+      · exact (rk_le_width _ (25 + t) (3 + t) (by omega)).trans (by omega)
+  · -- D ≤ 25
+    rcases Nat.lt_or_ge t 17 with h | h
+    · have hb := rkQ_le_of_block_gen x₁ y₁ x₂ y₂ (26 + t) (3 + t) 25 25 (by omega)
+        (n7_mem_D2 t (by omega) h)
+      rwa [show 26 + t - 1 = 25 + t from by omega] at hb
+    · exact (rk_le_width _ (26 + t) (3 + t) (by omega)).trans (by omega)
+  · -- B >= 26
+    exact hM2 t ht
+  · -- C >= 25: hM1 + monotonicity (rows 25 <= 25+t, cols 3+t <= 20)
+    exact hM1.trans ((rk_rows_mono _ (by omega)).trans (rk_cols_mono _ (by omega)))
+
+/-! #### the corner-level clause -/
+
+/-- **N7 — the symbolic 39-position CORNER CLAUSE** (corner coordinates).
+
+For arbitrary labels, the 39 run positions of the two staircase corner runs are pivots of
+the pair-matrix corner, given: `hu`, `hv`, the 21 run-1 diagonal deviations, and the two
+independence hypotheses `hM1`/`hM2`. Note `h₁`/`h₂` (`y·x = 1`) and `hdet` are NOT needed
+for the corner clause (they are the middle-run's fuel, `isPiv_stairMid`). -/
+theorem isPiv_stairCorner_rk (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
+    (hu : x₁ ⟨0, by omega⟩ * x₂ ⟨0, by omega⟩ ≠ 0)
+    (hv : y₁ ⟨22, by omega⟩ * y₂ ⟨22, by omega⟩ ≠ 0)
+    (hT : ∀ l, 1 ≤ l → l ≤ 21 →
+      stairRunA l * x₂ ⟨l, by omega⟩ * y₂ ⟨l + 1, by omega⟩
+        + stairRunB l * x₁ ⟨l, by omega⟩ * y₁ ⟨l + 1, by omega⟩ ≠ 0)
+    (hM1 : 25 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) 25 20)
+    (hM2 : ∀ t : ℕ, t < 18 →
+      26 ≤ rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (26 + t) (2 + t)) :
+    ∀ p ∈ runPairs [(1, 23, 21), (25, 2, 18)],
+      IsPiv (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2 := by
+  intro p hp
+  rw [runPairs, List.mem_flatMap] at hp
+  obtain ⟨ρ, hρ, hp2⟩ := hp
+  obtain ⟨i, j, r⟩ := ρ
+  rw [List.mem_cons, List.mem_cons, List.mem_nil] at hρ
+  rcases hρ with rfl | rfl | hr
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    rw [show 23 + k = 22 + (1 + k) from by omega]
+    exact n7_run1 x₁ y₁ x₂ y₂ hu hv hT (1 + k) (by omega) (by omega)
+  · obtain ⟨k, hk, rfl⟩ := List.mem_map.mp hp2
+    exact n7_run2 x₁ y₁ x₂ y₂ hM1 hM2 k hk
+  · exact absurd hr (by simp)
+
+/-! #### witness discharges (all hypotheses hold at the extracted witness) -/
+
+/-- hT at the witness: the 21 run-1 diagonal deviations are nonzero. -/
+theorem n7_hT_witness : ∀ l : ℕ, 1 ≤ l → l ≤ 21 →
+    stairRunA l * stairQX2 ⟨l, by omega⟩ * stairQY2 ⟨l + 1, by omega⟩
+      + stairRunB l * stairQX1 ⟨l, by omega⟩ * stairQY1 ⟨l + 1, by omega⟩ ≠ 0 := by
+  intro l h1 h2
+  interval_cases l <;>
+    simp only [stairRunA, stairRunB, stairQX1, stairQX2, stairQY1, stairQY2, stairWX1L,
+      stairWX2L, stairWY1L, stairWY2L, stairAZL, stairBZL, List.getD, List.getD_cons,
+      List.getD_nil, Int.cast_ofNat, Int.cast_one, Int.cast_neg] <;>
+    norm_num
+
+/-- hM1 at the witness: N2c certificate 1 verbatim. -/
+theorem n7_hM1_witness : 25 ≤ rk stairCornerQ 25 20 :=
+  n2c_rank_lower (by omega) n2cR1 n2cC1 (by decide) (by decide) (by decide)
+    n2cS1 n2cT1 n2cChk1 n2cEnt1
+
+/-- hM2 at the witness: N2c's 26-certificates verbatim (one per run-2 position). -/
+theorem n7_hM2_witness : ∀ t : ℕ, t < 18 → 26 ≤ rk stairCornerQ (26 + t) (2 + t) := by
+  intro t ht
+  interval_cases t
+  · exact n2c_rank_lower (by omega) n2cR12 n2cC12 (by decide) (by decide) (by decide)
+      n2cS12 n2cT12 n2cChk12 n2cEnt12
+  · exact n2c_rank_lower (by omega) n2cR16 n2cC16 (by decide) (by decide) (by decide)
+      n2cS16 n2cT16 n2cChk16 n2cEnt16
+  · exact n2c_rank_lower (by omega) n2cR8 n2cC8 (by decide) (by decide) (by decide)
+      n2cS8 n2cT8 n2cChk8 n2cEnt8
+  · exact n2c_rank_lower (by omega) n2cR11 n2cC11 (by decide) (by decide) (by decide)
+      n2cS11 n2cT11 n2cChk11 n2cEnt11
+  · exact n2c_rank_lower (by omega) n2cR14 n2cC14 (by decide) (by decide) (by decide)
+      n2cS14 n2cT14 n2cChk14 n2cEnt14
+  · exact n2c_rank_lower (by omega) n2cR18 n2cC18 (by decide) (by decide) (by decide)
+      n2cS18 n2cT18 n2cChk18 n2cEnt18
+  · exact n2c_rank_lower (by omega) n2cR21 n2cC21 (by decide) (by decide) (by decide)
+      n2cS21 n2cT21 n2cChk21 n2cEnt21
+  · exact n2c_rank_lower (by omega) n2cR13 n2cC13 (by decide) (by decide) (by decide)
+      n2cS13 n2cT13 n2cChk13 n2cEnt13
+  · exact n2c_rank_lower (by omega) n2cR17 n2cC17 (by decide) (by decide) (by decide)
+      n2cS17 n2cT17 n2cChk17 n2cEnt17
+  · exact n2c_rank_lower (by omega) n2cR20 n2cC20 (by decide) (by decide) (by decide)
+      n2cS20 n2cT20 n2cChk20 n2cEnt20
+  · exact n2c_rank_lower (by omega) n2cR22 n2cC22 (by decide) (by decide) (by decide)
+      n2cS22 n2cT22 n2cChk22 n2cEnt22
+  · exact n2c_rank_lower (by omega) n2cR10 n2cC10 (by decide) (by decide) (by decide)
+      n2cS10 n2cT10 n2cChk10 n2cEnt10
+  · exact n2c_rank_lower (by omega) n2cR19 n2cC19 (by decide) (by decide) (by decide)
+      n2cS19 n2cT19 n2cChk19 n2cEnt19
+  · exact n2c_rank_lower (by omega) n2cR9 n2cC9 (by decide) (by decide) (by decide)
+      n2cS9 n2cT9 n2cChk9 n2cEnt9
+  · exact n2c_rank_lower (by omega) n2cR23 n2cC23 (by decide) (by decide) (by decide)
+      n2cS23 n2cT23 n2cChk23 n2cEnt23
+  · exact n2c_rank_lower (by omega) n2cR24 n2cC24 (by decide) (by decide) (by decide)
+      n2cS24 n2cT24 n2cChk24 n2cEnt24
+  · exact n2c_rank_lower (by omega) n2cR15 n2cC15 (by decide) (by decide) (by decide)
+      n2cS15 n2cT15 n2cChk15 n2cEnt15
+  · exact n2c_rank_lower (by omega) n2cR7 n2cC7 (by decide) (by decide) (by decide)
+      n2cS7 n2cT7 n2cChk7 n2cEnt7
+
+/-- **The 39 corner positions at the witness, through the symbolic clause** — all five
+hypotheses of `isPiv_stairCorner_rk` discharged (integration check of the witness chain;
+the corner coordinates here match the global runs (1,507,21) and (25,486,18) shifted by
+484 = 23*23 - 45). -/
+theorem isPiv_stairCorner_rk_witness :
+    ∀ p ∈ runPairs [(1, 23, 21), (25, 2, 18)], IsPiv stairCornerQ p.1 p.2 :=
+  isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
+    n7_hM1_witness n7_hM2_witness
+
+end StaircasePort.Stair
+
 
 /-! #### run 2: the 18 below-diagonal positions (25+t, 2+t) -/
 
@@ -315,4 +533,73 @@ theorem isPiv_stairCorner_rk (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
     exact n7_run2 x₁ y₁ x₂ y₂ hM1 hM2 k hk
   · exact absurd hr (by simp)
 
+/-! #### witness discharges (all hypotheses hold at the extracted witness) -/
+
+/-- hT at the witness: the 21 run-1 diagonal deviations are nonzero. -/
+theorem n7_hT_witness : ∀ l : ℕ, 1 ≤ l → l ≤ 21 →
+    stairRunA l * stairQX2 ⟨l, by omega⟩ * stairQY2 ⟨l + 1, by omega⟩
+      + stairRunB l * stairQX1 ⟨l, by omega⟩ * stairQY1 ⟨l + 1, by omega⟩ ≠ 0 := by
+  intro l h1 h2
+  interval_cases l <;>
+    simp only [stairRunA, stairRunB, stairQX1, stairQX2, stairQY1, stairQY2, stairWX1L,
+      stairWX2L, stairWY1L, stairWY2L, stairAZL, stairBZL, List.getD, List.getD_cons,
+      List.getD_nil, Int.cast_ofNat, Int.cast_one, Int.cast_neg] <;>
+    norm_num
+
+/-- hM1 at the witness: N2c certificate 1 verbatim. -/
+theorem n7_hM1_witness : 25 ≤ rk stairCornerQ 25 20 :=
+  n2c_rank_lower (by omega) n2cR1 n2cC1 (by decide) (by decide) (by decide)
+    n2cS1 n2cT1 n2cChk1 n2cEnt1
+
+/-- hM2 at the witness: N2c's 26-certificates verbatim (one per run-2 position). -/
+theorem n7_hM2_witness : ∀ t : ℕ, t < 18 → 26 ≤ rk stairCornerQ (26 + t) (2 + t) := by
+  intro t ht
+  interval_cases t
+  · exact n2c_rank_lower (by omega) n2cR12 n2cC12 (by decide) (by decide) (by decide)
+      n2cS12 n2cT12 n2cChk12 n2cEnt12
+  · exact n2c_rank_lower (by omega) n2cR16 n2cC16 (by decide) (by decide) (by decide)
+      n2cS16 n2cT16 n2cChk16 n2cEnt16
+  · exact n2c_rank_lower (by omega) n2cR8 n2cC8 (by decide) (by decide) (by decide)
+      n2cS8 n2cT8 n2cChk8 n2cEnt8
+  · exact n2c_rank_lower (by omega) n2cR11 n2cC11 (by decide) (by decide) (by decide)
+      n2cS11 n2cT11 n2cChk11 n2cEnt11
+  · exact n2c_rank_lower (by omega) n2cR14 n2cC14 (by decide) (by decide) (by decide)
+      n2cS14 n2cT14 n2cChk14 n2cEnt14
+  · exact n2c_rank_lower (by omega) n2cR18 n2cC18 (by decide) (by decide) (by decide)
+      n2cS18 n2cT18 n2cChk18 n2cEnt18
+  · exact n2c_rank_lower (by omega) n2cR21 n2cC21 (by decide) (by decide) (by decide)
+      n2cS21 n2cT21 n2cChk21 n2cEnt21
+  · exact n2c_rank_lower (by omega) n2cR13 n2cC13 (by decide) (by decide) (by decide)
+      n2cS13 n2cT13 n2cChk13 n2cEnt13
+  · exact n2c_rank_lower (by omega) n2cR17 n2cC17 (by decide) (by decide) (by decide)
+      n2cS17 n2cT17 n2cChk17 n2cEnt17
+  · exact n2c_rank_lower (by omega) n2cR20 n2cC20 (by decide) (by decide) (by decide)
+      n2cS20 n2cT20 n2cChk20 n2cEnt20
+  · exact n2c_rank_lower (by omega) n2cR22 n2cC22 (by decide) (by decide) (by decide)
+      n2cS22 n2cT22 n2cChk22 n2cEnt22
+  · exact n2c_rank_lower (by omega) n2cR10 n2cC10 (by decide) (by decide) (by decide)
+      n2cS10 n2cT10 n2cChk10 n2cEnt10
+  · exact n2c_rank_lower (by omega) n2cR19 n2cC19 (by decide) (by decide) (by decide)
+      n2cS19 n2cT19 n2cChk19 n2cEnt19
+  · exact n2c_rank_lower (by omega) n2cR9 n2cC9 (by decide) (by decide) (by decide)
+      n2cS9 n2cT9 n2cChk9 n2cEnt9
+  · exact n2c_rank_lower (by omega) n2cR23 n2cC23 (by decide) (by decide) (by decide)
+      n2cS23 n2cT23 n2cChk23 n2cEnt23
+  · exact n2c_rank_lower (by omega) n2cR24 n2cC24 (by decide) (by decide) (by decide)
+      n2cS24 n2cT24 n2cChk24 n2cEnt24
+  · exact n2c_rank_lower (by omega) n2cR15 n2cC15 (by decide) (by decide) (by decide)
+      n2cS15 n2cT15 n2cChk15 n2cEnt15
+  · exact n2c_rank_lower (by omega) n2cR7 n2cC7 (by decide) (by decide) (by decide)
+      n2cS7 n2cT7 n2cChk7 n2cEnt7
+
+/-- **The 39 corner positions at the witness, through the symbolic clause** — all five
+hypotheses of `isPiv_stairCorner_rk` discharged (integration check of the witness chain;
+the corner coordinates here match the global runs (1,507,21) and (25,486,18) shifted by
+484 = 23*23 - 45). -/
+theorem isPiv_stairCorner_rk_witness :
+    ∀ p ∈ runPairs [(1, 23, 21), (25, 2, 18)], IsPiv stairCornerQ p.1 p.2 :=
+  isPiv_stairCorner_rk stairQX1 stairQY1 stairQX2 stairQY2 stair_hu stair_hv n7_hT_witness
+    n7_hM1_witness n7_hM2_witness
+
 end StaircasePort.Stair
+
