@@ -295,7 +295,7 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
         · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
           have h4 : (Instr.edge (ι (D2.wS (r + 1))) (sideE r) : NI).edgeOf = some (sideE r) := rfl
           rw [h4] at hie
-          exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩).symm)
+          exact Or.inr (Or.inr (Or.inl ⟨r, hr, (Option.some.inj hie).symm⟩))
     · -- part3: the childless exit edges
       obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
       have h4 : (Instr.edge (ι (D2.wS (s + 400))) dfltE : NI).edgeOf = some dfltE := rfl
