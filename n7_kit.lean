@@ -208,4 +208,131 @@ theorem edge_exact {m : ℕ} (hm : 1 < m) (q : Matrix (Fin m) (Fin m) ℚ) (hq :
 
 end PivKit
 
+
+section Ports
+
+/-! ## N7 stub ports — the r6-frame generic edges (bodies verbatim from the fetched platform
+bodies, specialized to h = 19; these replace the `sorry` stubs `N52.aux_edge_of` and
+`N52.side_edge_of` in Signature.lean). -/
+
+/-- Ported ref/nb_aux_edge_of_solution.lean:561-631 (aux_edge_of_sol_aux at h = 19). -/
+theorem aux_edge_of_port (M : Matrix (Pr (19 + 4)) (Pr (19 + 4)) ℚ) (hM : M * M = M)
+    (htr : M.trace = ((19 + 4) * (19 + 3) : ℕ))
+    (hlow : ∀ β γ : ℕ, β < γ → γ < 19 + 4 → cor M β (19 + 3 + γ) = 0)
+    (hdiag : ∀ β : ℕ, β < 19 + 4 → cor M β (19 + 3 + β) ≠ 0) :
+    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM M) ∧
+      e.runs = [(0, (19 + 4) * (19 + 4) - (19 + 4), 19 + 4),
+        (19 + 4, 19 + 4, (19 + 4) * (19 + 4) - 2 * (19 + 4))] := by
+  have hk := two_k_le (h := 19)
+  have hmm : (19 + 4) * (19 + 4) = (19 + 4) * (19 + 3) + (19 + 4) := by ring
+  have hq := qM_idem hM
+  have hrank : (qM M).rank = (19 + 4) * (19 + 4) - (19 + 4) := by
+    have h1 := rank_eq_trace (qM M) hq
+    rw [qM_trace, htr] at h1
+    have := Nat.cast_injective h1
+    omega
+  set Cp : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ := (qM M).submatrix
+    (fun l : Fin (19 + 4) => (⟨l.val, by omega⟩ : Fin ((19 + 4) * (19 + 4))))
+    (fun r : Fin (19 + 4) => (⟨(19 + 4) * (19 + 4) - (19 + 4) + r.val, by omega⟩ :
+      Fin ((19 + 4) * (19 + 4)))) with hCp
+  have hCe : ∀ β γ : Fin (19 + 4), Cp β γ = cor M β.val (19 + 3 + γ.val) := by
+    intro β γ
+    have e : (⟨(19 + 4) * (19 + 4) - (19 + 4) + γ.val, by omega⟩ : Fin ((19 + 4) * (19 + 4))) =
+        ⟨(19 + 4) * (19 + 4) - (2 * 19 + 7) + (19 + 3 + γ.val), by omega⟩ :=
+      Fin.ext (by simp only; omega)
+    rw [hCp, submatrix_apply, e, ← qM_corner M β.val (19 + 3 + γ.val) (by omega) (by omega)]
+  have hCl : ∀ β γ : Fin (19 + 4), β < γ → Cp β γ = 0 := fun β γ hβγ => by
+    rw [hCe]; exact hlow _ _ hβγ γ.isLt
+  have hCd : ∀ β : Fin (19 + 4), Cp β β ≠ 0 := fun β => by rw [hCe]; exact hdiag _ β.isLt
+  have hdet : Cp.det ≠ 0 := by
+    rw [det_of_isLowerTriangular Cp (fun a b hab => hCl a b hab)]
+    exact Finset.prod_ne_zero_iff.2 fun a _ => hCd a
+  have hmid := fun i (h1 : 19 + 4 ≤ i) (h2 : i < (19 + 4) * (19 + 4) - (19 + 4)) =>
+    isPiv_mid (k := 19 + 4) (by omega) (qM M) hq hrank hdet h1 h2
+  have hcorner : ∀ l : Fin (19 + 4), IsPiv (qM M) l.val ((19 + 4) * (19 + 4) - (19 + 4) + l.val) :=
+    fun l => isPiv_block (qM M) Cp (by omega) (by omega) (fun i j => rfl)
+      (isPiv_diag_of_lower Cp hCl hCd l)
+  refine edge_exact (by omega) (qM M) hq _ ?_ ?_ ?_ ?_
+  · intro ρ hρ
+    simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
+    rcases hρ with rfl | rfl <;> refine ⟨?_, ?_, ?_, ?_⟩ <;> simp only <;> omega
+  · rw [DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.nodup_append]
+    refine ⟨DEPort.nodup_run _ _ _, DEPort.nodup_run _ _ _, ?_⟩
+    intro a ha b hb hab
+    rw [DEPort.mem_run] at ha hb
+    obtain ⟨k, hk1, rfl⟩ := ha
+    obtain ⟨k', hk2, rfl⟩ := hb
+    simp only [Prod.mk.injEq] at hab
+    omega
+  · intro p hp
+    rw [DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.mem_append, DEPort.mem_run, DEPort.mem_run] at hp
+    rcases hp with ⟨k, hk1, rfl⟩ | ⟨k, hk1, rfl⟩
+    · simpa using hcorner ⟨k, hk1⟩
+    · exact hmid _ (by simp only; omega) (by simp only; omega)
+  · rw [hrank, DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.length_append, DEPort.length_run, DEPort.length_run]
+    omega
+
+/-- Ported ref/nb_side_edge_of_solution.lean:175-218 (side_edge_of_sol_aux at h = 19). -/
+theorem side_edge_of_port (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ)
+    (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ)
+    (hB : ∀ i j : Fin (19 + 4), i < j →
+      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ j = 0)
+    (hBd : ∀ i : Fin (19 + 4),
+      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ i ≠ 0)
+    (hA : ∀ i j : Fin (19 + 4), i < j → (R * Te' (h := 19)) i
+      ⟨(19 + 4) * (19 + 4) - (19 + 4) + j.val, by have := two_k_le (h := 19); omega⟩ = 0)
+    (hAd : ∀ i : Fin (19 + 4), (R * Te' (h := 19)) i
+      ⟨(19 + 4) * (19 + 4) - (19 + 4) + i.val, by have := two_k_le (h := 19); omega⟩ ≠ 0)
+    (hM : C * A * R * (C * A * R) = C * A * R) (hAA : A * A = A) (r : ℕ) (hr : A.rank = r)
+    (hrM : (qM (C * A * R)).rank = r)
+    (hcor : 19 + 4 < 2 * r →
+      (A.submatrix (fun l : Fin (19 + 4 - r) => (⟨l.val, by omega⟩ : Fin (19 + 4)))
+        (fun c : Fin (19 + 4 - r) => (⟨19 + 4 - (19 + 4 - r) + c.val, by omega⟩ :
+          Fin (19 + 4)))).det ≠ 0) :
+    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM (C * A * R)) ∧ ∃ rs',
+      e.runs = sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+      (runPairs (sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r)).length + rs'.length = r := by
+  have hk := two_k_le (h := 19)
+  have hq : qM (C * A * R) * qM (C * A * R) = qM (C * A * R) := qM_idem hM
+  have hrn : r ≤ 19 + 4 := hr ▸ rank_le_width A |>.trans (by simp)
+  obtain ⟨e, he, rs', h1, h2, h3⟩ : ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM (C * A * R)) ∧
+      ∃ rs', e.runs = sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+      (runPairs (sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r)).length + rs'.length =
+        (qM (C * A * R)).rank := by
+    refine DEPort.edge_singles (by nlinarith) _ hq _ ?_ ?_ ?_
+    · intro ρ hρ
+      unfold sideRuns at hρ
+      split_ifs at hρ with hr2
+      · simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
+        subst hρ
+        refine ⟨?_, ?_, ?_, ?_⟩ <;> simp only <;> omega
+      · simp at hρ
+    · unfold sideRuns
+      split_ifs
+      · rw [DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil]
+        exact DEPort.nodup_run _ _ _
+      · exact List.nodup_nil
+    · intro p hp
+      unfold sideRuns at hp
+      split_ifs at hp with hr2
+      · rw [DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil, DEPort.mem_run] at hp
+        obtain ⟨t, ht, rfl⟩ := hp
+        have hpiv : IsPiv A (19 + 4 - r + t) (19 + 4 - r + t) :=
+          isPiv_mid (m := 19 + 4) (k := 19 + 4 - r) (by omega) A hAA (by omega) (hcor hr2)
+            (by omega) (by omega)
+        have his := isPiv_side (by nlinarith) (Te (h := 19) * C) A (R * Te' (h := 19)) hB hBd hA hAd
+          hpiv
+        rw [qM_fac]
+        have key : (19 + 4) * (19 + 4) - r + t =
+            (19 + 4) * (19 + 4) - (19 + 4) + (19 + 4 - r + t) := by
+          generalize (19 + 4) * (19 + 4) = M2 at hk ⊢; omega
+        rw [key]; exact his
+      · rw [DEPort.runPairs_nil] at hp; simp at hp
+  exact ⟨e, he, rs', h1, h2, h3.trans hrM⟩
+
+end Ports
+
 end StaircasePort.Stair.N52Kit
