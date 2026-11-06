@@ -13,3 +13,4 @@ import StaircasePort.Nonvan
 import StaircasePort.Signature
 import StaircasePort.Top
 import StaircasePort.Projector
+import StaircasePort.Rewire
