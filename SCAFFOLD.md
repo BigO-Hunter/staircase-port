@@ -1210,3 +1210,12 @@ StaircasePort` was still grinding kills under the reaper at write time — verdi
    the per-class counts must be read off the producer readout schedule (d2SIGMA frames /
    d2VLEAFSLOTS / d2LATEV counts) and the EMq algebra here closes D3 mechanically.
    Stubs 1-3 ride the Rewire integration (corner contract landed at 9e71a48).
+
+### STAGE 1 ADDENDUM (same session, later): AXCHECK GREEN — rc=0
+`n5_axcheck.lean` (log: f5_axcheck.log, committed): netS_RunsOK / netS_EdgesOK_large /
+staircase_leaf_mod_stubs / netS_powSum_eq / netS_dominance =
+[propext, sorryAx, Classical.choice, Quot.sound] — the sorryAx road is EXACTLY the five
+documented stubs; histMoment_expansion [propext, Classical.choice, Quot.sound] and
+powSum_expansion [propext, Quot.sound] are STUB-FREE; d2_childCount_eq_S0 / d2_rankSum_eq_S1
+[propext] only. Package build: attempts continue (oleans accumulate); verdict line = grep
+"Build completed successfully" /tmp/f5_build.log.

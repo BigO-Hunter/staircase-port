@@ -1,0 +1,11 @@
+'StaircasePort.QS.netS_RunsOK' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'StaircasePort.QS.netS_EdgesOK_large' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'StaircasePort.QS.staircase_leaf_mod_stubs' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'StaircasePort.QS.netS_powSum_eq' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'StaircasePort.QS.netS_dominance' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'StaircasePort.QS.histMoment_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StaircasePort.QS.powSum_expansion' depends on axioms: [propext, Quot.sound]
+'StaircasePort.QS.d2_childCount_eq_S0' depends on axioms: [propext]
+'StaircasePort.QS.d2_rankSum_eq_S1' depends on axioms: [propext]
+'StaircasePort.QS.dfltE_EdgeQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+rc=0
