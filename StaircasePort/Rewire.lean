@@ -317,6 +317,11 @@ section SideStair
 
 variable (x y : Fin (19 + 4) → ℚ)
 
+/-- `TiStair_col` in the `QmStair_apply` order (column-entry times the inverse scale). -/
+lemma TiStair_col' (j : ℕ) (hj : j < 45) (u : Pr 23) :
+    TiStair u (bLsStair j) * (dv (bLsStair j))⁻¹ = sv (RtermsStair j) u := by
+  rw [dv_bLs j hj, inv_inv, mul_comm, TiStair_col j hj]
+
 /-- Staircase analogue of `side_B` (N52): `(TeStair * C) β a` reads the staircase family row. -/
 lemma side_B_Stair (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ) (β : ℕ) (hβ : β < 2 * 19 + 7)
     (a : Fin (19 + 4)) :
@@ -336,10 +341,10 @@ lemma side_A_Stair (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ) (γ : ℕ) (hγ
   have e : (⟨(19 + 4) * (19 + 4) - (19 + 4) + γ, by have := two_k_le_23; omega⟩ :
       Fin ((19 + 4) * (19 + 4))) =
       ⟨23 * 23 - 45 + (19 + 3 + γ), by have := two_k_le_23; omega⟩ := by
-    ext; simp only; omega
+    refine Fin.ext (by simp only; omega)
   simp only [TeStair', Matrix.mul_apply, Matrix.submatrix_apply, id, e,
-    flagEquivStair_bot _ (show 19 + 3 + γ < 2 * 19 + 7 by omega), QmStair_apply, dv_bLs _ (by omega),
-    inv_inv, TiStair_col _ (show 19 + 3 + γ < 2 * 19 + 7 by omega), sum_mul_sv]
+    flagEquivStair_bot _ (show 19 + 3 + γ < 2 * 19 + 7 by omega), QmStair_apply,
+    TiStair_col' _ (show 19 + 3 + γ < 2 * 19 + 7 by omega), sum_mul_sv]
 
 /-- Staircase analogue of `side1_B_upper` (N52). -/
 lemma side1_B_upper_Stair (β : ℕ) (a : Fin (19 + 4)) (hβa : β < a.val) :
@@ -357,13 +362,13 @@ lemma side1_B_diag_Stair (β : Fin (19 + 4)) :
   rcases Nat.lt_or_ge β.val (19 + 3) with h1 | h1
   · simp (disch := omega) only [LtermsStair, LtermsZStair, Cx, of_apply, dif_pos, if_pos, if_true,
       Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, one_mul, add_zero,
-      Fin.eta]
+      Fin.eta, mul_one, Int.cast_one]
   · obtain ⟨b, hb'⟩ := β
     obtain rfl : b = 19 + 3 := by simp only at h1; omega
     simp (disch := omega) only [LtermsStair, LtermsZStair, Cx, of_apply, dif_pos, dif_neg, if_pos,
       if_neg, if_true, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil,
       one_mul, add_zero, lt_irrefl, not_false_eq_true, ite_true, ite_false, mul_zero, ↓reduceIte,
-      ↓reduceDIte]
+      ↓reduceDIte, Int.cast_one, zero_add]
 
 /-- Staircase analogue of `side1_A_upper` (N52). -/
 lemma side1_A_upper_Stair (γ : ℕ) (hγ : γ < 19 + 4) (a : Fin (19 + 4)) (haγ : a.val < γ) :
@@ -378,21 +383,27 @@ lemma side1_A_upper_Stair (γ : ℕ) (hγ : γ < 19 + 4) (a : Fin (19 + 4)) (ha�
       if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
       add_zero, ite_true, ite_false, dite_true, dite_false, ↓reduceIte, ↓reduceDIte]
 
-/-- Staircase analogue of `side1_A_diag` (N52): diag `a_γ · y (γ+1)` resp. `y 22`. -/
-lemma side1_A_diag_Stair (γ : Fin (19 + 4)) :
-    ((RtermsStair (19 + 3 + γ.val)).map fun t => Ry y γ t.2 * t.1).sum =
-      if γ.val < 19 + 3 then ((stairAZL.getD γ.val 0 : ℤ) : ℚ) * y ⟨γ.val + 1, by omega⟩
-      else y ⟨19 + 3, by omega⟩ := by
-  have hg := γ.isLt
-  rcases Nat.lt_or_ge γ.val (19 + 3) with h1 | h1
-  · simp (disch := omega) only [RtermsStair, RtermsZStair, Ry, of_apply, dif_pos, dif_neg, if_pos,
-      if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
-      add_zero, Nat.add_sub_cancel_left, mul_one, zero_add, ite_true, ↓reduceIte]
-  · obtain ⟨b, hb'⟩ := γ
-    obtain rfl : b = 19 + 3 := by simp only at h1; omega
-    simp (disch := omega) only [RtermsStair, RtermsZStair, Ry, of_apply, dif_pos, dif_neg, if_pos,
-      if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
-      add_zero, mul_one, ↓reduceIte, ↓reduceDIte, lt_irrefl, not_false_eq_true]
+/-- Staircase analogue of `side1_A_diag` (N52), the `γ < 22` diagonal: `a_γ · y (γ+1)`. -/
+lemma side1_A_diag_Stair (γ : ℕ) (hγ : γ < 19 + 3) :
+    ((RtermsStair (19 + 3 + γ)).map fun t =>
+      Ry y (⟨γ, by omega⟩ : Fin (19 + 4)) t.2 * t.1).sum =
+      ((stairAZL.getD γ 0 : ℤ) : ℚ) * y ⟨γ + 1, by omega⟩ := by
+  have hfin : ((⟨19 + 3 + γ - 21, by omega⟩ : Fin (19 + 4)) = ⟨γ + 1, by omega⟩) := by
+    simp only [Fin.mk.injEq]; omega
+  simp (disch := omega) only [RtermsStair, RtermsZStair, Ry, of_apply, dif_pos, dif_neg, if_pos,
+    if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
+    add_zero, Nat.add_sub_cancel_left, mul_one, zero_add, ite_true, ↓reduceIte]
+  rw [hfin]; ring
+
+/-- Staircase analogue of `side1_A_diag` (N52), the last diagonal: `y 22`. -/
+lemma side1_A_diag_last_Stair :
+    ((RtermsStair (19 + 3 + (19 + 3))).map fun t =>
+      Ry y (⟨19 + 3, by omega⟩ : Fin (19 + 4)) t.2 * t.1).sum =
+      y ⟨19 + 3, by omega⟩ := by
+  simp (disch := omega) only [RtermsStair, RtermsZStair, Ry, of_apply, dif_pos, dif_neg, if_pos,
+    if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
+    add_zero, mul_one, ↓reduceIte, ↓reduceDIte, lt_irrefl, not_false_eq_true, Int.cast_one,
+    one_mul]
 
 /-- Staircase analogue of `side2_B_upper` (N52). -/
 lemma side2_B_upper_Stair (β : ℕ) (a : Fin (19 + 4)) (hβa : β < a.val) :
@@ -410,13 +421,13 @@ lemma side2_B_diag_Stair (β : Fin (19 + 4)) :
   rcases Nat.lt_or_ge β.val (19 + 3) with h1 | h1
   · simp (disch := omega) only [LtermsStair, LtermsZStair, Cx2, of_apply, dif_pos, if_pos, if_true,
       Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, one_mul, add_zero,
-      Fin.eta]
+      Fin.eta, mul_one, Int.cast_one]
   · obtain ⟨b, hb'⟩ := β
     obtain rfl : b = 19 + 3 := by simp only at h1; omega
     simp (disch := omega) only [LtermsStair, LtermsZStair, Cx2, of_apply, dif_pos, dif_neg, if_pos,
       if_neg, if_true, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil,
       one_mul, add_zero, lt_irrefl, not_false_eq_true, ite_true, ite_false, mul_zero, ↓reduceIte,
-      ↓reduceDIte]
+      ↓reduceDIte, Int.cast_one, zero_add]
 
 /-- Staircase analogue of `side2_A_upper` (N52). -/
 lemma side2_A_upper_Stair (γ : ℕ) (hγ : γ < 19 + 4) (a : Fin (19 + 4)) (haγ : a.val < γ) :
@@ -431,21 +442,27 @@ lemma side2_A_upper_Stair (γ : ℕ) (hγ : γ < 19 + 4) (a : Fin (19 + 4)) (ha�
       if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
       add_zero, ite_true, ite_false, dite_true, dite_false, ↓reduceIte, ↓reduceDIte]
 
-/-- Staircase analogue of `side2_A_diag` (N52): diag `b_γ · y (γ+1)` resp. `y 22`. -/
-lemma side2_A_diag_Stair (γ : Fin (19 + 4)) :
-    ((RtermsStair (19 + 3 + γ.val)).map fun t => Ry2 y γ t.2 * t.1).sum =
-      if γ.val < 19 + 3 then ((stairBZL.getD γ.val 0 : ℤ) : ℚ) * y ⟨γ.val + 1, by omega⟩
-      else y ⟨19 + 3, by omega⟩ := by
-  have hg := γ.isLt
-  rcases Nat.lt_or_ge γ.val (19 + 3) with h1 | h1
-  · simp (disch := omega) only [RtermsStair, RtermsZStair, Ry2, of_apply, dif_pos, dif_neg, if_pos,
-      if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
-      add_zero, Nat.add_sub_cancel_left, mul_one, zero_add, ite_true, ↓reduceIte]
-  · obtain ⟨b, hb'⟩ := γ
-    obtain rfl : b = 19 + 3 := by simp only at h1; omega
-    simp (disch := omega) only [RtermsStair, RtermsZStair, Ry2, of_apply, dif_pos, dif_neg, if_pos,
-      if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
-      add_zero, mul_one, ↓reduceIte, ↓reduceDIte, lt_irrefl, not_false_eq_true]
+/-- Staircase analogue of `side2_A_diag` (N52), the `γ < 22` diagonal: `b_γ · y (γ+1)`. -/
+lemma side2_A_diag_Stair (γ : ℕ) (hγ : γ < 19 + 3) :
+    ((RtermsStair (19 + 3 + γ)).map fun t =>
+      Ry2 y (⟨γ, by omega⟩ : Fin (19 + 4)) t.2 * t.1).sum =
+      ((stairBZL.getD γ 0 : ℤ) : ℚ) * y ⟨γ + 1, by omega⟩ := by
+  have hfin : ((⟨19 + 3 + γ - 21, by omega⟩ : Fin (19 + 4)) = ⟨γ + 1, by omega⟩) := by
+    simp only [Fin.mk.injEq]; omega
+  simp (disch := omega) only [RtermsStair, RtermsZStair, Ry2, of_apply, dif_pos, dif_neg, if_pos,
+    if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
+    add_zero, Nat.add_sub_cancel_left, mul_one, zero_add, ite_true, ↓reduceIte]
+  rw [hfin]; ring
+
+/-- Staircase analogue of `side2_A_diag` (N52), the last diagonal: `y 22`. -/
+lemma side2_A_diag_last_Stair :
+    ((RtermsStair (19 + 3 + (19 + 3))).map fun t =>
+      Ry2 y (⟨19 + 3, by omega⟩ : Fin (19 + 4)) t.2 * t.1).sum =
+      y ⟨19 + 3, by omega⟩ := by
+  simp (disch := omega) only [RtermsStair, RtermsZStair, Ry2, of_apply, dif_pos, dif_neg, if_pos,
+    if_neg, Fin.ext_iff, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, zero_mul,
+    add_zero, mul_one, ↓reduceIte, ↓reduceDIte, lt_irrefl, not_false_eq_true, Int.cast_one,
+    one_mul]
 
 /-- Staircase analogue of `rank_kron_vmv` (N52). -/
 lemma rank_kron_vmv_Stair (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (hAA : A * A = A)
@@ -458,6 +475,12 @@ lemma rank_kron_vmv_Stair (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (hAA : 
 end SideStair
 
 /-! ## R7-5 — the staircase side-class edge (r6 `side_edge_of` at `qMStair`) -/
+
+/-- The staircase-frame qMStair factorization (r6 `qM_fac` analogue). -/
+lemma qMStair_fac (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ) (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)
+    (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ) :
+    qMStair (C * A * R) = (TeStair * C) * A * (R * TeStair') := by
+  rw [qMStair_eq]; simp only [Matrix.mul_assoc]
 
 /-- Staircase-frame analogue of `N52.side_edge_of` (same body; `Te`/`Te'` → `TeStair`/`TeStair'`,
 `qM` → `qMStair`). The corner facts `hB/hBd/hA/hAd` are the STAIRCASE-family block conditions. -/
@@ -518,12 +541,6 @@ theorem side_edge_of_Stair (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ)
       · rw [DEPort.runPairs_nil] at hp; simp at hp
   exact ⟨e, he, rs', h1, h2, h3.trans hrM⟩
 
-/-- The staircase-frame qMStair factorization (r6 `qM_fac` analogue). -/
-lemma qMStair_fac (C : Matrix (Pr (19 + 4)) (Pr (19 + 4)) ℚ) (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)
-    (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ) :
-    qMStair (C * A * R) = (TeStair * C) * A * (R * TeStair') := by
-  rw [qMStair_eq]; simp only [Matrix.mul_assoc]
-
 /-- Staircase-frame side edge of the first kind (r6 `side1_edge`; strengthened label facts). -/
 theorem side1_edge_Stair (x y : Fin (19 + 4) → ℚ) (hxy : y ⬝ᵥ x = 1)
     (hx : ∀ β : Fin (19 + 4), β.val < 19 + 3 → x β ≠ 0) (hy : ∀ l : Fin (19 + 4), y l ≠ 0)
@@ -552,10 +569,15 @@ theorem side1_edge_Stair (x y : Fin (19 + 4) → ℚ) (hxy : y ⬝ᵥ x = 1)
     rw [side_A_Stair _ _ j.isLt]
     exact side1_A_upper_Stair y j.val j.isLt i hij
   · intro i
-    rw [side_A_Stair _ _ i.isLt, side1_A_diag_Stair]
-    split_ifs with h1
-    · exact mul_ne_zero (stairAZL_ne i.val h1) (hy ⟨i.val + 1, by omega⟩)
-    · exact hy ⟨19 + 3, by omega⟩
+    rw [side_A_Stair _ _ i.isLt]
+    rcases Nat.lt_or_ge i.val (19 + 3) with h1 | h1
+    · rw [side1_A_diag_Stair y i.val h1]
+      exact mul_ne_zero (stairAZL_ne i.val h1) (hy ⟨i.val + 1, by have := i.isLt; omega⟩)
+    · have hi : i.val = 19 + 3 := by have := i.isLt; omega
+      obtain ⟨b, hb'⟩ := i
+      obtain rfl : b = 19 + 3 := hi
+      rw [side1_A_diag_last_Stair]
+      exact hy ⟨19 + 3, by omega⟩
 
 /-- Staircase-frame side edge of the second kind (r6 `side2_edge`; strengthened label facts). -/
 theorem side2_edge_Stair (x y : Fin (19 + 4) → ℚ) (hxy : y ⬝ᵥ x = 1)
@@ -585,9 +607,14 @@ theorem side2_edge_Stair (x y : Fin (19 + 4) → ℚ) (hxy : y ⬝ᵥ x = 1)
     rw [side_A_Stair _ _ j.isLt]
     exact side2_A_upper_Stair y j.val j.isLt i hij
   · intro i
-    rw [side_A_Stair _ _ i.isLt, side2_A_diag_Stair]
-    split_ifs with h1
-    · exact mul_ne_zero (stairBZL_ne i.val h1) (hy ⟨i.val + 1, by omega⟩)
-    · exact hy ⟨19 + 3, by omega⟩
+    rw [side_A_Stair _ _ i.isLt]
+    rcases Nat.lt_or_ge i.val (19 + 3) with h1 | h1
+    · rw [side2_A_diag_Stair y i.val h1]
+      exact mul_ne_zero (stairBZL_ne i.val h1) (hy ⟨i.val + 1, by have := i.isLt; omega⟩)
+    · have hi : i.val = 19 + 3 := by have := i.isLt; omega
+      obtain ⟨b, hb'⟩ := i
+      obtain rfl : b = 19 + 3 := hi
+      rw [side2_A_diag_last_Stair]
+      exact hy ⟨19 + 3, by omega⟩
 
 end StaircasePort.Stair
