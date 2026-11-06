@@ -270,7 +270,8 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
     e = dataE ∨ e = auxE ∨ (∃ r ∈ sideRanks, e = sideE r) ∨ e = dfltE := by
   intro e he
   obtain ⟨i, hi, hie⟩ := List.mem_filterMap.1 he
-  rw [show netS.prog = progS ++ d2Ops.flatMap gatesOf from rfl] at hi
+  have hp : netS.prog = progS := rfl
+  rw [hp] at hi
   simp only [progS, edgeSched] at hi
   rcases List.mem_append.1 hi with h | h
   · rcases List.mem_append.1 h with h | h
@@ -389,7 +390,7 @@ theorem foldr_max_bound {α : Type*} (g : α → ℕ) :
 /-- Uniform good-prime clearance over the net's edge schedule. -/
 theorem netS_EdgesOK_large :
     ∃ q₀ : ℕ, ∀ q, q.Prime → q₀ < q → ∀ f : ℕ, netS.EdgesOK (q ^ f) := by
-  refine ⟨edgeQClearBound dataE + edgeQClearBound auxE +
+  refine ⟨edgeQClearBound dataE + edgeQClearBound auxE + edgeQClearBound dfltE +
     (sideRanks.map fun r => edgeQClearBound (sideE r)).foldr max 0, ?_⟩
   intro q hq hq₀ f e he
   rcases prog_edges_fam e he with rfl | rfl | ⟨r, hrm, rfl⟩ | rfl
@@ -412,7 +413,17 @@ theorem sum_flatMap {α : Type*} {M : Type*} [AddCommMonoid M] (f : α → List 
 
 theorem powSum_eq_edges (q : ℕ) :
     Mom.powSum q (QHNet.hist netS) = ((QHNet.edges netS).map fun e => EMq q e).sum := by
-  simp [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq, sum_flatMap]
+  have hmap : ∀ (rs : List (ℕ × ℕ × ℕ)),
+      ((rs.map (fun ρ => ρ.2.2)).map fun w => w ^ q).sum = (rs.map fun ρ => ρ.2.2 ^ q).sum := by
+    intro rs
+    induction rs with
+    | nil => simp
+    | cons ρ rs ih => simp [ih]
+  show ((QHNet.hist netS).map (fun p => p.2 * p.1 ^ q)).sum = _
+  rw [show QHNet.hist netS =
+      (QHNet.edges netS).flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ) from rfl,
+    List.map_flatMap, sum_flatMap]
+  exact List.map_congr_left fun e _ => hmap e.runs
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
     EMq q (Edge.mk E₁ D1 E₂) = 439 ^ q + 21 ^ q + 18 ^ q + 6 := by
