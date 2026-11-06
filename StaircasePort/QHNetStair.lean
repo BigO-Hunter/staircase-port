@@ -52,6 +52,7 @@ namespace StaircasePort.QS
 
 open IntMul.Kappa.R6.Bit
 open IntMul.Kappa.R6.Bit.NB
+open StaircasePort.Stair
 open AModel AModelFac Matrix Finset
 
 /-! ## Wire map (D2 geometry) -/
@@ -71,8 +72,8 @@ theorem ρn_lt_W (g : ℕ) (hg : g < D2.W) : D2.ρn g < D2.W := by
   have hN : 2 * D2.N ≤ D2.W := by decide
   unfold D2.ρn
   split_ifs with h1 h2
-  · exact Nat.lt_of_lt_of_le (Nat.add_lt_add_right h1 D2.N) (by omega)
-  · exact Nat.lt_of_lt_of_le (Nat.sub_lt_left_of_lt_add (le_of_not_gt h1) (by omega)) (by omega)
+  · omega
+  · omega
   · exact hg
 
 /-- The merge permutation (WireLayout ρn shape). -/
@@ -82,20 +83,30 @@ def ρF (w : Fin D2.W) : Fin D2.W := ⟨D2.ρn w.val, ρn_lt_W w.val w.isLt⟩
 
 /-- Raw op field-groups: `src` = [1,d,s], `add` = [2,d,s1,s2], `fan` = [3,d,k,t₁..t_k]
 (extract/d2_regen.py `opf`). Fuel-driven decode; padding fields (0) terminate. -/
+/-- Raw op field-groups as decoded records: `src` = [1,d,s], `add` = [2,d,s1,s2],
+`fan` = [3,d,k,t₁..t_k] (extract/d2_regen.py `opf`). -/
+inductive DOp where
+  | src (d s : ℕ) : DOp
+  | add (d s1 s2 : ℕ) : DOp
+  | fan (d : ℕ) (ts : List ℕ) : DOp
+
 def opsTake (i k : ℕ) : List ℕ := (List.range k).map fun j => D2.fieldOf D2.d2OPS 16 (i + j)
 
-def opsDec : ℕ → ℕ → List (List ℕ)
+def opsDec : ℕ → ℕ → List DOp
   | _, 0 => []
   | i, fuel + 1 =>
     match D2.fieldOf D2.d2OPS 16 i with
-    | 1 => opsTake (i + 1) 2 :: opsDec (i + 3) fuel
-    | 2 => opsTake (i + 1) 3 :: opsDec (i + 4) fuel
-    | 3 => opsTake (i + 1) (D2.fieldOf D2.d2OPS 16 (i + 2) + 2) ::
+    | 1 => DOp.src (D2.fieldOf D2.d2OPS 16 (i + 1)) (D2.fieldOf D2.d2OPS 16 (i + 2)) ::
+        opsDec (i + 3) fuel
+    | 2 => DOp.add (D2.fieldOf D2.d2OPS 16 (i + 1)) (D2.fieldOf D2.d2OPS 16 (i + 2))
+        (D2.fieldOf D2.d2OPS 16 (i + 3)) :: opsDec (i + 4) fuel
+    | 3 => DOp.fan (D2.fieldOf D2.d2OPS 16 (i + 1))
+        (opsTake (i + 3) (D2.fieldOf D2.d2OPS 16 (i + 2))) ::
         opsDec (i + 3 + D2.fieldOf D2.d2OPS 16 (i + 2)) fuel
     | _ => []
 
 /-- The decoded stage-1 word (82983 ops, D2 RESUME). -/
-def d2Ops : List (List ℕ) := opsDec 0 82983
+def d2Ops : List DOp := opsDec 0 82983
 
 /-- XOR gate `x_d ← x_d + x_s` (R8 `xorG`, characteristic 2). -/
 def xorG (d s : Wr) : NI :=
@@ -103,12 +114,20 @@ def xorG (d s : Wr) : NI :=
 
 /-- One decoded op → its XOR-gate instructions (`add` of two sources = two xors;
 `fan` = broadcast the destination into each target). Gate semantics only. -/
-def gatesOf (op : List ℕ) : List NI :=
-  match op with
-  | 1 :: d :: s :: _ => [xorG (ι d) (ι s)]
-  | 2 :: d :: s1 :: s2 :: _ => [xorG (ι d) (ι s1), xorG (ι d) (ι s2)]
-  | 3 :: d :: _ :: ts => ts.map fun t => xorG (ι t) (ι d)
-  | _ => []
+def gatesOf : DOp → List NI
+  | .src d s => [xorG (ι d) (ι s)]
+  | .add d s1 s2 => [xorG (ι d) (ι s1), xorG (ι d) (ι s2)]
+  | .fan d ts => ts.map fun t => xorG (ι t) (ι d)
+
+theorem gatesOf_none : ∀ (op : DOp) (j : NI), j ∈ gatesOf op → j.edgeOf = none := by
+  intro op j hj
+  cases op with
+  | src d s => rw [hj]; rfl
+  | add d s1 s2 => rcases hj with rfl | rfl <;> rfl
+  | fan d ts =>
+      simp only [gatesOf, List.mem_map] at hj
+      obtain ⟨t, -, rfl⟩ := hj
+      rfl
 
 /-! ## Edge classes with certified run lists -/
 
@@ -162,14 +181,22 @@ theorem dataE_spec : dataPred dataE := pickE_spec exists_dataE
 theorem auxE_spec : auxPred auxE := pickE_spec exists_auxE
 theorem sideE_spec (r : ℕ) : sidePred r (sideE r) := pickE_spec (exists_sideE r)
 
-theorem dataE_EdgeQ : EdgeQ dataE (Classical.choose dataE_spec.1) := (Classical.choose_spec dataE_spec.1).1
-theorem auxE_EdgeQ : EdgeQ auxE (Classical.choose auxE_spec.1) := (Classical.choose_spec auxE_spec.1).1
-theorem sideE_EdgeQ (r : ℕ) : EdgeQ (sideE r) (Classical.choose (sideE_spec r).1) :=
-  (Classical.choose_spec (sideE_spec r).1).1
+theorem dataE_h : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ dataE Q ∧ dataE.runs = D1 :=
+  pickE_spec exists_dataE
+theorem auxE_h : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ auxE Q ∧ auxE.runs = auxRuns 19 :=
+  pickE_spec exists_auxE
+theorem sideE_h (r : ℕ) :
+    ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ (sideE r) Q ∧ (sideE r).runs = sideRuns 23 529 r :=
+  pickE_spec (exists_sideE r)
 
-theorem dataE_runs : dataE.runs = D1 := (Classical.choose_spec dataE_spec.1).2
-theorem auxE_runs : auxE.runs = auxRuns 19 := (Classical.choose_spec auxE_spec.1).2
-theorem sideE_runs (r : ℕ) : (sideE r).runs = sideRuns 23 529 r := (Classical.choose_spec (sideE_spec r).1).2
+theorem dataE_EdgeQ : EdgeQ dataE (Classical.choose dataE_h) := (Classical.choose_spec dataE_h).1
+theorem auxE_EdgeQ : EdgeQ auxE (Classical.choose auxE_h) := (Classical.choose_spec auxE_h).1
+theorem sideE_EdgeQ (r : ℕ) : EdgeQ (sideE r) (Classical.choose (sideE_h r)) :=
+  (Classical.choose_spec (sideE_h r)).1
+
+theorem dataE_runs : dataE.runs = D1 := (Classical.choose_spec dataE_h).2
+theorem auxE_runs : auxE.runs = auxRuns 19 := (Classical.choose_spec auxE_h).2
+theorem sideE_runs (r : ℕ) : (sideE r).runs = sideRuns 23 529 r := (Classical.choose_spec (sideE_h r)).2
 
 /-! ## Trivial-edge EdgeQ (no runs) — dfltE_Q pattern, proved -/
 
@@ -220,20 +247,22 @@ theorem auxRunOK : ∀ ρ ∈ auxRuns 19, RunOK 529 ρ := by
 theorem sideRunOK (r : ℕ) (hr : r ≤ 23) : ∀ ρ ∈ sideRuns 23 529 r, RunOK 529 ρ := by
   unfold sideRuns
   by_cases hcond : 23 < 2 * r
-  · simp only [if_pos hcond, List.mem_cons, List.mem_nil_iff, or_false] at *
+  · rw [if_pos hcond]
     intro ρ hρ
+    simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
     subst hρ
-    have h1 : 23 - r + (2 * r - 23) = r := by omega
-    have h2 : 529 - r + (2 * r - 23) = 506 + r := by omega
-    refine ⟨by omega, by omega, ?_, ?_⟩ <;> omega
-  · simp only [if_neg hcond, List.mem_cons, List.mem_nil_iff, or_false] at *
-    intro ρ hρ; exact absurd hρ (by simp)
+    exact ⟨Nat.sub_pos_of_lt hcond, by omega, by omega, by omega⟩
+  · rw [if_neg hcond]
+    intro ρ hρ
+    exact absurd hρ (List.not_mem_nil ρ)
 
-/-- Edge classification for the schedule (R8 `prog_fam` pattern). -/
+/-- Edge classification for the schedule (R8 `prog_fam` pattern); the side class carries
+its rank membership. -/
 theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
-    e = dataE ∨ e = auxE ∨ (∃ r, e = sideE r) ∨ e = dfltE := by
+    e = dataE ∨ e = auxE ∨ (∃ r ∈ sideRanks, e = sideE r) ∨ e = dfltE := by
   intro e he
   obtain ⟨i, hi, hie⟩ := List.mem_filterMap.1 he
+  rw [show netS.prog = progS ++ d2Ops.flatMap gatesOf from rfl] at hi
   unfold progS edgeSched at hi
   rcases List.mem_append.1 hi with h | h
   · rcases List.mem_append.1 h with h | h
@@ -242,17 +271,21 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
     · rcases List.mem_cons.1 h with rfl | h
       · exact Or.inr (Or.inl (Option.some.inj hie).symm)
       · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
-        exact Or.inr (Or.inr (Or.inl ⟨r, Option.some.inj hie⟩))
+        exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩))
     · obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
       exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
-  · exact absurd (by rw [show (xorG (ι 0) (ι 0) : NI).edgeOf = none from rfl] at hie) hie
+  · obtain ⟨op, hop, hiop⟩ := List.mem_flatMap.1 h
+    exact absurd hie (by rw [gatesOf_none op i hiop]; simp)
 
 theorem netS_RunsOK : netS.RunsOK := by
   intro e he ρ hρ
-  rcases prog_edges_fam e he with rfl | rfl | ⟨r, rfl⟩ | rfl
+  rcases prog_edges_fam e he with rfl | rfl | ⟨r, hrm, rfl⟩ | rfl
   · rw [dataE_runs] at hρ; exact stairRunOK ρ hρ
   · rw [auxE_runs] at hρ; exact auxRunOK ρ hρ
-  · rw [sideE_runs r] at hρ; exact sideRunOK r (by omega) ρ hρ
+  · have hr23 : r ≤ 23 := by
+      have h := List.mem_range'.1 (by simpa [sideRanks] using hrm)
+      omega
+    rw [sideE_runs r] at hρ; exact sideRunOK r hr23 ρ hρ
   · exact absurd hρ (by simp [dfltE])
 
 /-! ## EdgesOK at large prime powers — PROVED (good-prime clearance route)
@@ -309,14 +342,13 @@ lemma isUnit_redQ_of_coprime {N : ℕ} {r : ℚ} (hr : r ≠ 0)
   have hm := hx.map (redHom N)
   simpa only [redQ, toGood, dif_pos hd, x] using hm
 
-/-- One edge with rational Bruhat data is admissible at every sufficiently
-large prime power. -/
-theorem edgeOK_large_of_edgeQ {m : ℕ} (e : Edge m)
-    (h : ∃ Q : Matrix (Fin m) (Fin m) ℚ, EdgeQ e Q) :
-    ∃ q₀ : ℕ, ∀ q, q.Prime → q₀ < q → ∀ f : ℕ, EdgeOK (q ^ f) e := by
+/-- One edge with rational Bruhat data is admissible at every prime power whose prime
+exceeds `edgeQClearBound e` (the `edgeOK_large_of_edgeQ` body of the plain-line
+`Thm_net0Pnd_EdgesOK.lean`, exposed at a fixed prime power). -/
+theorem edgeOK_at_of_edgeQ {m : ℕ} (e : Edge m)
+    (h : ∃ Q : Matrix (Fin m) (Fin m) ℚ, EdgeQ e Q)
+    (q : ℕ) (hq : q.Prime) (hqb : edgeQClearBound e < q) (f : ℕ) : EdgeOK (q ^ f) e := by
   obtain ⟨Q, hQ⟩ := h
-  refine ⟨edgeQClearBound e, ?_⟩
-  intro q hq hqb f
   have unit_of_bound : ∀ r : ℚ, r ≠ 0 → r.den ≤ edgeQClearBound e →
       r.num.natAbs ≤ edgeQClearBound e → IsUnit (redQ (q ^ f) r) := by
     intro r hr hd hn
@@ -327,15 +359,12 @@ theorem edgeOK_large_of_edgeQ {m : ℕ} (e : Edge m)
     · exact (((hq.coprime_iff_not_dvd).2
         (Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr (Rat.num_ne_zero.mpr hr))
           (lt_of_le_of_lt hn hqb))).symm.pow_right f)
-  refine ⟨hQ.2.1, hQ.2.2.2.1, ?_, ?_⟩
-  · intro i
-    apply unit_of_bound _ (hQ.2.2.1 i)
-    · exact (den_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _)
-    · exact (num_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _)
-  · intro i
-    apply unit_of_bound _ (hQ.2.2.2.2.1 i)
-    · exact (den_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)
-    · exact (num_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)
+  exact ⟨hQ.2.1, hQ.2.2.2.1, fun i =>
+    unit_of_bound _ (hQ.2.2.1 i) (den_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _)
+      (num_le_edgeQMatBound e.E₁ i i).trans (Nat.le_add_right _ _),
+    fun i =>
+    unit_of_bound _ (hQ.2.2.2.2.1 i) (den_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)
+      (num_le_edgeQMatBound e.E₂ i i).trans (Nat.le_add_left _ _)⟩
 
 theorem foldr_max_bound {α : Type*} (f : α → ℕ) :
     ∀ (l : List α) (x : α), x ∈ l → f x ≤ l.foldr max 0
@@ -351,17 +380,12 @@ theorem netS_EdgesOK_large :
   refine ⟨edgeQClearBound dataE + edgeQClearBound auxE +
     (sideRanks.map fun r => edgeQClearBound (sideE r)).foldr max 0, ?_⟩
   intro q hq hq₀ f e he
-  have hq₁ : edgeQClearBound dataE < q := by omega
-  have hq₂ : edgeQClearBound auxE < q := by omega
-  have hq₃ : ∀ r ∈ sideRanks, edgeQClearBound (sideE r) < q := by
-    intro r hr
-    have := foldr_max_bound (fun r => edgeQClearBound (sideE r)) sideRanks r hr
-    omega
-  rcases prog_edges_fam e he with rfl | rfl | ⟨r, hr, rfl⟩ | rfl
-  · exact (edgeOK_large_of_edgeQ dataE ⟨_, dataE_EdgeQ⟩ q hq hq₁ f).1
-  · exact (edgeOK_large_of_edgeQ auxE ⟨_, auxE_EdgeQ⟩ q hq hq₂ f).1
-  · exact (edgeOK_large_of_edgeQ (sideE r) ⟨_, sideE_EdgeQ r⟩ q hq (hq₃ r hr) f).1
-  · exact (edgeOK_large_of_edgeQ dfltE ⟨0, dfltE_EdgeQ⟩ q hq (by omega) f).1
+  rcases prog_edges_fam e he with rfl | rfl | ⟨r, hrm, rfl⟩ | rfl
+  · exact edgeOK_at_of_edgeQ dataE ⟨_, dataE_EdgeQ⟩ q hq (by omega) f
+  · exact edgeOK_at_of_edgeQ auxE ⟨_, auxE_EdgeQ⟩ q hq (by omega) f
+  · have hb := foldr_max_bound (fun r => edgeQClearBound (sideE r)) sideRanks r hrm
+    exact edgeOK_at_of_edgeQ (sideE r) ⟨_, sideE_EdgeQ r⟩ q hq (by omega) f
+  · exact edgeOK_at_of_edgeQ dfltE ⟨0, dfltE_EdgeQ⟩ q hq (by omega) f
 
 /-! ## The moment bridge (D3) -/
 
@@ -370,42 +394,33 @@ def EMq (q : ℕ) (e : Edge 529) : ℕ := (e.runs.map fun ρ => ρ.2.2 ^ q).sum
 
 theorem powSum_eq_edges (q : ℕ) :
     Mom.powSum q (QHNet.hist netS) = (QHNet.edges netS.map (EMq q)).sum := by
-  simp only [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq]
-  rw [List.map_flatMap, List.map_map, List.sum_flatMap]
-  congr 1
-  funext e
-  rw [List.map_map]
-  rfl
+  simp [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq]
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
     EMq q (Edge.mk E₁ D1 E₂) = 439 ^ q + 21 ^ q + 18 ^ q + 6 := by
-  simp only [EMq, D1, stairDataRuns_eval, stairSingles_eval, List.map_append, List.sum_append,
-    List.map_cons, List.map_nil, List.sum_cons]
-  norm_num [one_pow]
+  simp [EMq, D1, stairDataRuns_eval, stairSingles_eval]
+  all_goals ring
 
 theorem EMq_aux (E₁ E₂ : QMat2 529) (q : ℕ) :
     EMq q (Edge.mk E₁ (auxRuns 19) E₂) = 23 ^ q + 483 ^ q := by
-  simp only [EMq, auxRuns, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil]
-  norm_num
+  simp [EMq, auxRuns]
+  all_goals ring
 
 theorem EMq_side_pos (E₁ E₂ : QMat2 529) (q : ℕ) (r : ℕ) (hr : 23 < 2 * r) :
     EMq q (Edge.mk E₁ (sideRuns 23 529 r) E₂) = (2 * r - 23) ^ q := by
-  unfold EMq sideRuns
-  rw [if_pos hr]
-  simp
+  simp [EMq, sideRuns, hr]
 
 theorem EMq_side_neg (E₁ E₂ : QMat2 529) (q : ℕ) (r : ℕ) (hr : ¬ 23 < 2 * r) :
     EMq q (Edge.mk E₁ (sideRuns 23 529 r) E₂) = 0 := by
-  unfold EMq sideRuns
-  rw [if_neg hr]
-  simp
+  simp [EMq, sideRuns, hr]
 
 /-- Grouped-vs-expanded histogram moments agree (the `(w, n_w)` list and its
 `n_w`-fold child expansion carry the same `histMoment`). -/
 theorem histMoment_expansion (h : List (ℕ × ℕ)) (m : ℕ) (τ : ℝ) :
-    histMoment (h.flatMap fun p => List.replicate p.2 (p.1, 1)) m τ = histMoment h m τ := by
-  simp [histMoment, List.map_flatMap, List.sum_flatMap, List.map_replicate, List.sum_replicate,
-    smul_eq_mul, mul_one]
+    IntMul.Kappa.histMoment (h.flatMap fun p => List.replicate p.2 (p.1, 1)) m τ =
+      IntMul.Kappa.histMoment h m τ := by
+  simp [IntMul.Kappa.histMoment, List.map_flatMap, List.sum_flatMap, List.map_replicate,
+    List.sum_replicate, smul_eq_mul, mul_one]
 
 /-- Grouped-vs-expanded histogram power sums agree — the D3 decidability shape. -/
 theorem powSum_expansion (q : ℕ) (h : List (ℕ × ℕ)) :
@@ -432,7 +447,8 @@ theorem netS_powSum_eq (q : ℕ) :
 
 /-- The leaf's moment clause, from the same single stub. -/
 theorem netS_dominance (τ : ℝ) (hτ : 0 < τ) (hτ1 : τ ≤ 1) :
-    histMoment (QHNet.hist netS) 529 τ ≤ histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
+    IntMul.Kappa.histMoment (QHNet.hist netS) 529 τ ≤
+      IntMul.Kappa.histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
   rw [netS_hist_eq]
   exact (histMoment_expansion IntMul.Kappa.Jain.bitR7 529 τ).le
 
@@ -463,7 +479,8 @@ theorem staircase_leaf_mod_stubs :
       C.RunsOK ∧
       (∀ q, q.Prime → q₀ < q → ∀ f, C.EdgesOK (q ^ f) ∧ C.FormalOK (q ^ f)) ∧
       ∀ τ : ℝ, 0 < τ → τ ≤ 1 →
-        histMoment C.hist 529 τ ≤ histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
+        IntMul.Kappa.histMoment C.hist 529 τ ≤
+          IntMul.Kappa.histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
   obtain ⟨q₀, hE⟩ := netS_EdgesOK_large
   refine ⟨3217907, netS, q₀, netS_RunsOK, ?_, netS_dominance⟩
   intro q hq hq₀ f
