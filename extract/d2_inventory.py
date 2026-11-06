@@ -72,7 +72,7 @@ comp('readout_order (deferred slots)', len(ro), '%d..%d bijective' % (min(ro), m
 comp('sigma (deferred readout frames)', len(sg), '%d rows x 23; values in [%d,%d]' % (
     sg_rows, min(sg_vals), max(sg_vals)),
     "deferred_23['sigma'] (primitive integer bases; frame len = h - corner rank, check_frames.py X re-derives)",
-    'D2Data: packed 4-bit-bias+1 stream d2SIGMA (%d rows, row = 23 fields)' % sg_rows)
+    'D2Data: packed 5-bit-bias16 stream d2SIGMA (%d rows, row = 23 fields)' % sg_rows)
 comp('corner ranks (h - dim sigma_u)', R, 'Counter: %s' % dict(sorted((Counter(h - len(f) for f in sg)
      | Counter({h: R - len(sg)})).items())),
      'derived: f[s] from sigma (dr.Schedule.f); histogram corner input',
@@ -83,7 +83,7 @@ vs_vals = [x for f in D['vleaf_start'] for r in f for x in r]
 comp('vleaf_slots + vleaf_start', len(D['vleaf_slots']), '%d frames, values in [%d,%d]' % (
     len(D['vleaf_start']), min(vs_vals), max(vs_vals)),
     "deferred_23['vleaf_slots','vleaf_start'] (V-leaf start frames s_i)",
-    'D2Data: d2VLEAFSLOTS 16-bit + d2VLEAFSTART (4/5-bit rows x 23)')
+    'D2Data: d2VLEAFSLOTS 16-bit + d2VLEAFSTART (5-bit bias-16 rows x 23)')
 xs_tot = sum(len(x[1]) for x in D['xs_order'])
 comp('xs_order (X_S chain per leaf)', len(D['xs_order']), '%d slots, chain lens %s' % (
     xs_tot, dict(Counter(len(x[1]) for x in D['xs_order']))),

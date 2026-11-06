@@ -1,0 +1,475 @@
+{
+ "verdicts": [
+  [
+   "A1 hist(staircase) == Jain.bitR7 (37 entries)",
+   true,
+   "37 entries"
+  ],
+  [
+   "A2 staircase rankSum == 57403754177",
+   true,
+   "got 57403754177"
+  ],
+  [
+   "A3 staircase childCount == 1905413587",
+   true,
+   "got 1905413587"
+  ],
+  [
+   "A4 staircase W == 2N+2vR == 108516254",
+   true,
+   "got 108516254"
+  ],
+  [
+   "A5 plain a_b == D.claimed.a_b == witness const",
+   true,
+   "got 12599/200000000"
+  ],
+  [
+   "A6 staircase a_b == witness const",
+   true,
+   "got 31987/500000000"
+  ],
+  [
+   "A7 kappa(plain) == claim",
+   true,
+   "6299103187973/100000000000000000"
+  ],
+  [
+   "A8 kappa(staircase) == claim",
+   true,
+   "1599247689723/25000000000000000"
+  ],
+  [
+   "A9 D.claimed.kappa == plain kappa",
+   true,
+   "6299103187973/100000000000000000"
+  ],
+  [
+   "A10 s == W*m - N + L (both corners)",
+   true,
+   "L=1792252"
+  ],
+  [
+   "B1 ops well-formed ({'src': 11374, 'add': 62271, 'fan': 9338})",
+   true,
+   "82983 ops"
+  ],
+  [
+   "B2 readout_order bijective in [0,R)",
+   true,
+   "11565 deferred of R=28866"
+  ],
+  [
+   "B3 vleaf_slots bijective, one per V gate",
+   true,
+   "11374 V-gate slots over 1771 leaves"
+  ],
+  [
+   "B4 hold: R slot lines",
+   true,
+   "28866 lines"
+  ],
+  [
+   "B5 node_dims keys == 1..64042, dims 1..22",
+   true,
+   "64042"
+  ],
+  [
+   "B6 late_dims == all late-copy suffix keys, dims 1..22",
+   true,
+   "1396"
+  ],
+  [
+   "B7 sigma rows are length-h integer vectors",
+   true,
+   "209688 rows"
+  ],
+  [
+   "B8 sigma values integral in [-15,15] (5-bit bias-16 encodable)",
+   true,
+   "range [-13,10]"
+  ],
+  [
+   "B9 vleaf_start values integral in [-15,15] (5-bit bias-16 encodable)",
+   true,
+   "range [-10,10]"
+  ],
+  [
+   "B10 corner ranks == sigma frame-len distribution",
+   true,
+   "23 classes"
+  ],
+  [
+   "B11 xs_order chains",
+   true,
+   "1771 chains, lens {7: 550, 9: 66, 6: 1155}"
+  ],
+  [
+   "B12 xdata deltas sum to h-1 (producer assert)",
+   true,
+   "1771 leaves"
+  ],
+  [
+   "B13 W.claimed.R == D.R == 28866",
+   true,
+   "28866"
+  ],
+  [
+   "B14 leaf == combinations(range(23),3)",
+   true,
+   "1771 leaves"
+  ],
+  [
+   "B15 j: lifted additions with levels 14..21",
+   true,
+   "56460 entries"
+  ],
+  [
+   "B16 links well-formed",
+   true,
+   "38741 links"
+  ],
+  [
+   "B17 outputs == 3v with c in T",
+   true,
+   "5313"
+  ],
+  [
+   "B18 flag 23x23 ints |v|<=50",
+   true,
+   "529 entries"
+  ],
+  [
+   "B19 design-B chain ranks: 21 classes (chains monotone by construction)",
+   true,
+   "count=162678 rankSum=454230"
+  ],
+  [
+   "B20 ylev covers all v targets, levels 1..22",
+   true,
+   "1771 targets"
+  ],
+  [
+   "C1 base compile R == claim (check_lifted B)",
+   true,
+   ""
+  ],
+  [
+   "C2 base chain-rank hist == claim (check_lifted hist_ok)",
+   true,
+   ""
+  ],
+  [
+   "C3 check_frames battery ALL PASS (exact dims re-derived in-clone)",
+   true,
+   "0 FAIL lines"
+  ]
+ ],
+ "hist_stair": [
+  [
+   1,
+   1690297301
+  ],
+  [
+   3,
+   1356586
+  ],
+  [
+   5,
+   354200
+  ],
+  [
+   7,
+   3580962
+  ],
+  [
+   9,
+   1526602
+  ],
+  [
+   11,
+   5093396
+  ],
+  [
+   13,
+   2164162
+  ],
+  [
+   15,
+   7948248
+  ],
+  [
+   17,
+   8476006
+  ],
+  [
+   18,
+   6272882
+  ],
+  [
+   19,
+   1639946
+  ],
+  [
+   21,
+   6906900
+  ],
+  [
+   23,
+   61280142
+  ],
+  [
+   439,
+   6272882
+  ],
+  [
+   483,
+   61280142
+  ],
+  [
+   485,
+   545468
+  ],
+  [
+   487,
+   173558
+  ],
+  [
+   489,
+   293986
+  ],
+  [
+   491,
+   580888
+  ],
+  [
+   493,
+   14168
+  ],
+  [
+   495,
+   322322
+  ],
+  [
+   497,
+   17710
+  ],
+  [
+   499,
+   1129898
+  ],
+  [
+   501,
+   127512
+  ],
+  [
+   503,
+   410872
+  ],
+  [
+   505,
+   99176
+  ],
+  [
+   507,
+   1186570
+  ],
+  [
+   509,
+   340032
+  ],
+  [
+   511,
+   322322
+  ],
+  [
+   513,
+   106260
+  ],
+  [
+   515,
+   1583274
+  ],
+  [
+   517,
+   626934
+  ],
+  [
+   519,
+   2854852
+  ],
+  [
+   521,
+   13711082
+  ],
+  [
+   523,
+   4629394
+  ],
+  [
+   525,
+   5653032
+  ],
+  [
+   527,
+   6233920
+  ]
+ ],
+ "hist_plain": [
+  [
+   1,
+   1803209177
+  ],
+  [
+   3,
+   1356586
+  ],
+  [
+   5,
+   354200
+  ],
+  [
+   7,
+   3580962
+  ],
+  [
+   9,
+   1526602
+  ],
+  [
+   11,
+   5093396
+  ],
+  [
+   13,
+   2164162
+  ],
+  [
+   15,
+   7948248
+  ],
+  [
+   17,
+   8476006
+  ],
+  [
+   19,
+   1639946
+  ],
+  [
+   21,
+   6906900
+  ],
+  [
+   23,
+   61280142
+  ],
+  [
+   439,
+   6272882
+  ],
+  [
+   483,
+   61280142
+  ],
+  [
+   485,
+   545468
+  ],
+  [
+   487,
+   173558
+  ],
+  [
+   489,
+   293986
+  ],
+  [
+   491,
+   580888
+  ],
+  [
+   493,
+   14168
+  ],
+  [
+   495,
+   322322
+  ],
+  [
+   497,
+   17710
+  ],
+  [
+   499,
+   1129898
+  ],
+  [
+   501,
+   127512
+  ],
+  [
+   503,
+   410872
+  ],
+  [
+   505,
+   99176
+  ],
+  [
+   507,
+   1186570
+  ],
+  [
+   509,
+   340032
+  ],
+  [
+   511,
+   322322
+  ],
+  [
+   513,
+   106260
+  ],
+  [
+   515,
+   1583274
+  ],
+  [
+   517,
+   626934
+  ],
+  [
+   519,
+   2854852
+  ],
+  [
+   521,
+   13711082
+  ],
+  [
+   523,
+   4629394
+  ],
+  [
+   525,
+   5653032
+  ],
+  [
+   527,
+   6233920
+  ]
+ ],
+ "a_b": {
+  "plain": "12599/200000000",
+  "staircase": "31987/500000000"
+ },
+ "ranksum": {
+  "staircase": 57403754177
+ },
+ "childcount": {
+  "staircase": 1905413587
+ }
+}
