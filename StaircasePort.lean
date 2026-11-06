@@ -6,6 +6,7 @@ see SCAFFOLD.md for the N1..N5 map, fan-out independence, and proof routes.
 
 import StaircasePort.CertData
 import StaircasePort.NEBlocks
+import StaircasePort.D2Data
 import StaircasePort.Data
 import StaircasePort.Cert
 import StaircasePort.Pivot
