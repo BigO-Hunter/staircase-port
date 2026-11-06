@@ -883,12 +883,13 @@ theorem flagBasis_stair
       S * Sinv = 1 ∧ Sinv * S = 1 ∧
       (∀ p ∈ Lab, AuxE (h := 19) (S * ((1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) ⊗ₖ
           (1 - vecMulVec p.1 p.2)) * Sinv) ∧
-        AuxE (h := 19) (S * ((1 - vecMulVec p.1 p.2) ⊗ₖ (1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)) *
-          Sinv)) ∧
+        AuxE (h := 19) (S * ((1 - vecMulVec p.1 p.2) ⊗ₖ
+          (1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)) * Sinv)) ∧
       (∀ p ∈ Lab, ∀ A ∈ Pis, SideE (h := 19) (S * (A ⊗ₖ vecMulVec p.1 p.2) * Sinv) A.rank ∧
         SideE (h := 19) (S * (vecMulVec p.1 p.2 ⊗ₖ A) * Sinv) A.rank) ∧
-      (∀ p1 ∈ Lab, ∀ p2 ∈ Lab,
-        DataE' (h := 19) (S * ((1 - vecMulVec p1.1 p1.2) ⊗ₖ (1 - vecMulVec p2.1 p2.2)) * Sinv)) := by
+      (∀ p₁ ∈ Lab, ∀ p₂ ∈ Lab,
+        DataE' (h := 19) (S * ((1 - vecMulVec p₁.1 p₁.2) ⊗ₖ (1 - vecMulVec p₂.1 p₂.2)) *
+          Sinv)) := by
   exact flag_gen_stair_aux stairQX1 stairQY1 stairQX2 stairQY2 stairQxy1 stairQxy2
     stair_data_cert Lab hLab Pis hPis
 
