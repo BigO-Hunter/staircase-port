@@ -184,71 +184,6 @@ end Gen
 
 end DEPort
 
-/-- **N5-1** — `data_edge_stair`: the staircase data-entrance edge. Exact delta vs
-data_edge_sol_aux (nb_data_edge_solution.lean:503-517): the pivot hyp is N2d's output (the
-r6 proof obtained it from isPiv_mid + isPiv_rank1_lower; here isPiv_stair_lower supplies
-both runs at once) and the conclusion is DataE' at h = 19. Assembly route (PROVED, this
-file): idempotence + rank = 484 via the ported trace computation (:518-531 verbatim);
-hok from N1's kernel-decided stairRunOK restricted to the run prefix; hnd HAND-PROVED via
-the ported run toolkit (:575-583 pattern) and rs'.length = 6 from a kernel-decided
-478 + 6 = 484 count — deliberately NOT consuming stairNodup/stair_pivot_budget, whose
-native_decide would put Lean.ofReduceBool in the axiom footprint; hp := hpiv verbatim;
-edge extraction via DEPort.edge_singles → Platform.edge_of_pivs (stub). -/
-theorem data_edge_stair (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
-    (h₁ : y₁ ⬝ᵥ x₁ = 1) (h₂ : y₂ ⬝ᵥ x₂ = 1)
-    (hpiv : ∀ p ∈ runPairs (stairDataRuns 23 529),
-      IsPiv (qM ((1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂))) p.1 p.2) :
-    DataE' (qM ((1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂))) := by
-  set M := (1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂) with hMdef
-  -- idempotence: Kronecker of two idempotents (body :522-524, verbatim)
-  have hMM : M * M = M := by
-    rw [hMdef, ← mul_kronecker_mul, DEPort.one_sub_vmv_idem x₁ y₁ h₁,
-      DEPort.one_sub_vmv_idem x₂ y₂ h₂]
-  have hq := DEPort.qM_idem hMM
-  -- rank via trace (body :525-531, verbatim; concrete n = 23, h = 19)
-  have hrank : (qM M).rank = 484 := by
-    have h1 := DEPort.rank_eq_trace (qM M) hq
-    rw [DEPort.qM_trace, hMdef, trace_kronecker, DEPort.trace_one_sub_vmv x₁ y₁ h₁,
-      DEPort.trace_one_sub_vmv x₂ y₂ h₂] at h1
-    apply Nat.cast_injective (R := ℚ); rw [h1]; norm_num
-  -- hok: N1's stairRunOK (kernel `decide`, axiom-clean) restricted to the run prefix
-  have hok : ∀ ρ ∈ stairDataRuns 23 529, RunOK 529 ρ := fun ρ hρ =>
-    stairRunOK ρ (List.mem_append.2 (Or.inl hρ))
-  -- hnd: hand proof, the body's :575-583 pattern on the three extracted runs
-  -- (45,45,439) diagonal / (1,507,21) / (25,486,18); disjointness is omega on the offsets
-  have hnd : (runPairs (stairDataRuns 23 529)).Nodup := by
-    rw [stairDataRuns_eval, DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_cons,
-      DEPort.runPairs_nil, List.append_nil, List.nodup_append]
-    refine ⟨DEPort.nodup_run _ _ _, ?_, ?_⟩
-    · rw [List.nodup_append]
-      refine ⟨DEPort.nodup_run _ _ _, DEPort.nodup_run _ _ _, ?_⟩
-      intro a ha b hb hab
-      rw [DEPort.mem_run] at ha hb
-      obtain ⟨k, hk, rfl⟩ := ha
-      obtain ⟨k', hk', rfl⟩ := hb
-      simp only [Prod.mk.injEq] at hab
-      omega
-    · intro a ha b hb hab
-      rw [DEPort.mem_run] at ha
-      obtain ⟨k, hk, rfl⟩ := ha
-      simp only [List.mem_append, DEPort.mem_run] at hb
-      rcases hb with ⟨k', hk', rfl⟩ | ⟨k', hk', rfl⟩ <;>
-        simp only [Prod.mk.injEq] at hab <;> omega
-  -- hp: the N2d hypothesis, verbatim
-  have hpM : ∀ p ∈ runPairs (stairDataRuns 23 529), IsPiv (qM M) p.1 p.2 := hpiv
-  obtain ⟨e, he, rs', hruns, hsing, hlen⟩ :=
-    DEPort.edge_singles (m := 529) (by omega) (qM M) hq _ hok hnd hpM
-  -- rs'.length = 6: 478 run positions (kernel-decided length count) + 6 = 484 = rank
-  have hl : (runPairs (stairDataRuns 23 529)).length = 478 := by
-    unfold stairDataRuns stairCornerRuns runPairs
-    decide
-  have h6 : rs'.length = 6 := by
-    rw [hrank, hl] at hlen
-    omega
-  show ∃ e : Edge 529, EdgeQ e (qM M) ∧ ∃ rs', e.runs = stairDataRuns 23 529 ++ rs' ∧
-    (∀ ρ ∈ rs', ρ.2.2 = 1) ∧ rs'.length = 6
-  exact ⟨e, he, rs', hruns, hsing, h6⟩
-
 /-! ## N5-2 machinery: the staircase-frame corner factor
 
 `flag_gen`'s Pall-product corner factor is `pDat` (Defs4:1497), built from the r6/Defs4 `cor`
@@ -341,53 +276,6 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 namespace N52
-
-/-! ## PLATFORM STUBS (wave-3 follow-up: replace each by an import at submission)
-
-The ported `flag_gen` body consumes three generic Proved platform children whose statements are
-verbatim below, specialized to h = 19 (ids + fetched bodies committed in ref/):
-
-| stub | platform theorem | id | fetched body |
-|---|---|---|---|
-| `aux_edge_of` | IntMul.Kappa.R6.Bit.NB.aux_edge_of | c973e50d-124a-489e-b0fd-ac3804a68d0b | ref/nb_aux_edge_of_solution.lean:561 |
-| `side_edge_of` | IntMul.Kappa.R6.Bit.NB.side_edge_of | f2e5b569-5d59-4157-8761-498f52b51299 | ref/nb_side_edge_of_solution.lean:196 |
-| `idem_similar` | IntMul.Kappa.R6.Bit.NB.idem_similar | be86910c-e063-49cb-8700-1d314cebf2de | ref/nb_idem_similar_solution.lean:52 |
-
-Porting them is mechanical but pulls a further generic chain (`edge_exact`,
-`isPiv_diag_of_lower`, `isPiv_block`, `isPiv_mid` — the last already a `Platform` stub in
-Pivot.lean); the bodies are in ref/ so no re-fetch is needed.
-
-`aux_edge_of`: the aux-class edge at a generic pair matrix `M` with the Bruhat corner shape. -/
-theorem aux_edge_of (M : Matrix (Pr (19 + 4)) (Pr (19 + 4)) ℚ) (hM : M * M = M)
-    (htr : M.trace = ((19 + 4) * (19 + 3) : ℕ))
-    (hlow : ∀ β γ : ℕ, β < γ → γ < 19 + 4 → cor M β (19 + 3 + γ) = 0)
-    (hdiag : ∀ β : ℕ, β < 19 + 4 → cor M β (19 + 3 + β) ≠ 0) :
-    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM M) ∧
-      e.runs = [(0, (19 + 4) * (19 + 4) - (19 + 4), 19 + 4),
-        (19 + 4, 19 + 4, (19 + 4) * (19 + 4) - 2 * (19 + 4))] := by
-  sorry
-
-/-- `side_edge_of`: the side-class edge of rank `r` at a factorized pair matrix `C * A * R`. -/
-theorem side_edge_of (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ)
-    (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ)
-    (hB : ∀ i j : Fin (19 + 4), i < j →
-      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ j = 0)
-    (hBd : ∀ i : Fin (19 + 4),
-      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ i ≠ 0)
-    (hA : ∀ i j : Fin (19 + 4), i < j → (R * Te' (h := 19)) i
-      ⟨(19 + 4) * (19 + 4) - (19 + 4) + j.val, by have := two_k_le (h := 19); omega⟩ = 0)
-    (hAd : ∀ i : Fin (19 + 4), (R * Te' (h := 19)) i
-      ⟨(19 + 4) * (19 + 4) - (19 + 4) + i.val, by have := two_k_le (h := 19); omega⟩ ≠ 0)
-    (hM : C * A * R * (C * A * R) = C * A * R) (hAA : A * A = A) (r : ℕ) (hr : A.rank = r)
-    (hrM : (qM (C * A * R)).rank = r)
-    (hcor : 19 + 4 < 2 * r →
-      (A.submatrix (fun l : Fin (19 + 4 - r) => (⟨l.val, by omega⟩ : Fin (19 + 4)))
-        (fun c : Fin (19 + 4 - r) => (⟨19 + 4 - (19 + 4 - r) + c.val, by omega⟩ :
-          Fin (19 + 4)))).det ≠ 0) :
-    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM (C * A * R)) ∧ ∃ rs',
-      e.runs = sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
-      (runPairs (sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r)).length + rs'.length = r := by
-  sorry
 
 /-- `idem_similar`: idempotents of equal rank are similar — PORTED verbatim from the platform
 body (ref/nb_idem_similar_solution.lean, submission 92d6f177 of
@@ -769,6 +657,341 @@ lemma side2_A_diag (γ : Fin (19 + 4)) :
 end Side
 
 end Class
+
+/-! ## N7 toolkit — generic pivot/edge machinery (ported from the fetched platform bodies
+ref/nb_data_edge_solution.lean + ref/nb_aux_edge_of_solution.lean, R6BitNBPiv/R6BitNBEdges). -/
+
+
+variable {K : Type*} [Field K] {a b : ℕ}
+
+/-- Ported nb_aux_edge_of_solution.lean:31-40 (RunsLib.PSwapAux.rank_eq_of_range_rows). -/
+lemma rank_eq_of_range_rows {m m' n : Type*} [Fintype m] [Fintype m'] [Fintype n]
+    {A : Matrix m n K} {B : Matrix m' n K} (h : Set.range A.row = Set.range B.row) :
+    A.rank = B.rank := by
+  rw [Matrix.rank_eq_finrank_span_row, Matrix.rank_eq_finrank_span_row, h]
+
+/-- Ported nb_aux_edge_of_solution.lean:41-48 (RunsLib.PSwapAux.rank_eq_of_range_cols). -/
+lemma rank_eq_of_range_cols {m n n' : Type*} [Fintype m] [Fintype n] [Fintype n']
+    {A : Matrix m n K} {B : Matrix m n' K} (h : Set.range A.col = Set.range B.col) :
+    A.rank = B.rank := by
+  rw [Matrix.rank_eq_finrank_span_cols, Matrix.rank_eq_finrank_span_cols, h]
+
+/-- Ported nb_aux_edge_of_solution.lean:131-141 (RunsLib.RunsAux.rank_submatrix_range). -/
+lemma rank_submatrix_range {ι κ α β γ δ : Type*} [Fintype α] [Fintype β] [Fintype γ] [Fintype δ]
+    (A : Matrix ι κ K) (f : α → ι) (f' : β → ι) (g : γ → κ) (g' : δ → κ)
+    (hf : Set.range f = Set.range f') (hg : Set.range g = Set.range g') :
+    (A.submatrix f g).rank = (A.submatrix f' g').rank := by
+  trans (A.submatrix f' g).rank
+  · apply rank_eq_of_range_rows
+    have h1 : (A.submatrix f g).row = (fun i c => A i (g c)) ∘ f := rfl
+    have h2 : (A.submatrix f' g).row = (fun i c => A i (g c)) ∘ f' := rfl
+    rw [h1, h2, Set.range_comp, Set.range_comp, hf]
+  · apply rank_eq_of_range_cols
+    have h1 : (A.submatrix f' g).col = (fun j r => A (f' r) j) ∘ g := rfl
+    have h2 : (A.submatrix f' g').col = (fun j r => A (f' r) j) ∘ g' := rfl
+    rw [h1, h2, Set.range_comp, Set.range_comp, hg]
+
+/-- Ported nb_data_edge_solution.lean:109-114. -/
+lemma rk_congr (q : Matrix (Fin a) (Fin b) K) {X X' Y Y' : ℕ}
+    (hX : ∀ r : Fin a, r.val < X ↔ r.val < X') (hY : ∀ c : Fin b, Y ≤ c.val ↔ Y' ≤ c.val) :
+    rk q X Y = rk q X' Y' := by
+  unfold rk
+  apply rank_submatrix_range
+  · ext r; simp [hX]
+  · ext c; simp [hY]
+
+/-- Ported nb_data_edge_solution.lean:116-121. -/
+lemma not_isPiv_of_le_row (q : Matrix (Fin a) (Fin b) K) {i : ℕ} (hi : a ≤ i) (j : ℕ) :
+    ¬ IsPiv q i j := by
+  unfold IsPiv
+  have h1 : ∀ Y, rk q (i + 1) Y = rk q i Y := fun Y =>
+    rk_congr q (fun r => by have := r.isLt; omega) (fun _ => Iff.rfl)
+  rw [h1, h1]; omega
+
+/-- Ported nb_data_edge_solution.lean:123-128. -/
+lemma rk_zero_of_le_col (q : Matrix (Fin a) (Fin b) K) (X : ℕ) {Y : ℕ} (hY : b ≤ Y) :
+    rk q X Y = 0 := by
+  unfold rk
+  apply Nat.eq_zero_of_le_zero
+  refine (Matrix.rank_le_card_width _).trans ?_
+  rw [Nat.le_zero, Fintype.card_eq_zero_iff]
+  exact ⟨fun c => by have := c.1.isLt; have := c.2; omega⟩
+
+/-- Ported nb_data_edge_solution.lean:130-135. -/
+lemma not_isPiv_of_le_col (q : Matrix (Fin a) (Fin b) K) (i : ℕ) {j : ℕ} (hj : b ≤ j) :
+    ¬ IsPiv q i j := by
+  unfold IsPiv
+  rw [rk_zero_of_le_col q _ hj, rk_zero_of_le_col q _ hj, rk_zero_of_le_col q _ (by omega),
+    rk_zero_of_le_col q _ (by omega)]
+  omega
+
+/-- Ported nb_data_edge_solution.lean:156-161. -/
+lemma isPiv_lt {q : Matrix (Fin a) (Fin b) K} {i j : ℕ} (h : IsPiv q i j) : i < a ∧ j < b := by
+  by_contra hc
+  rcases not_and_or.1 hc with h' | h'
+  · exact not_isPiv_of_le_row q (by omega) j h
+  · exact not_isPiv_of_le_col q i (by omega) h
+
+/-- **NEW (N7)** — the rows `< X` / cols `≥ Y` submatrix of an upper-zero matrix is zero, so
+its rank vanishes. Replaces the platform `isPiv_iff` route of isPiv_diag_of_lower (platform
+body not fetched; this direct route covers exactly the instances the aux edge needs). -/
+lemma rk_upper_zero {k : ℕ} (C : Matrix (Fin k) (Fin k) K)
+    (hC : ∀ i j : Fin k, (i : ℕ) < (j : ℕ) → C i j = 0) {X Y : ℕ} (hXY : X ≤ Y) :
+    rk C X Y = 0 := by
+  unfold rk
+  have h0 : (C.submatrix (fun r : {r : Fin k // r.val < X} => r.1)
+      (fun c : {c : Fin k // Y ≤ c.val} => c.1)) = 0 := by
+    ext i j
+    simp only [Matrix.submatrix_apply, Matrix.zero_apply]
+    exact hC i.1 j.1 (by have := i.2; have := j.2; omega)
+  rw [h0, Matrix.rank_zero]
+
+/-- **NEW (N7)** — the `(l+1, l)` subblock rank: rows `< l+1`, cols `≥ l` of an upper-zero
+matrix with nonzero `(l,l)` entry has rank 1 (rows `< l` vanish; row `l` is nonzero). -/
+lemma rk_diag_one {k : ℕ} (C : Matrix (Fin k) (Fin k) K)
+    (hC : ∀ i j : Fin k, (i : ℕ) < (j : ℕ) → C i j = 0)
+    (hd : ∀ i : Fin k, C i i ≠ 0) (l : Fin k) : rk C (l.val + 1) l.val = 1 := by
+  have hlk : l.val < k := l.isLt
+  unfold rk
+  set B : Matrix {r : Fin k // r.val < l.val + 1} {c : Fin k // l.val ≤ c.val} K :=
+    C.submatrix (fun r : {r : Fin k // r.val < l.val + 1} => r.1)
+      (fun c : {c : Fin k // l.val ≤ c.val} => c.1) with hB
+  have hrow : ∀ i : {r : Fin k // r.val < l.val + 1}, (i.1 : ℕ) < l.val → B i = 0 := by
+    intro i hi
+    ext j
+    simp only [hB, Matrix.submatrix_apply]
+    exact hC i.1 j.1 (by have := i.2; have := j.2; omega)
+  have hwne : (B ⟨⟨l.val, hlk⟩, by simp⟩ : {c : Fin k // l.val ≤ c.val} → K) ≠ 0 := by
+    intro h0
+    have h2 : B ⟨⟨l.val, hlk⟩, by simp⟩ ⟨⟨l.val, hlk⟩, by simp⟩ =
+        C ⟨l.val, hlk⟩ ⟨l.val, hlk⟩ := by
+      simp only [hB, Matrix.submatrix_apply]
+    rw [h0, Pi.zero_apply] at h2
+    exact (hd ⟨l.val, hlk⟩) h2.symm
+  have hspan : Submodule.span K (Set.range B.row) = K ∙ (B ⟨⟨l.val, hlk⟩, by simp⟩) := by
+    apply le_antisymm
+    · refine Submodule.span_le.2 ?_
+      rintro x ⟨i, rfl⟩
+      simp only [Matrix.row]
+      rcases Nat.lt_or_ge (i.1 : ℕ) l.val with hi | hi
+      · rw [hrow i hi]
+        exact Submodule.zero_mem _
+      · have hiEq : (i.1 : ℕ) = l.val := by have := i.2; omega
+        have hi2 : i = ⟨⟨l.val, hlk⟩, by simp⟩ := Subtype.ext (Fin.ext hiEq)
+        rw [hi2]
+        exact Submodule.mem_span_singleton_self _
+    · intro x hx
+      obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hx
+      exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨⟨l.val, hlk⟩, by simp⟩, rfl⟩)
+  rw [Matrix.rank_eq_finrank_span_row, hspan, finrank_span_singleton hwne]
+
+/-- Ported nb_data_edge_solution.lean:196-215 (rk_block). -/
+lemma rk_block {a b a' b' c0 : ℕ} (C : Matrix (Fin a) (Fin b) K) (B : Matrix (Fin a') (Fin b') K)
+    (ha : a' ≤ a) (hb : c0 + b' = b)
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C ⟨i.val, lt_of_lt_of_le i.isLt ha⟩ ⟨c0 + j.val, by have := j.isLt; omega⟩)
+    {X : ℕ} (hX : X ≤ a') (y : ℕ) : rk C X (c0 + y) = rk B X y := by
+  unfold rk
+  have e : B.submatrix (fun r : {r : Fin a' // r.val < X} => r.1)
+      (fun c : {c : Fin b' // y ≤ c.val} => c.1) =
+      C.submatrix (fun r : {r : Fin a' // r.val < X} => (⟨r.1.val, lt_of_lt_of_le r.1.isLt ha⟩ : Fin a))
+        (fun c : {c : Fin b' // y ≤ c.val} =>
+          (⟨c0 + c.1.val, by have := c.1.isLt; omega⟩ : Fin b)) := by
+    ext r c; simp [hCB]
+  rw [e]
+  apply rank_submatrix_range
+  · ext x
+    simp only [Set.mem_range, Subtype.exists]
+    constructor
+    · rintro ⟨x', hx', rfl⟩
+      exact ⟨⟨x'.val, by omega⟩, hx', rfl⟩
+    · rintro ⟨x', hx', rfl⟩
+      exact ⟨_, hx', rfl⟩
+  · ext x
+    simp only [Set.mem_range, Subtype.exists]
+    constructor
+    · rintro ⟨x', hx', rfl⟩
+      refine ⟨⟨x'.val - c0, by have := x'.isLt; omega⟩, by simp only; omega, ?_⟩
+      ext; simp only; omega
+    · rintro ⟨x', hx', rfl⟩
+      exact ⟨_, by simp only; omega, rfl⟩
+
+/-- Ported nb_data_edge_solution.lean:217-228 (isPiv_block). -/
+lemma isPiv_block {a b a' b' c0 : ℕ} (C : Matrix (Fin a) (Fin b) K) (B : Matrix (Fin a') (Fin b') K)
+    (ha : a' ≤ a) (hb : c0 + b' = b)
+    (hCB : ∀ (i : Fin a') (j : Fin b'),
+      B i j = C ⟨i.val, lt_of_lt_of_le i.isLt ha⟩ ⟨c0 + j.val, by have := j.isLt; omega⟩)
+    {i j : ℕ} (h : IsPiv B i j) : IsPiv C i (c0 + j) := by
+  have hi := (isPiv_lt h).1
+  unfold IsPiv at h ⊢
+  rw [show c0 + j + 1 = c0 + (j + 1) by omega, rk_block C B ha hb hCB (X := i + 1) (by omega),
+    rk_block C B ha hb hCB (X := i + 1) (by omega), rk_block C B ha hb hCB (X := i) (by omega),
+    rk_block C B ha hb hCB (X := i) (by omega)]
+  exact h
+
+/-- **N7 direct port of nb_aux_edge_of_solution.lean:309-330** (isPiv_diag_of_lower): a lower
+triangular matrix with nonzero diagonal pivots on its diagonal. The platform proof consumes
+`isPiv_iff` (Bruhat factorization, body not fetched); this direct route computes the four rk
+values at `(l, l)` from rk_upper_zero/rk_diag_one. -/
+lemma isPiv_diag_of_lower [DecidableEq K] {k : ℕ} (C : Matrix (Fin k) (Fin k) K)
+    (hC : ∀ i j : Fin k, (i : ℕ) < (j : ℕ) → C i j = 0) (hd : ∀ i : Fin k, C i i ≠ 0)
+    (l : Fin k) : IsPiv C l.val l.val := by
+  unfold IsPiv
+  rw [rk_upper_zero C hC (X := l.val + 1) (Y := l.val + 1) (by omega),
+    rk_upper_zero C hC (X := l.val) (Y := l.val) (by omega),
+    rk_upper_zero C hC (X := l.val) (Y := l.val + 1) (by omega),
+    rk_diag_one C hC hd l]
+
+
+/-- Ported ref/nb_side_edge_of_solution.lean:92-95 (qM_fac). -/
+lemma qM_fac (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ) (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)
+    (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ) :
+    qM (C * A * R) = (Te (h := 19) * C) * A * (R * Te' (h := 19)) := by
+  rw [qM_eq]; simp only [Matrix.mul_assoc]
+
+/-- Ported nb_aux_edge_of_solution.lean:527-534 (edge_exact). -/
+theorem edge_exact {m : ℕ} (hm : 1 < m) (q : Matrix (Fin m) (Fin m) ℚ) (hq : q * q = q)
+    (rs : List (ℕ × ℕ × ℕ)) (hok : ∀ ρ ∈ rs, RunOK m ρ) (hnd : (runPairs rs).Nodup)
+    (hp : ∀ x ∈ runPairs rs, IsPiv q x.1 x.2) (hlen : (runPairs rs).length = q.rank) :
+    ∃ e : Edge m, EdgeQ e q ∧ e.runs = rs := by
+  obtain ⟨e, he, rs', h1, -, h3⟩ := DEPort.edge_singles hm q hq rs hok hnd hp
+  have : rs' = [] := List.eq_nil_of_length_eq_zero (by omega)
+  subst this
+  exact ⟨e, he, by simpa using h1⟩
+
+/-! ## PLATFORM STUBS (wave-3 follow-up: replace each by an import at submission)
+
+The ported `flag_gen` body consumes three generic Proved platform children whose statements are
+verbatim below, specialized to h = 19 (ids + fetched bodies committed in ref/):
+
+| stub | platform theorem | id | fetched body |
+|---|---|---|---|
+| `aux_edge_of` | IntMul.Kappa.R6.Bit.NB.aux_edge_of | c973e50d-124a-489e-b0fd-ac3804a68d0b | ref/nb_aux_edge_of_solution.lean:561 |
+| `side_edge_of` | IntMul.Kappa.R6.Bit.NB.side_edge_of | f2e5b569-5d59-4157-8761-498f52b51299 | ref/nb_side_edge_of_solution.lean:196 |
+| `idem_similar` | IntMul.Kappa.R6.Bit.NB.idem_similar | be86910c-e063-49cb-8700-1d314cebf2de | ref/nb_idem_similar_solution.lean:52 |
+
+Porting them is mechanical but pulls a further generic chain (`edge_exact`,
+`isPiv_diag_of_lower`, `isPiv_block`, `isPiv_mid` — the last already a `Platform` stub in
+Pivot.lean); the bodies are in ref/ so no re-fetch is needed.
+
+`aux_edge_of`: the aux-class edge at a generic pair matrix `M` with the Bruhat corner shape. -/
+theorem aux_edge_of (M : Matrix (Pr (19 + 4)) (Pr (19 + 4)) ℚ) (hM : M * M = M)
+    (htr : M.trace = ((19 + 4) * (19 + 3) : ℕ))
+    (hlow : ∀ β γ : ℕ, β < γ → γ < 19 + 4 → cor M β (19 + 3 + γ) = 0)
+    (hdiag : ∀ β : ℕ, β < 19 + 4 → cor M β (19 + 3 + β) ≠ 0) :
+    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM M) ∧
+      e.runs = [(0, (19 + 4) * (19 + 4) - (19 + 4), 19 + 4),
+        (19 + 4, 19 + 4, (19 + 4) * (19 + 4) - 2 * (19 + 4))] := by
+  have hk := two_k_le (h := 19)
+  have hmm : (19 + 4) * (19 + 4) = (19 + 4) * (19 + 3) + (19 + 4) := by ring
+  have hq := qM_idem hM
+  have hrank : (qM M).rank = (19 + 4) * (19 + 4) - (19 + 4) := by
+    have h1 := rank_eq_trace (qM M) hq
+    rw [qM_trace, htr] at h1
+    have := Nat.cast_injective h1
+    omega
+  set Cp : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ := (qM M).submatrix
+    (fun l : Fin (19 + 4) => (⟨l.val, by omega⟩ : Fin ((19 + 4) * (19 + 4))))
+    (fun r : Fin (19 + 4) => (⟨(19 + 4) * (19 + 4) - (19 + 4) + r.val, by omega⟩ :
+      Fin ((19 + 4) * (19 + 4)))) with hCp
+  have hCe : ∀ β γ : Fin (19 + 4), Cp β γ = cor M β.val (19 + 3 + γ.val) := by
+    intro β γ
+    have e : (⟨(19 + 4) * (19 + 4) - (19 + 4) + γ.val, by omega⟩ : Fin ((19 + 4) * (19 + 4))) =
+        ⟨(19 + 4) * (19 + 4) - (2 * 19 + 7) + (19 + 3 + γ.val), by omega⟩ :=
+      Fin.ext (by simp only; omega)
+    rw [hCp, submatrix_apply, e, ← qM_corner M β.val (19 + 3 + γ.val) (by omega) (by omega)]
+  have hCl : ∀ β γ : Fin (19 + 4), β < γ → Cp β γ = 0 := fun β γ hβγ => by
+    rw [hCe]; exact hlow _ _ hβγ γ.isLt
+  have hCd : ∀ β : Fin (19 + 4), Cp β β ≠ 0 := fun β => by rw [hCe]; exact hdiag _ β.isLt
+  have hdet : Cp.det ≠ 0 := by
+    rw [det_of_isLowerTriangular Cp (fun a b hab => hCl a b hab)]
+    exact Finset.prod_ne_zero_iff.2 fun a _ => hCd a
+  have hmid := fun i (h1 : 19 + 4 ≤ i) (h2 : i < (19 + 4) * (19 + 4) - (19 + 4)) =>
+    Platform.isPiv_mid (k := 19 + 4) (by omega) (qM M) hq hrank hdet h1 h2
+  have hcorner : ∀ l : Fin (19 + 4), IsPiv (qM M) l.val ((19 + 4) * (19 + 4) - (19 + 4) + l.val) :=
+    fun l => isPiv_block (qM M) Cp (by omega) (by omega) (fun i j => rfl)
+      (isPiv_diag_of_lower Cp hCl hCd l)
+  refine edge_exact (by omega) (qM M) hq _ ?_ ?_ ?_ ?_
+  · intro ρ hρ
+    simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
+    rcases hρ with rfl | rfl <;> refine ⟨?_, ?_, ?_, ?_⟩ <;> simp only <;> omega
+  · rw [DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.nodup_append]
+    refine ⟨DEPort.nodup_run _ _ _, DEPort.nodup_run _ _ _, ?_⟩
+    intro a ha b hb hab
+    rw [DEPort.mem_run] at ha hb
+    obtain ⟨k, hk1, rfl⟩ := ha
+    obtain ⟨k', hk2, rfl⟩ := hb
+    simp only [Prod.mk.injEq] at hab
+    omega
+  · intro p hp
+    rw [DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.mem_append, DEPort.mem_run, DEPort.mem_run] at hp
+    rcases hp with ⟨k, hk1, rfl⟩ | ⟨k, hk1, rfl⟩
+    · simpa using hcorner ⟨k, hk1⟩
+    · exact hmid _ (by simp only; omega) (by simp only; omega)
+  · rw [hrank, DEPort.runPairs_cons, DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil,
+      List.length_append, DEPort.length_run, DEPort.length_run]
+
+/-- `side_edge_of`: the side-class edge of rank `r` at a factorized pair matrix `C * A * R`. -/
+theorem side_edge_of (C : Matrix (Pr (19 + 4)) (Fin (19 + 4)) ℚ)
+    (A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (R : Matrix (Fin (19 + 4)) (Pr (19 + 4)) ℚ)
+    (hB : ∀ i j : Fin (19 + 4), i < j →
+      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ j = 0)
+    (hBd : ∀ i : Fin (19 + 4),
+      (Te (h := 19) * C) ⟨i.val, by have := two_k_le (h := 19); omega⟩ i ≠ 0)
+    (hA : ∀ i j : Fin (19 + 4), i < j → (R * Te' (h := 19)) i
+      ⟨(19 + 4) * (19 + 4) - (19 + 4) + j.val, by have := two_k_le (h := 19); omega⟩ = 0)
+    (hAd : ∀ i : Fin (19 + 4), (R * Te' (h := 19)) i
+      ⟨(19 + 4) * (19 + 4) - (19 + 4) + i.val, by have := two_k_le (h := 19); omega⟩ ≠ 0)
+    (hM : C * A * R * (C * A * R) = C * A * R) (hAA : A * A = A) (r : ℕ) (hr : A.rank = r)
+    (hrM : (qM (C * A * R)).rank = r)
+    (hcor : 19 + 4 < 2 * r →
+      (A.submatrix (fun l : Fin (19 + 4 - r) => (⟨l.val, by omega⟩ : Fin (19 + 4)))
+        (fun c : Fin (19 + 4 - r) => (⟨19 + 4 - (19 + 4 - r) + c.val, by omega⟩ :
+          Fin (19 + 4)))).det ≠ 0) :
+    ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM (C * A * R)) ∧ ∃ rs',
+      e.runs = sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+      (runPairs (sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r)).length + rs'.length = r := by
+  have hk := two_k_le (h := 19)
+  have hq : qM (C * A * R) * qM (C * A * R) = qM (C * A * R) := qM_idem hM
+  have hrn : r ≤ 19 + 4 := hr ▸ rank_le_width A |>.trans (by simp)
+  obtain ⟨e, he, rs', h1, h2, h3⟩ : ∃ e : Edge ((19 + 4) * (19 + 4)), EdgeQ e (qM (C * A * R)) ∧
+      ∃ rs', e.runs = sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+      (runPairs (sideRuns (19 + 4) ((19 + 4) * (19 + 4)) r)).length + rs'.length =
+        (qM (C * A * R)).rank := by
+    refine DEPort.edge_singles (by nlinarith) _ hq _ ?_ ?_ ?_
+    · intro ρ hρ
+      unfold sideRuns at hρ
+      split_ifs at hρ with hr2
+      · simp only [List.mem_cons, List.mem_nil_iff, or_false] at hρ
+        subst hρ
+        refine ⟨?_, ?_, ?_, ?_⟩ <;> simp only <;> omega
+      · simp at hρ
+    · unfold sideRuns
+      split_ifs
+      · rw [DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil]
+        exact DEPort.nodup_run _ _ _
+      · exact List.nodup_nil
+    · intro p hp
+      unfold sideRuns at hp
+      split_ifs at hp with hr2
+      · rw [DEPort.runPairs_cons, DEPort.runPairs_nil, List.append_nil, DEPort.mem_run] at hp
+        obtain ⟨t, ht, rfl⟩ := hp
+        have hpiv : IsPiv A (19 + 4 - r + t) (19 + 4 - r + t) :=
+          Platform.isPiv_mid (m := 19 + 4) (k := 19 + 4 - r) (by omega) A hAA (by omega) (hcor hr2)
+            (by omega) (by omega)
+        have his := Platform.isPiv_side (by nlinarith) (Te (h := 19) * C) A (R * Te' (h := 19)) hB hBd hA hAd
+          hpiv
+        rw [qM_fac]
+        have key : (19 + 4) * (19 + 4) - r + t =
+            (19 + 4) * (19 + 4) - (19 + 4) + (19 + 4 - r + t) := by
+          generalize (19 + 4) * (19 + 4) = M2 at hk ⊢; omega
+        rw [key]; exact his
+      · rw [DEPort.runPairs_nil] at hp; simp at hp
+  exact ⟨e, he, rs', h1, h2, h3.trans hrM⟩
+
+
 
 
 end
@@ -1396,156 +1619,10 @@ lemma corner_of_pCor (U A : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) (hU : U.de
   rw [sconj_eq U A hU, det_sub_smul] at hne
   exact right_ne_zero_of_mul hne
 
-/-- **Flag basis (general `19`, given a data-corner certificate).** -/
-theorem flag_gen_stair_aux (w₁ v₁ w₂ v₂ : Fin (19 + 4) → ℚ) (hw₁ : v₁ ⬝ᵥ w₁ = 1) (hw₂ : v₂ ⬝ᵥ w₂ = 1)
-    (hcert : (Matrix.of fun i j : Fin (2 * 19 + 7) =>
-      corStairQ ((1 - vecMulVec w₁ v₁) ⊗ₖ (1 - vecMulVec w₂ v₂)) i.val j.val).det ≠ 0)
-    (Lab : Finset ((Fin (19 + 4) → ℚ) × (Fin (19 + 4) → ℚ))) (hLab : ∀ p ∈ Lab, p.2 ⬝ᵥ p.1 = 1)
-    (Pis : Finset (Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)) (hPis : ∀ A ∈ Pis, A * A = A) :
-    ∃ (S : Matrix (Fin ((19 + 4) * (19 + 4))) (Pr (19 + 4)) ℚ)
-      (Sinv : Matrix (Pr (19 + 4)) (Fin ((19 + 4) * (19 + 4))) ℚ),
-      S * Sinv = 1 ∧ Sinv * S = 1 ∧
-      (∀ p ∈ Lab, AuxE (h := 19) (S * ((1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) ⊗ₖ
-          (1 - vecMulVec p.1 p.2)) * Sinv) ∧
-        AuxE (h := 19) (S * ((1 - vecMulVec p.1 p.2) ⊗ₖ (1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)) *
-          Sinv)) ∧
-      (∀ p ∈ Lab, ∀ A ∈ Pis, SideE (h := 19) (S * (A ⊗ₖ vecMulVec p.1 p.2) * Sinv) A.rank ∧
-        SideE (h := 19) (S * (vecMulVec p.1 p.2 ⊗ₖ A) * Sinv) A.rank) ∧
-      (∀ p₁ ∈ Lab, ∀ p₂ ∈ Lab,
-        DataE' (h := 19) (S * ((1 - vecMulVec p₁.1 p₁.2) ⊗ₖ (1 - vecMulVec p₂.1 p₂.2)) * Sinv)) := by
-  classical
-  have hn : 0 < 19 + 4 := by omega
-  let Pall : Rp (19 + 4) :=
-    (XU (n := 19 + 4)).det * (XV (n := 19 + 4)).det *
-      (∏ p ∈ Lab, ∏ β : Fin (19 + 4),
-        (pA XU (vecMulVec p.1 p.2) β (lst 19) * pA XV (vecMulVec p.1 p.2) β (lst 19))) *
-      (∏ A ∈ Pis.filter (fun A => 19 + 4 < 2 * A.rank),
-        (pCor XU A A.rank * pCor XV A A.rank)) *
-      (∏ q ∈ Lab ×ˢ Lab, (pDatStair (vecMulVec q.1.1 q.1.2) (vecMulVec q.2.1 q.2.2) *
-        ∏ l : Fin (19 + 4), pT (vecMulVec q.1.1 q.1.2) (vecMulVec q.2.1 q.2.2) l (lst 19)))
-  have hP : Pall ≠ 0 := by
-    refine mul_ne_zero (mul_ne_zero (mul_ne_zero (mul_ne_zero detU_ne detV_ne) ?_) ?_) ?_
-    · refine prod_ne_zero_iff.2 fun p hp => prod_ne_zero_iff.2 fun β _ => mul_ne_zero ?_ ?_
-      · exact pA_U_ne hn _ (vmv_idem _ _ (hLab p hp)) (lab_trace _ _ (hLab p hp)) β
-      · exact pA_V_ne hn _ (vmv_idem _ _ (hLab p hp)) (lab_trace _ _ (hLab p hp)) β
-    · refine prod_ne_zero_iff.2 fun A hA => ?_
-      rw [Finset.mem_filter] at hA
-      exact mul_ne_zero (pCor_U_ne A (hPis A hA.1) _ rfl hA.2) (pCor_V_ne A (hPis A hA.1) _ rfl hA.2)
-    · refine prod_ne_zero_iff.2 fun q hq => ?_
-      rw [Finset.mem_product] at hq
-      have d1 := hLab _ hq.1
-      have d2 := hLab _ hq.2
-      refine mul_ne_zero ?_ (prod_ne_zero_iff.2 fun l _ => ?_)
-      · exact pDatStair_ne _ _ _ _ (vmv_idem _ _ d1) (vmv_idem _ _ d2) (vmv_idem _ _ hw₁) (vmv_idem _ _ hw₂)
-          ((lab_trace _ _ d1).trans (lab_trace _ _ hw₁).symm)
-          ((lab_trace _ _ d2).trans (lab_trace _ _ hw₂).symm) hcert
-      · exact pT_ne hn _ _ (vmv_idem _ _ d1) (vmv_idem _ _ d2) (lab_trace _ _ d1) (lab_trace _ _ d2) l
-  obtain ⟨f, hf⟩ := exists_eval_ne Pall hP
-  simp only [Pall, map_mul, map_prod, mul_ne_zero_iff, prod_ne_zero_iff, Finset.mem_univ,
-    true_implies] at hf
-  obtain ⟨⟨⟨⟨hdU, hdV⟩, hlab⟩, hpis⟩, hdat⟩ := hf
-  rw [eval_detU] at hdU
-  rw [eval_detV] at hdV
-  set U := Uf f with hUdef
-  set V := Vf f with hVdef
-  -- label facts
-  have labU : ∀ p ∈ Lab, (∀ β, (Uᵀ *ᵥ p.1) β ≠ 0) ∧ (U⁻¹ *ᵥ p.2) ⟨19 + 3, by omega⟩ ≠ 0 := by
-    intro p hp
-    have := fun β => lab_of_sconj U hdU p.1 p.2 β (lst 19) (by rw [← eval_pA_U]; exact (hlab p hp β).1)
-    refine ⟨fun β => (this β).1, ?_⟩
-    have := (this 0).2; rwa [lst_eq] at this
-  have labV : ∀ p ∈ Lab, (∀ β, (Vᵀ *ᵥ p.1) β ≠ 0) ∧ (V⁻¹ *ᵥ p.2) ⟨19 + 3, by omega⟩ ≠ 0 := by
-    intro p hp
-    have := fun β => lab_of_sconj V hdV p.1 p.2 β (lst 19) (by rw [← eval_pA_V]; exact (hlab p hp β).2)
-    refine ⟨fun β => (this β).1, ?_⟩
-    have := (this 0).2; rwa [lst_eq] at this
-  have one_c : ∀ W : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ, W.det ≠ 0 → Wᵀ * 1 * W⁻¹ᵀ = 1 :=
-    fun W hW => by rw [Matrix.mul_one, conj_one W hW]
-  refine ⟨Sb U V, Sbi U V, (Sb_inv U V hdU hdV).1, (Sb_inv U V hdU hdV).2, ?_, ?_, ?_⟩
-  · intro p hp
-    obtain ⟨hxU, hyU⟩ := labU p hp
-    obtain ⟨hxV, hyV⟩ := labV p hp
-    constructor
-    · rw [Sb_conj, one_c U hdU, conj_sub_vmv V hdV]
-      exact aux1_edge _ _ (conj_dot V hdV _ _ (hLab p hp)) (fun β _ => hxV β) hyV
-    · rw [Sb_conj, one_c V hdV, conj_sub_vmv U hdU]
-      exact aux2_edge _ _ (conj_dot U hdU _ _ (hLab p hp)) (fun β _ => hxU β) hyU
-  · intro p hp A hA
-    obtain ⟨hxU, hyU⟩ := labU p hp
-    obtain ⟨hxV, hyV⟩ := labV p hp
-    have hcorU : 19 + 4 < 2 * A.rank → _ := fun hr => corner_of_pCor U A hdU A.rank (by
-      rw [← eval_pCor_U]; exact (hpis A (Finset.mem_filter.2 ⟨hA, hr⟩)).1)
-    have hcorV : 19 + 4 < 2 * A.rank → _ := fun hr => corner_of_pCor V A hdV A.rank (by
-      rw [← eval_pCor_V]; exact (hpis A (Finset.mem_filter.2 ⟨hA, hr⟩)).2)
-    constructor
-    · rw [Sb_conj, conj_vmv]
-      exact side1_edge _ _ (conj_dot V hdV _ _ (hLab p hp)) (fun β _ => hxV β) hyV _
-        (conj_idem U hdU A (hPis A hA)) A.rank (conj_rank U hdU A) hcorU
-    · rw [Sb_conj, conj_vmv]
-      exact side2_edge _ _ (conj_dot U hdU _ _ (hLab p hp)) (fun β _ => hxU β) hyU _
-        (conj_idem V hdV A (hPis A hA)) A.rank (conj_rank V hdV A) hcorV
-  · intro p₁ hp₁ p₂ hp₂
-    obtain ⟨hx1, hy1⟩ := labU p₁ hp₁
-    obtain ⟨hx2, hy2⟩ := labV p₂ hp₂
-    have hq := hdat (p₁, p₂) (Finset.mem_product.2 ⟨hp₁, hp₂⟩)
-    obtain ⟨hD, hT⟩ := hq
-    rw [Sb_conj, conj_sub_vmv U hdU, conj_sub_vmv V hdV]
-    -- N5-2 swap (fetched :1049): platform `data_edge` (r6 frame) -> `data_edge_stair`
-    -- (N5-1, Signature.lean:197) whose pivot hypothesis is N2d `isPiv_stair_lower`
-    -- (Pivot.lean:310). It needs the STAIRCASE-frame corner det, supplied below.
-    have h₁' : (U⁻¹ *ᵥ p₁.2) ⬝ᵥ (Uᵀ *ᵥ p₁.1) = 1 := conj_dot U hdU _ _ (hLab _ hp₁)
-    have h₂' : (V⁻¹ *ᵥ p₂.2) ⬝ᵥ (Vᵀ *ᵥ p₂.1) = 1 := conj_dot V hdV _ _ (hLab _ hp₂)
-    refine data_edge_stair _ _ _ _ h₁' h₂'
-      (isPiv_stair_lower _ _ _ _ h₁' h₂' (mul_ne_zero (hx1 _) (hx2 _)) (mul_ne_zero hy1 hy2) ?_ ?_)
-    · intro l _ _
-      have t := hT ⟨l, by omega⟩
-      rw [eval_pT, ← hUdef, ← hVdef, sconj_eq U _ hdU, sconj_eq V _ hdV, conj_vmv, conj_vmv,
-        Matrix.smul_apply, Matrix.smul_apply, vecMulVec_apply, vecMulVec_apply, smul_eq_mul,
-        smul_eq_mul, lst_eq] at t
-      intro h0
-      apply t
-      linear_combination (U.det * V.det) * h0
-    · have t := hD
-      rw [eval_pDatStair_of f _ _ _ _ (sconj_eq U _ hdU) (sconj_eq V _ hdV), ← hUdef,
-        ← hVdef, conj_vmv, conj_vmv] at t
-      exact right_ne_zero_of_mul t
-
 end Main
 
 end
 
 end N52
-
-/-- **N5-2** — `flagBasis_stair`: verbatim mirror of flagBasis_sol_aux
-(nb_flagBasis_solution.lean:184-198) with the data clause `DataE (h := 19)` →
-`DataE' (h := 19)` and the internal witness qx*/qy*/data_cert → stairQ*/stair_data_cert.
-Upstream consumption (FB0_ex, accepted_bitNetR6_mom.lean:2289) keeps the SAME signature.
-Route: flag_gen skeleton (generic, nb_flag_gen_solution.lean:956-971) + data_edge_stair +
-stair_data_cert (N3) + stairQxy1/2 (N3-1/2). -/
-theorem flagBasis_stair
-    (Lab : Finset ((Fin (19 + 4) → ℚ) × (Fin (19 + 4) → ℚ)))
-    (hLab : ∀ p ∈ Lab, p.2 ⬝ᵥ p.1 = 1)
-    (Pis : Finset (Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ))
-    (hPis : ∀ A ∈ Pis, A * A = A) :
-    ∃ (S : Matrix (Fin ((19 + 4) * (19 + 4))) (Pr (19 + 4)) ℚ)
-      (Sinv : Matrix (Pr (19 + 4)) (Fin ((19 + 4) * (19 + 4))) ℚ),
-      S * Sinv = 1 ∧ Sinv * S = 1 ∧
-      (∀ p ∈ Lab, AuxE (h := 19) (S * ((1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ) ⊗ₖ
-          (1 - vecMulVec p.1 p.2)) * Sinv) ∧
-        AuxE (h := 19) (S * ((1 - vecMulVec p.1 p.2) ⊗ₖ
-          (1 : Matrix (Fin (19 + 4)) (Fin (19 + 4)) ℚ)) * Sinv)) ∧
-      (∀ p ∈ Lab, ∀ A ∈ Pis, SideE (h := 19) (S * (A ⊗ₖ vecMulVec p.1 p.2) * Sinv) A.rank ∧
-        SideE (h := 19) (S * (vecMulVec p.1 p.2 ⊗ₖ A) * Sinv) A.rank) ∧
-      (∀ p₁ ∈ Lab, ∀ p₂ ∈ Lab,
-        DataE' (h := 19) (S * ((1 - vecMulVec p₁.1 p₁.2) ⊗ₖ (1 - vecMulVec p₂.1 p₂.2)) *
-          Sinv)) := by
-  -- The r6 delegation (nb_flagBasis_solution.lean:198)
-  --   `flag_gen (h := 19) qx1 qy1 qx2 qy2 qxy1 qxy2 data_cert Lab hLab Pis hPis`
-  -- becomes the ported body with the staircase witness. The one hypothesis the port adds over
-  -- the r6 body is `hcert`, supplied here by N3's kernel-checked `stair_data_cert`
-  -- (Cert.lean:213) — the same role `data_cert` plays in the r6 body
-  -- (nb_flagBasis_solution.lean:121-147).
-  exact N52.flag_gen_stair_aux stairQX1 stairQY1 stairQX2 stairQY2 stairQxy1 stairQxy2
-    stair_data_cert Lab hLab Pis hPis
 
 end StaircasePort.Stair
