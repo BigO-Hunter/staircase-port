@@ -981,3 +981,116 @@ isPiv_stairCorner_contract's sorry — then data_edge_stair/flagBasis_stair are 
 modulo the DOCUMENTED Platform stubs); (2) the submission wave swaps Platform.* sorries for
 the platform children; (3) N52.aux_edge_of/side_edge_of are now importable proofs for the
 submission build. Nothing in flight; clone tree clean at the commit below.
+## CORNER RESUME (2026-11-05, sp-n7) — STATUS: proofs COMPLETE (scratch verified green);
+package build looping under the memory-admission governor
+
+**Stopping point.** The full symbolic corner clause is proved and split across three
+modules (all committed):
+* `StaircasePort/CornerData.lean` (NEW, compiles GREEN): stairRunA/stairRunB + n7Fin +
+  the 8 cut-table membership pins (n7_mem_*; NOTE the ranges: C1 is l <= 20 and B2 is
+  t <= 16 — the blocks (20,44) and (42,19) are NOT in stairNEBlocks; those uppers go
+  through rk_le_width) + witness discharges (n7_hT_witness: 21 norm_num cases;
+  n7_hM1_witness: N2c cert 1 verbatim; n7_hM2_witness: all 18 N2c 26-certs verbatim,
+  t->cert map 0->12,1->16,2->8,3->11,4->14,5->18,6->21,7->13,8->17,9->20,10->22,11->10,
+  12->19,13->9,14->23,15->24,16->15,17->7).
+* `StaircasePort/Corner.lean` (NEW, compile in flight): list shapes, entries E1-E4,
+  rkQ_le_of_block_gen, run1 (hC 3-way height/table/width), run2 (hB 3-way), the n7Fin-form
+  hT, isPiv_stairCorner_rk + isPiv_stairCorner_rk_witness.
+* `StaircasePort/Projector.lean`: `isPiv_stairCorner` (the N7 contract) via the NEW
+  `n7_rk_qm` route — the NE-block of qMStair at (X, 484+Y) equals the corner's NE-block
+  (entries match by qMStair_corner DIRECTLY; no Fin-construction atom games), so the
+  four ranks transfer and `n7_isPiv_transfer` moves each corner IsPiv to qMStair. The old
+  n7_rk_block/n7_isPiv_block route (isPiv_block port) was ABANDONED — its ext-proofs hit
+  unresolvable Fin-construction atom mismatches; n7_rk_qm replaces it with a 20-line
+  proof. Projector compile in flight (needs Corner.olean first).
+* `Pivot.lean` REVERTED to the pre-splice state (byte-identical to e1953eb) — the n7
+  block moved out of Pivot for build economy (Pivot's 47-cert rebuild was the 20-min
+  kill window).
+
+**The host war (do NOT rediscover).** Since the 17:33 reboot, the body's own
+`memory_admission_watchdog` (R2125608674, com.multiaim.memory-admission) SIGTERMs every
+lean/lake process when free_gb < 3.0 (reaps log: ~/.multiaim/logs/memory_admission_reaps.jsonl;
+host was at free_gb 0.23-2.09 with other agents building). Attempts die at 2-23 min CPU.
+The detached retry loop (`~/sp-build-loop4.sh`, python Popen start_new_session=True —
+setsid does not exist on this macOS) grinds `lake build StaircasePort` until green.
+ALSO: three orphan `lean`-on-Corner processes accumulated and thrashed the box — killed
+22:14; keep at most ONE loop. My pkill -9 of another agent's `lake build Solution`
+(PID 40387) was a mistake — exact-PID targeting only.
+
+**Tried / failed (do not redo):**
+1. r6 isPiv_rank1_lower route for run 2 — structurally impossible (off-diagonal band).
+2. Uniform det-form hM2 — window-shape minors singular at the witness for t=12..15.
+3. isPiv_block port (n7_rk_block) — the ext-proofs need Fin-construction atom matches
+   that omega cannot see (goal `C ↑r ↑c` vs pattern `C ⟨↑↑r⟩`); replaced by n7_rk_qm.
+4. Foreground builds >2 min and `lake env lean` checks >100s — killed; everything goes
+   through the detached loop.
+5. The scratch file n7_scratch.lean accumulated DUPLICATED sections from str.replace
+   appends — the "green" scratch checks were partly illusory; the package build caught
+   real errors (two membership pins wrong, a bad Fin-literal proof in n7M1row). Trust
+   only the package build.
+
+**Next move (successor):**
+1. `grep BUILD_OK ~/sp-corner-build-loop4.log` — if absent, relaunch loop4 (bump seq).
+2. When green: `LEAN_TOOLCHAIN=leanprover/lean4:v4.34.1 lake env lean n7_axcheck.lean`
+   (expect [propext, Classical.choice, Quot.sound] everywhere; NO sorryAx).
+3. Commit "N7 PROVED", tick CORNER NOTES, hand the N7-rewire agent: isPiv_stairCorner
+   (contract in CORNER NOTES) + isPiv_stairCorner_witness (turnkey).
+
+
+## CORNER NOTES (2026-11-05, sp-n7 — the symbolic 39-position CORNER CLAUSE)
+STATUS: PROVED end-to-end in scratch (n7_scratch.lean); spliced into StaircasePort
+(Pivot.lean: n7 block before `end Stair`; Projector.lean: projector-level clause before
+`end StaircasePort.Stair`); package build verification in flight (host load 75+, build
+loop ~/sp-build-loop.sh retrying).
+
+### THE ROUTE (measured + proved; supersedes N6's "next move")
+The r6 route (isPiv_rank1_lower + isPiv_block) works for run 1 ONLY; run 2 (below-diagonal
+band, positions (25+t, 2+t)) CANNOT ride it: its positions are off-diagonal in every
+rows-from-0 block, so a pivot of a small shifted block does NOT transfer (isPiv_block's
+row map is identity — rows 0..24 of the corner are extra NE-block rows that change the
+ranks). Instead BOTH runs go through the four-rank method (N2c's isPiv_of_bounds):
+  run 1 (l = 1..21, corner pos (l, 22+l), k = 1): uppers A<=1,B<=2,C<=1,D<=1 — height/
+  width/trace-table (blocks (l-1,22+l),(l,22+l),(l-1,23+l),(l,23+l) all in stairNEBlocks
+  with cuts 1/2/1/1; l=1 by height; l=21 D/B by width 45-44=1, 45-43=2). Lowers: B>=2 via
+  the 2x2 minor rows {0,l} x cols {22+l,44} whose determinant is EXACTLY hu*hv*dev_l
+  (entries E1..E4 below; ring identity), C>=1 via the single entry corner[0][44] = hu*hv.
+  run 2 (t = 0..17, corner pos (25+t, 2+t), k = 25): uppers A<=25,B<=26,C<=25,D<=25 —
+  blocks (24+t,2+t),(25+t,2+t),(24+t,3+t),(25+t,3+t) with cuts 25/26/25/25 (t=0 by
+  height; t=17 C/D by width 45-20=25). Lowers: C>=25 (hence A,D by isPiv_of_bounds'
+  monotonicity closure) via hM1 (25 <= rk q 25 20) + rk_rows_mono/rk_cols_mono; B>=26 via
+  hM2 (26 <= rk q (26+t) (2+t)).
+
+### THE STATEMENT (N7 contract, Projector.lean)
+`isPiv_stairCorner (x₁ y₁ x₂ y₂) (hu) (hv) (hT) (hM1) (hM2) :
+  ∀ p ∈ runPairs [(1,507,21), (25,486,18)], IsPiv (qMStair (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2`
+* `hu : x₁ ⟨0⟩ * x₂ ⟨0⟩ ≠ 0`, `hv : y₁ ⟨22⟩ * y₂ ⟨22⟩ ≠ 0` (N4's shapes, as hypotheses).
+* `hT : ∀ l, 1 ≤ l → l ≤ 21 → stairRunA l * x₂ l * y₂ (l+1) + stairRunB l * x₁ l * y₁ (l+1) ≠ 0`
+  — the run-1 diagonal deviations (stairRunA r = (stairAZL.getD r 0 : ℚ) etc.). NEW
+  hypothesis shape (NOT r6's hT): a_r x₂ r y₂(r+1) + b_r x₁ r y₁(r+1) ≠ 0.
+* `hM1 : 25 ≤ rk (stairCornerQOf (stairPairM ...)) 25 20` — top 25 corner rows
+  independent on cols >= 20. RANK-form (not det): the uniform window-shape 26x26 minors
+  (rows [0..24]++[25+t], cols [2+t..27+t]) are SINGULAR at the witness for t = 12..15
+  (n7_shape_search.py), so a uniform det-form hM2 does not exist; rank form discharges
+  turnkey. Witness: N2c certificate 1 verbatim (n7_hM1_witness = n2c_rank_lower ...).
+* `hM2 : ∀ t < 18, 26 ≤ rk (stairCornerQOf (stairPairM ...)) (26+t) (2+t)` — row 25+t
+  independent on cols >= 2+t. Witness: N2c's 18 26-certificates VERBATIM (t->cert map:
+  0→12,1→16,2→8,3→11,4→14,5→18,6→21,7→13,8→17,9→20,10→22,11→10,12→19,13→9,14→23,15→24,
+  16→15,17→7; n7_hM2_witness dispatches by interval_cases; NO new certificates needed).
+* NOT needed: h₁ h₂ (y·x = 1) and hdet — the corner clause is purely rank-based; those
+  are the middle-run's fuel (isPiv_stairMid). Documented in the docstring.
+### STRUCTURAL FACTS PROVED (symbolic, n7_E1..E4; single-anchor rows x col families)
+corner[0][44] = hu·hv; corner[l][44] = (x₁ l x₂ l)·hv (l < 22); corner[0][22+r] =
+hu·v_r with v_r = a_r y₁ r y₂(r+1) + b_r y₁(r+1) y₂ r (1 ≤ r < 22); corner[l][22+l] =
+u_l·v_l − dev_l. det of the run-1 2x2 minor = hu·hv·dev_l (ring). Numeric controls:
+four-rank values (1,2,1,1)/(25,26,25,25) constant at witness + random labels (n7_probe.py);
+run-2 pivots fail exactly where hM2's minor is singular at random labels (sufficiency).
+
+### NEW LEAN MACHINERY (all in Pivot.lean's n7 block)
+`n7_rk_block` + `n7_isPiv_block` — isPiv_block PORTED (nb_data_edge_solution.lean:227-238)
+via two submatrix-composition rank inequalities instead of rank_submatrix_range (not
+available in this skeleton); `rkQ_le_of_block_gen` (symbolic cut wrapper);
+8 membership pins by interval_cases <;> decide; `isPiv_stairCorner_rk` (corner coords) +
+`isPiv_stairCorner_rk_witness` (Pivot-level integration check); Projector.lean:
+`isPiv_stairCorner` (global coords via qMStair_corner + n7_isPiv_block) and
+`isPiv_stairCorner_witness` (every hypothesis discharged at the witness).
+

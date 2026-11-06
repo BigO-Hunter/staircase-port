@@ -12,5 +12,6 @@ import StaircasePort.Pivot
 import StaircasePort.Nonvan
 import StaircasePort.Signature
 import StaircasePort.Top
+import StaircasePort.CornerData
+import StaircasePort.Corner
 import StaircasePort.Projector
-import StaircasePort.Rewire
