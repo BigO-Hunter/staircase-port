@@ -297,14 +297,20 @@ def emit(W, D, S, rk, ylev, xd, cs, hist_plain, BITR7, kinds):
     stream('XD', [x for row in xd for x in row], 5)
     stream('XSN', [n for n, us in S.xs], 16)
     stream('XSU', [u for _, us in S.xs for u in us], 16)
+    # big clear tables become packed streams too (deep List literals exceed maxRecDepth)
+    stream('WOUTC', [o[0] for o in W['outputs']], 16)
+    stream('WOUTT', [x for o in W['outputs'] for x in o[1]], 16)
+    stream('WOUTN', [o[2] for o in W['outputs']], 16)
+    stream('LDN', [n for n, _, _ in D['late_dims']], 16)
+    stream('LDLEN', [len(lt) for _, lt, _ in D['late_dims']], 16)
+    stream('LDLT', [x for _, lt, _ in D['late_dims'] for x in lt], 16)
+    stream('LDD', [d for _, _, d in D['late_dims']], 16)
 
     clear = dict(ret=sorted(D['ret']),
                  retnode=sorted((int(c), n) for c, n in W['retained']),
                  hist_stair=sorted(cs['hist'].items()), hist_plain=hist_plain,
                  ranks=sorted(rk.items()),
                  ranks_base=sorted((int(r), c) for r, c in W['claimed']['rk'].items()),
-                 late_dims=[[n, list(lt), d] for n, lt, d in D['late_dims']],
-                 out=[[o[0], list(o[1]), o[2]] for o in W['outputs']],
                  bitR7=[list(p) for p in BITR7])
     json.dump(dict(streams={k: dict(width=wd, fields=n, limbs=[hex(l) for l in limbs])
                             for k, (wd, n, limbs) in streams.items()}, clear=clear),
@@ -372,10 +378,6 @@ end StaircasePort.D2
     ranks_count = sum(c for _, c in ranks); ranks_sum = sum(r * c for r, c in ranks)
     rb_count = sum(c for _, c in ranks_base)
     lit = lambda pairs: '[' + ', '.join('(%d, %d)' % tuple(p) for p in pairs) + ']'
-    ld_lit = '[\n' + ',\n'.join('  (%d, [%s], %d)' % (n, ', '.join(map(str, lt)), d)
-                                for n, lt, d in clear['late_dims']) + ']'
-    out_lit = '[\n' + ',\n'.join('  (%d, [%s], %d)' % (c, ', '.join(map(str, T)), n)
-                                 for c, T, n in clear['out']) + ']'
     corner = [h - 2, h - 5] + [1] * 6
     corner_plain = [h - 2] + [1] * (h + 1)
 
@@ -405,12 +407,15 @@ set_option relaxedAutoImplicit false
 Everything the Lean QHNet construction of `bitNetR7_mom` consumes, emitted from the frozen
 producer chain at pin c05adfe and pre-verified offline (extract/d2_regen.py PND-GATE — the
 GAP-9 lesson): the stage-1 word `d2OPS` with the slot schedule (`d2HOLDLENS`/`d2HOLD`/
-`d2START`/`d2RET`/`d2OUT`), the deferred readouts (R = 28866 aux slots; 11565 deferred frames
-`d2SIGMA` of primitive integer bases in readout order `d2READOUT`; the other slots read at F0,
-corner rank h), the V-leaf starts (`d2VLEAFSLOTS`/`d2VLEAFSTART`), the X_S chains
-(`d2XSN`/`d2XSU`), the deferred V gates (`d2LATEV`), all frame dimensions (`d2NODEDIMS` 64042,
-`d2LATEDIMS`), the witness side data (`d2ARGS`, `d2JKEYS`/`d2J`, `d2LEAF`, `d2LINKS`,
+`d2START`/`d2RET`/`d2WOUTC`/`d2WOUTT`/`d2WOUTN`), the deferred readouts (R = 28866 aux slots;
+11565 deferred frames `d2SIGMA` of primitive integer bases in readout order `d2READOUT`; the
+other slots read at F0, corner rank h), the V-leaf starts (`d2VLEAFSLOTS`/`d2VLEAFSTART`), the
+X_S chains (`d2XSN`/`d2XSU`), the deferred V gates (`d2LATEV`), all frame dimensions
+(`d2NODEDIMS` 64042; late-copy intersections `d2LDN`/`d2LDLEN`/`d2LDLT`/`d2LDD` keyed in
+late_dims order), the witness side data (`d2ARGS`, `d2JKEYS`/`d2J`, `d2LEAF`, `d2LINKS`,
 `d2FLAG`, `d2LATE`), and the hist-assembly inputs (`d2YLEV` level bitmaps, `d2XD` deltas).
+The two big witness tables (outputs, late_dims) are packed streams rather than `List` literals:
+a 5313-deep nested `List` literal exceeds Lean's parser recursion even at `maxRecDepth 20000`.
 
 Signed conventions: `d2SIGMA` ([-13,10]), `d2VLEAFSTART` ([-10,10]) and `d2FLAG` ([-50,50])
 fields are bias-encoded (+16 / +16 / +128) so that every stored field is a nonneg Nat; decoders
@@ -476,10 +481,6 @@ def d2CORNERPLAIN : List ℕ := %s
 def d2RET : List (ℕ × ℕ) := %s
 /-- Retained node per centre (witness_23 'retained', 23 pairs). -/
 def d2RETNODE : List (ℕ × ℕ) := %s
-/-- Late-copy intersection dims (deferred_23 'late_dims', 1396 triples (n, lt, dim)). -/
-def d2LATEDIMS : List (ℕ × List ℕ × ℕ) := %s
-/-- Outputs (c, T, node): witness_23 'outputs', 5313 triples, out(c,T) = {S : S ∩ T = {c}}. -/
-def d2WOUT : List (ℕ × List ℕ × ℕ) := %s
 
 /-! ## Hist assembly outputs (dr.histogram over the regenerated inputs) -/
 
@@ -510,8 +511,8 @@ theorem d2RanksBaseCount_eq : d2RanksBaseCount = %d := by decide
 %s
 
 end StaircasePort.D2
-''' % (', '.join(str(x) for x in corner), ', '.join(str(x) for x in corner_plain),
-       lit(clear['ret']), lit(clear['retnode']), ld_lit, out_lit,
+''' % ('[%s]' % ', '.join(str(x) for x in corner), '[%s]' % ', '.join(str(x) for x in corner_plain),
+       lit(clear['ret']), lit(clear['retnode']),
        lit(hist), lit(ranks), lit(ranks_base), ranks_count, rb_count,
        '\n\n'.join(spot))
     open(os.path.join(SP, 'D2Data.lean'), 'w').write(root)

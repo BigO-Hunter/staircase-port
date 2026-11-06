@@ -1,60 +1,67 @@
-[    5s] producer chain: h=23 v=1771 R=28866 ops=82983 readout=11565 vstart=11374 late_v=5116
-[    5s] PND A1 hist(staircase) == Jain.bitR7 (37 entries)              PASS 37 entries
-[    5s] PND A2 staircase rankSum == 57403754177                        PASS got 57403754177
-[    5s] PND A3 staircase childCount == 1905413587                      PASS got 1905413587
-[    5s] PND A4 staircase W == 2N+2vR == 108516254                      PASS got 108516254
-[    5s] PND A5 plain a_b == D.claimed.a_b == witness const             PASS got 12599/200000000
-[    5s] PND A6 staircase a_b == witness const                          PASS got 31987/500000000
-[    5s] PND A7 kappa(plain) == claim                                   PASS 6299103187973/100000000000000000
-[    5s] PND A8 kappa(staircase) == claim                               PASS 1599247689723/25000000000000000
-[    5s] PND A9 D.claimed.kappa == plain kappa                          PASS 6299103187973/100000000000000000
-[    5s] PND A10 s == W*m - N + L (both corners)                        PASS L=1792252
-[    5s] PND B1 ops well-formed ({'src': 11374, 'add': 62271, 'fan': 9338}) PASS 82983 ops
-[    5s] PND B2 readout_order bijective in [0,R)                        PASS 11565 deferred of R=28866
-[    5s] PND B3 vleaf_slots bijective, one per V gate                   PASS 11374 V-gate slots over 1771 leaves
-[    5s] PND B4 hold: R slot lines                                      PASS 28866 lines
-[    5s] PND B5 node_dims keys == 1..64042, dims 1..22                  PASS 64042
-[    5s] PND B6 late_dims == all late-copy suffix keys, dims 1..22      PASS 1396
-[    5s] PND B7 sigma rows are length-h integer vectors                 PASS 209688 rows
-[    6s] PND B8 sigma values integral in [-15,15] (5-bit bias-16 encodable) PASS range [-13,10]
-[    7s] PND B9 vleaf_start values integral in [-15,15] (5-bit bias-16 encodable) PASS range [-10,10]
-[    7s] PND B10 corner ranks == sigma frame-len distribution           PASS 23 classes
-[    7s] PND B11 xs_order chains                                        PASS 1771 chains, lens {7: 550, 9: 66, 6: 1155}
-[    7s] PND B12 xdata deltas sum to h-1 (producer assert)              PASS 1771 leaves
-[    7s] PND B13 W.claimed.R == D.R == 28866                            PASS 28866
-[    7s] PND B14 leaf == combinations(range(23),3)                      PASS 1771 leaves
-[    7s] PND B15 j: lifted additions with levels 14..21                 PASS 56460 entries
-[    7s] PND B16 links well-formed                                      PASS 38741 links
-[    7s] PND B17 outputs == 3v with c in T                              PASS 5313
-[    7s] PND B18 flag 23x23 ints |v|<=50                                PASS 529 entries
-[    7s] PND B19 design-B chain ranks: 21 classes (chains monotone by construction) PASS count=162678 rankSum=454230
-[    7s] PND B20 ylev covers all v targets, levels 1..22                PASS 1771 targets
-[    7s] PND C1 base compile R == claim (check_lifted B)                PASS 
-[    7s] PND C2 base chain-rank hist == claim (check_lifted hist_ok)    PASS 
-[    7s] PND C3 check_frames battery ALL PASS (exact dims re-derived in-clone) PASS 0 FAIL lines
-[   12s] stream OPS          width=16 fields=328712   limbs=81 OK
-[   12s] stream HOLDLENS     width= 8 fields=28866    limbs=4 OK
-[   15s] stream HOLD         width=16 fields=153408   limbs=38 OK
-[   17s] stream START        width=16 fields=84827    limbs=21 OK
-[   17s] stream READOUT      width=16 fields=11565    limbs=3 OK
-[   52s] stream SIGMA        width= 5 fields=4822824  limbs=368 OK
-[   52s] stream VLEAFSLOTS   width=16 fields=11374    limbs=3 OK
-[   70s] stream VLEAFSTART   width= 5 fields=2617354  limbs=200 OK
-[   70s] stream LATEV        width=16 fields=5116     limbs=2 OK
-[   71s] stream NODEDIMS     width= 5 fields=64042    limbs=5 OK
-[   74s] stream ARGS         width=32 fields=128084   limbs=63 OK
-[   75s] stream JKEYS        width=16 fields=56460    limbs=14 OK
-[   75s] stream J            width= 5 fields=56460    limbs=5 OK
-[   75s] stream LEAF         width= 5 fields=5313     limbs=1 OK
-[   77s] stream LINKS        width=16 fields=116223   limbs=29 OK
-[   77s] stream FLAG         width= 8 fields=529      limbs=1 OK
-[   77s] stream LATE         width=16 fields=5008     limbs=2 OK
-[   77s] stream YLEV         width=32 fields=1771     limbs=1 OK
-[   77s] stream XD           width= 5 fields=7074     limbs=1 OK
-[   77s] stream XSN          width=16 fields=1771     limbs=1 OK
-[   77s] stream XSU          width=16 fields=11374    limbs=3 OK
-[   77s] emitted StaircasePort/D2Data0.lean: ['ARGS', 'START', 'VLEAFSLOTS', 'VLEAFSTART'] (287 limbs)
-[   77s] emitted StaircasePort/D2Data1.lean: ['FLAG', 'HOLDLENS', 'J', 'JKEYS', 'LATE', 'LATEV', 'LEAF', 'LINKS', 'READOUT', 'SIGMA'] (429 limbs)
-[   77s] emitted StaircasePort/D2Data2.lean: ['HOLD', 'NODEDIMS', 'OPS', 'XD', 'XSN', 'XSU', 'YLEV'] (130 limbs)
-[   78s] emitted StaircasePort/D2Data.lean (root: geometry + clear tables + pins + 27 spot pins)
-[   78s] D2 REGEN COMPLETE: 33/33 verdicts PASS
+[    2s] producer chain: h=23 v=1771 R=28866 ops=82983 readout=11565 vstart=11374 late_v=5116
+[    2s] PND A1 hist(staircase) == Jain.bitR7 (37 entries)              PASS 37 entries
+[    2s] PND A2 staircase rankSum == 57403754177                        PASS got 57403754177
+[    2s] PND A3 staircase childCount == 1905413587                      PASS got 1905413587
+[    2s] PND A4 staircase W == 2N+2vR == 108516254                      PASS got 108516254
+[    2s] PND A5 plain a_b == D.claimed.a_b == witness const             PASS got 12599/200000000
+[    2s] PND A6 staircase a_b == witness const                          PASS got 31987/500000000
+[    2s] PND A7 kappa(plain) == claim                                   PASS 6299103187973/100000000000000000
+[    2s] PND A8 kappa(staircase) == claim                               PASS 1599247689723/25000000000000000
+[    2s] PND A9 D.claimed.kappa == plain kappa                          PASS 6299103187973/100000000000000000
+[    2s] PND A10 s == W*m - N + L (both corners)                        PASS L=1792252
+[    2s] PND B1 ops well-formed ({'src': 11374, 'add': 62271, 'fan': 9338}) PASS 82983 ops
+[    2s] PND B2 readout_order bijective in [0,R)                        PASS 11565 deferred of R=28866
+[    2s] PND B3 vleaf_slots bijective, one per V gate                   PASS 11374 V-gate slots over 1771 leaves
+[    2s] PND B4 hold: R slot lines                                      PASS 28866 lines
+[    2s] PND B5 node_dims keys == 1..64042, dims 1..22                  PASS 64042
+[    2s] PND B6 late_dims == all late-copy suffix keys, dims 1..22      PASS 1396
+[    2s] PND B7 sigma rows are length-h integer vectors                 PASS 209688 rows
+[    2s] PND B8 sigma values integral in [-15,15] (5-bit bias-16 encodable) PASS range [-13,10]
+[    2s] PND B9 vleaf_start values integral in [-15,15] (5-bit bias-16 encodable) PASS range [-10,10]
+[    2s] PND B10 corner ranks == sigma frame-len distribution           PASS 23 classes
+[    2s] PND B11 xs_order chains                                        PASS 1771 chains, lens {7: 550, 9: 66, 6: 1155}
+[    2s] PND B12 xdata deltas sum to h-1 (producer assert)              PASS 1771 leaves
+[    2s] PND B13 W.claimed.R == D.R == 28866                            PASS 28866
+[    2s] PND B14 leaf == combinations(range(23),3)                      PASS 1771 leaves
+[    2s] PND B15 j: lifted additions with levels 14..21                 PASS 56460 entries
+[    2s] PND B16 links well-formed                                      PASS 38741 links
+[    2s] PND B17 outputs == 3v with c in T                              PASS 5313
+[    2s] PND B18 flag 23x23 ints |v|<=50                                PASS 529 entries
+[    2s] PND B19 design-B chain ranks: 21 classes (chains monotone by construction) PASS count=162678 rankSum=454230
+[    2s] PND B20 ylev covers all v targets, levels 1..22                PASS 1771 targets
+[    2s] PND C1 base compile R == claim (check_lifted B)                PASS 
+[    2s] PND C2 base chain-rank hist == claim (check_lifted hist_ok)    PASS 
+[    2s] PND C3 check_frames battery ALL PASS (exact dims re-derived in-clone) PASS 0 FAIL lines
+[    5s] stream OPS          width=16 fields=328712   limbs=81 OK
+[    5s] stream HOLDLENS     width= 8 fields=28866    limbs=4 OK
+[    5s] stream HOLD         width=16 fields=153408   limbs=38 OK
+[    6s] stream START        width=16 fields=84827    limbs=21 OK
+[    6s] stream READOUT      width=16 fields=11565    limbs=3 OK
+[   15s] stream SIGMA        width= 5 fields=4822824  limbs=368 OK
+[   15s] stream VLEAFSLOTS   width=16 fields=11374    limbs=3 OK
+[   20s] stream VLEAFSTART   width= 5 fields=2617354  limbs=200 OK
+[   20s] stream LATEV        width=16 fields=5116     limbs=2 OK
+[   20s] stream NODEDIMS     width= 5 fields=64042    limbs=5 OK
+[   21s] stream ARGS         width=32 fields=128084   limbs=63 OK
+[   21s] stream JKEYS        width=16 fields=56460    limbs=14 OK
+[   21s] stream J            width= 5 fields=56460    limbs=5 OK
+[   21s] stream LEAF         width= 5 fields=5313     limbs=1 OK
+[   22s] stream LINKS        width=16 fields=116223   limbs=29 OK
+[   22s] stream FLAG         width= 8 fields=529      limbs=1 OK
+[   22s] stream LATE         width=16 fields=5008     limbs=2 OK
+[   22s] stream YLEV         width=32 fields=1771     limbs=1 OK
+[   22s] stream XD           width= 5 fields=7074     limbs=1 OK
+[   22s] stream XSN          width=16 fields=1771     limbs=1 OK
+[   22s] stream XSU          width=16 fields=11374    limbs=3 OK
+[   22s] stream WOUTC        width=16 fields=5313     limbs=2 OK
+[   22s] stream WOUTT        width=16 fields=15939    limbs=4 OK
+[   22s] stream WOUTN        width=16 fields=5313     limbs=2 OK
+[   22s] stream LDN          width=16 fields=1396     limbs=1 OK
+[   22s] stream LDLEN        width=16 fields=1396     limbs=1 OK
+[   22s] stream LDLT         width=16 fields=3639     limbs=1 OK
+[   22s] stream LDD          width=16 fields=1396     limbs=1 OK
+[   22s] emitted StaircasePort/D2Data0.lean: ['ARGS', 'SIGMA'] (431 limbs)
+[   22s] emitted StaircasePort/D2Data1.lean: ['FLAG', 'HOLDLENS', 'J', 'JKEYS', 'LATE', 'LATEV', 'LDD', 'LDLEN', 'LDLT', 'LDN', 'LEAF', 'LINKS', 'READOUT', 'START', 'VLEAFSLOTS', 'VLEAFSTART'] (289 limbs)
+[   22s] emitted StaircasePort/D2Data2.lean: ['HOLD', 'NODEDIMS', 'OPS', 'WOUTC', 'WOUTN', 'WOUTT', 'XD', 'XSN', 'XSU', 'YLEV'] (138 limbs)
+[   22s] emitted StaircasePort/D2Data.lean (root: geometry + clear tables + pins + 27 spot pins)
+[   22s] D2 REGEN COMPLETE: 33/33 verdicts PASS
