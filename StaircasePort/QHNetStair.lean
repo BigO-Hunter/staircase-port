@@ -275,16 +275,19 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
   simp only [progS, edgeSched] at hi
   rcases List.mem_append.1 hi with h | h
   · rcases List.mem_append.1 h with h | h
-    · obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
-      exact Or.inl (Option.some.inj hie).symm
-    · rcases List.mem_cons.1 h with rfl | h
-      · exact Or.inr (Or.inl (Option.some.inj hie).symm)
-      · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
-        exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩))
-    · obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
-      exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
+    · rcases List.mem_append.1 h with h | h
+      · obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
+        exact Or.inl (Option.some.inj hie).symm
+      · rcases List.mem_cons.1 h with rfl | h
+        · exact Or.inr (Or.inl (Option.some.inj hie).symm)
+        · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
+          exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩))
+      · obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
+        exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
   · obtain ⟨op, hop, hiop⟩ := List.mem_flatMap.1 h
-    exact absurd hie (by rw [gatesOf_none op i hiop]; simp)
+    have h0 := gatesOf_none op i hiop
+    rw [h0] at hie
+    exact absurd hie (by simp)
 
 theorem netS_RunsOK : netS.RunsOK := by
   intro e he ρ hρ
@@ -418,11 +421,17 @@ theorem powSum_eq_edges (q : ℕ) :
     intro rs
     induction rs with
     | nil => simp
-    | cons ρ rs ih => simp [ih]
+    | cons ρ rs ih => simp [Function.comp_apply, ih]
+  have h2 : ∀ ws : List ℕ,
+      ((ws.map fun w => (w, 1)).map fun p => p.2 * p.1 ^ q).sum = (ws.map fun w => w ^ q).sum := by
+    intro ws
+    induction ws with
+    | nil => simp
+    | cons w ws ih => simp [Function.comp_apply, ih]
   show ((QHNet.hist netS).map (fun p => p.2 * p.1 ^ q)).sum = _
   rw [show QHNet.hist netS =
-      (QHNet.edges netS).flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ) from rfl,
-    List.map_flatMap, sum_flatMap]
+      ((QHNet.edges netS).flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)
+      from rfl, h2, sum_flatMap]
   exact List.map_congr_left fun e _ => hmap e.runs
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
