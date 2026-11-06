@@ -235,11 +235,12 @@ noncomputable def edgeSched : List NI := (part1 ++ part2) ++ part3
 /-- The staircase witness-1 program: edge schedule first, then the d2OPS gates. -/
 noncomputable def progS : List NI := edgeSched ++ d2Ops.flatMap gatesOf
 
-/-- **The staircase witness-1 network** (W = 108516254, T = 3217907 = 46v + N, m = 529;
+/-- **The staircase witness-1 network** (W = 108516254 = D2.W, T = 3217907 = 46v + N, m = 529;
 T resolution: Data.lean stairT / D2.T_eq). -/
-noncomputable def netS : QHNet (ZMod 2) 108516254 D2.Tmp 529 := ⟨progS, ρF⟩
+noncomputable def netS : QHNet (ZMod 2) D2.W D2.Tmp 529 := ⟨progS, ρF⟩
 
 theorem netS_T : D2.Tmp = 3217907 := rfl
+theorem netS_W : D2.W = 108516254 := rfl
 
 /-! ## RunsOK — PROVED (the deliverable) -/
 
