@@ -1094,3 +1094,72 @@ available in this skeleton); `rkQ_le_of_block_gen` (symbolic cut wrapper);
 `isPiv_stairCorner` (global coords via qMStair_corner + n7_isPiv_block) and
 `isPiv_stairCorner_witness` (every hypothesis discharged at the witness).
 
+
+## COMPOSE RESUME (2026-11-05/06, sp-compose) — STATUS: SURGERY COMPLETE IN SOURCE (contract closed, sorry gone, consumer wired); integration-gate build grinding under the host war
+
+**What landed (commits 1c6acee, 56ad6a3 on top of 9e71a48):**
+1. `isPiv_stairCorner_contract` (Rewire.lean) AMENDED to the PROVED form — binders mirror
+   `isPiv_stairCorner` (Projector.lean) verbatim: (x1 y1 x2 y2) (hu : x1⟨0⟩*x2⟨0⟩≠0)
+   (hv : y1⟨22⟩*y2⟨22⟩≠0) (hT : ∀ l, 1≤l≤21, stairRunA l * x2(n7Fin l) * y2(n7Fin(l+1))
+   + stairRunB l * x1(n7Fin l) * y1(n7Fin(l+1)) ≠ 0) (hM1 : 25 ≤ rk (stairCornerQOf
+   (stairPairM ...)) 25 20) (hM2 : ∀ t<18, 26 ≤ rk ... (26+t) (2+t)) — proof = ONE-LINE
+   runPairs bridge (`simp [stairCornerRuns, runPairs]`:
+   runPairs (stairCornerRuns 23 529) = runPairs [(1,507,21),(25,486,18)]) +
+   `exact isPiv_stairCorner x1 y1 x2 y2 hu hv hT hM1 hM2`. THE ONLY SORRY OF THE SPINE IS
+   GONE (grep "sorry" in Rewire.lean = docstrings only). NO sorryAx from the contract.
+2. Consumer (flag_gen_stair_aux data clause) wired: hu'/hv' DERIVED from labU/labV (the
+   conjugated labels' coordinates — the pA_all_ne-widened label facts); hT'/hM1'/hM2'
+   DERIVED at the call site from NEW Pall factors (no statement delta to data_edge_stair —
+   its hcorner slot is DISCHARGEABLE, statement byte-unchanged; flag_gen_stair_aux and
+   flagBasis_stair statements UNCHANGED).
+3. NEW Pall fuel (all in Rewire.lean, the `pDatStair_ne` conj_wit/ptUV witness trick with
+   W := the WITNESS matrices — conj_wit conjugates ANY idempotent trace-1 pair onto them):
+   * `pDevStair l` (the pT cross-det pattern at the staircase entries (n7Fin l, n7Fin(l+1)),
+     coefficients stairRunA/stairRunB via MvPolynomial.C): eval f = sconj-entries × cross
+     dets = (detU*detV) × hT-term of the conjugated labels; witness-nonzero via
+     n7_hT_witness. The r6-shape `pT` factors are DROPPED from Pall (documented delta —
+     their consumer isPiv_stair_lower was refuted; nothing else consumed pT).
+   * `pMStairL k rl cl` (= pDatStair restricted to a k×k minor, entries rl/cl via getD):
+     `eval_pMStairL` (eval_pDatStair_of proof verbatim, 45→k) gives eval f =
+     (detU*detV)^k × det(minor of the CONJUGATED corner); `pMStairL_ne` (pDatStair_ne
+     verbatim) with hc = the N2c cert det at the witness corner.
+   * `n7_cert_det` (the det form of n2c_rank_lower's hdetQ block, verbatim copy),
+     `n7_witdet_gen` (corStairQ-of-witness bridge via stairMQ), `n7_m1_witdet` (cert 1),
+     the t→cert dispatch `n7M2RL/n7M2CL/n7M2SL/n7M2TL` (0→12,1→16,2→8,3→11,4→14,5→18,
+     6→21,7→13,8→17,9→20,10→22,11→10,12→19,13→9,14→23,15→24,16→15,17→7 — the
+     n7_hM2_witness map), `n7_m2_pins` (interval_cases+decide) and `n7_m2_witdet`
+     (18-branch interval_cases dispatch over n7_witdet_gen).
+   * Call-site extraction: he : (detU*V)^k * det(minor) ≠ 0 → right_ne_zero_of_mul →
+     `rk_ge_of_det` with getD-built row/col maps (hM1: cert 1 at (25,20); hM2: per-t
+     n7_m2_pins at (26+t,2+t)). hT' extraction via linear_combination (U.det*V.det)*h0.
+4. Corner.lean REPAIR (documented in-file): the DEAD `n7R26`/`n7C26` defs deleted — they
+   referenced never-defined `n7M2row`/`n7M2col` (dangling identifiers from the ABANDONED
+   n7_rk_block/isPiv_block route) and broke ANY integration build of the merged tree.
+   No proved proof body touched. The run-2 minor indices live in the n2c cert lists.
+
+**Axiom discipline:** no new axioms; no native_decide added; the cert dispatch reuses the
+existing kernel-decided n2cChk*/n2cEnt* theorems (decide +kernel, already banked in
+Pivot.lean). Expected footprints when green: data_edge_stair/flagBasis_stair =
+[propext, sorryAx, Classical.choice, Quot.sound] with sorryAx roads EXACTLY the documented
+Platform stubs (Platform.isPiv_mid / edge_of_pivs / isPiv_side) — the corner-hole sorryAx
+road must VANISH; isPiv_stairCorner_contract = [propext, Classical.choice, Quot.sound].
+
+**BLOCKER (do NOT rediscover): the host war.** The memory-admission watchdog (R2125608674)
+kills every lean at ~1-5 min (swap_used ~15-16/17 GB pinned by a sibling agent's full
+`pytest tests/` run; kills happen even at free_gb 37). chain state: CornerData.olean IS
+banked (the 148-pin module went through in one clean window); Corner/Projector/Rewire
+build fresh and keep dying mid-module (Lean exit 143). grind loop:
+~/bigo-campaign/compose_grind2.sh (200 attempts, LEAN_NUM_THREADS=1, detached via python
+Popen start_new_session=True) + supervisor compose_supervise.py (relaunches until
+~/bigo-campaign/COMPOSE_DONE). Log ~/bigo-campaign/compose_build.log; on green it runs the
+axcheck into ~/bigo-campaign/compose_axcheck.log. The peer's R2125608616 lean-freeze cure
+is committed in ~/MultiAgency but the RUNNING daemon still kills (old code in memory) —
+once the daemon recycles, the chain should go green within ~30 min of clean CPU.
+
+**Next steps:** (1) wait for green (supervisor handles it; check
+`grep -c "g2 attempt" ~/bigo-campaign/compose_build.log` and
+`ls .lake/build/lib/lean/StaircasePort/ | grep olean` for Corner/Projector/Rewire);
+(2) on green read ~/bigo-campaign/compose_axcheck.log — verify the footprints above
+(the corner sorryAx gone); (3) commit "COMPOSE GREEN" + tick this section; (4) if a Lean
+ERROR surfaces in Rewire.lean's new code, the banked commits make re-authoring cheap —
+fix, commit, the loop re-grinds. Nothing else in flight.
