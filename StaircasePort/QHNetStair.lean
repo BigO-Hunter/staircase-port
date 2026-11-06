@@ -81,10 +81,9 @@ def ρF (w : Fin D2.W) : Fin D2.W := ⟨D2.ρn w.val, ρn_lt_W w.val w.isLt⟩
 
 /-! ## The d2OPS gate schedule (gates only; no edges) -/
 
-/-- Raw op field-groups: `src` = [1,d,s], `add` = [2,d,s1,s2], `fan` = [3,d,k,t₁..t_k]
-(extract/d2_regen.py `opf`). Fuel-driven decode; padding fields (0) terminate. -/
 /-- Raw op field-groups as decoded records: `src` = [1,d,s], `add` = [2,d,s1,s2],
-`fan` = [3,d,k,t₁..t_k] (extract/d2_regen.py `opf`). -/
+`fan` = [3,d,k,t₁..t_k] (extract/d2_regen.py `opf`). Fuel-driven decode; padding
+fields (0) terminate. -/
 inductive DOp where
   | src (d s : ℕ) : DOp
   | add (d s1 s2 : ℕ) : DOp
@@ -122,8 +121,12 @@ def gatesOf : DOp → List NI
 theorem gatesOf_none : ∀ (op : DOp) (j : NI), j ∈ gatesOf op → j.edgeOf = none := by
   intro op j hj
   cases op with
-  | src d s => rw [hj]; rfl
-  | add d s1 s2 => rcases hj with rfl | rfl <;> rfl
+  | src d s =>
+      simp only [gatesOf, List.mem_cons, List.mem_nil_iff, or_false] at hj
+      rw [hj]; rfl
+  | add d s1 s2 =>
+      simp only [gatesOf, List.mem_cons, List.mem_nil_iff, or_false] at hj
+      rcases hj with rfl | rfl <;> rfl
   | fan d ts =>
       simp only [gatesOf, List.mem_map] at hj
       obtain ⟨t, -, rfl⟩ := hj
@@ -393,8 +396,8 @@ theorem netS_EdgesOK_large :
 def EMq (q : ℕ) (e : Edge 529) : ℕ := (e.runs.map fun ρ => ρ.2.2 ^ q).sum
 
 theorem powSum_eq_edges (q : ℕ) :
-    Mom.powSum q (QHNet.hist netS) = (QHNet.edges netS.map (EMq q)).sum := by
-  simp [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq]
+    Mom.powSum q (QHNet.hist netS) = ((QHNet.edges netS).map (EMq q)).sum := by
+  simp [Mom.powSum, QHNet.hist, QHNet.widths, QHNet.edges, EMq, sum_flatMap]
 
 theorem EMq_data (E₁ E₂ : QMat2 529) (q : ℕ) :
     EMq q (Edge.mk E₁ D1 E₂) = 439 ^ q + 21 ^ q + 18 ^ q + 6 := by
@@ -414,18 +417,24 @@ theorem EMq_side_neg (E₁ E₂ : QMat2 529) (q : ℕ) (r : ℕ) (hr : ¬ 23 < 2
     EMq q (Edge.mk E₁ (sideRuns 23 529 r) E₂) = 0 := by
   simp [EMq, sideRuns, hr]
 
+theorem sum_flatMap {α : Type*} {M : Type*} [AddCommMonoid M] (f : α → List M) (l : List α) :
+    (l.flatMap f).sum = (l.map fun x => (f x).sum).sum := by
+  induction l with
+  | nil => simp
+  | cons a l ih => simp [List.flatMap_cons, List.map_cons, List.sum_append, ih, add_assoc]
+
 /-- Grouped-vs-expanded histogram moments agree (the `(w, n_w)` list and its
 `n_w`-fold child expansion carry the same `histMoment`). -/
 theorem histMoment_expansion (h : List (ℕ × ℕ)) (m : ℕ) (τ : ℝ) :
     IntMul.Kappa.histMoment (h.flatMap fun p => List.replicate p.2 (p.1, 1)) m τ =
       IntMul.Kappa.histMoment h m τ := by
-  simp [IntMul.Kappa.histMoment, List.map_flatMap, List.sum_flatMap, List.map_replicate,
+  simp [IntMul.Kappa.histMoment, List.map_flatMap, sum_flatMap, List.map_replicate,
     List.sum_replicate, smul_eq_mul, mul_one]
 
 /-- Grouped-vs-expanded histogram power sums agree — the D3 decidability shape. -/
 theorem powSum_expansion (q : ℕ) (h : List (ℕ × ℕ)) :
     Mom.powSum q (h.flatMap fun p => List.replicate p.2 (p.1, 1)) = Mom.powSum q h := by
-  simp [Mom.powSum, List.map_flatMap, List.sum_flatMap, List.map_replicate, List.sum_replicate,
+  simp [Mom.powSum, List.map_flatMap, sum_flatMap, List.map_replicate, List.sum_replicate,
     smul_eq_mul, mul_one]
 
 /-- STUB 4 (moment/schedule multiplicity): the net's child-width multiset is `Jain.bitR7`
