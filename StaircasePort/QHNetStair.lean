@@ -223,9 +223,9 @@ theorem dfltE_EdgeQ : EdgeQ dfltE 0 := by
 slot wires, childless exit edges on the R aux slots (R8 `blk1` exit shape). The class
 STRUCTURE is D2-pinned; per-class multiplicities beyond these class instances enter only
 the moment bridge (STUB 4) and are not separately claimed. -/
-def part1 : List NI := (List.range D2.v).map fun t => Instr.edge (ι (D2.wY t)) dataE
+noncomputable def part1 : List NI := (List.range D2.v).map fun t => Instr.edge (ι (D2.wY t)) dataE
 
-def part2 : List NI :=
+noncomputable def part2 : List NI :=
   Instr.edge (ι (D2.wS 0)) auxE :: sideRanks.map fun r => Instr.edge (ι (D2.wS (r + 1))) (sideE r)
 
 def part3 : List NI := (List.range D2.Rslots).map fun s => Instr.edge (ι (D2.wS (s + 400))) dfltE
@@ -277,25 +277,31 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
   rw [hp] at hi
   simp only [progS, edgeSched] at hi
   rcases List.mem_append.1 hi with h | h
-  · rcases List.mem_append.1 h with h | h
-    · rcases List.mem_append.1 h with h | h
-      · obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
-        have h4 : (Instr.edge (ι (D2.wY t)) dataE).edgeOf = some dataE := rfl
+  · -- i ∈ (part1 ++ part2) ++ part3
+    rcases List.mem_append.1 h with h | h
+    · -- i ∈ part1 ++ part2
+      rcases List.mem_append.1 h with h | h
+      · -- part1: the data-class edges
+        obtain ⟨t, -, rfl⟩ := List.mem_map.1 h
+        have h4 : (Instr.edge (ι (D2.wY t)) dataE : NI).edgeOf = some dataE := rfl
         rw [h4] at hie
         exact Or.inl (Option.some.inj hie).symm
-      · rcases List.mem_cons.1 h with rfl | h
-        · have h4 : (Instr.edge (ι (D2.wS 0)) auxE).edgeOf = some auxE := rfl
+      · -- part2: the aux head, then the side-class edges
+        rcases List.mem_cons.1 h with rfl | h
+        · have h4 : (Instr.edge (ι (D2.wS 0)) auxE : NI).edgeOf = some auxE := rfl
           rw [h4] at hie
           exact Or.inr (Or.inl (Option.some.inj hie).symm)
         · obtain ⟨r, hr, rfl⟩ := List.mem_map.1 h
-          have h4 : (Instr.edge (ι (D2.wS (r + 1))) (sideE r)).edgeOf = some (sideE r) := rfl
+          have h4 : (Instr.edge (ι (D2.wS (r + 1))) (sideE r) : NI).edgeOf = some (sideE r) := rfl
           rw [h4] at hie
           exact Or.inr (Or.inr (Or.inl ⟨r, hr, Option.some.inj hie⟩))
-      · obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
-        have h4 : (Instr.edge (ι (D2.wS (s + 400))) dfltE).edgeOf = some dfltE := rfl
-        rw [h4] at hie
-        exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
-  · obtain ⟨op, hop, hiop⟩ := List.mem_flatMap.1 h
+    · -- part3: the childless exit edges
+      obtain ⟨s, -, rfl⟩ := List.mem_map.1 h
+      have h4 : (Instr.edge (ι (D2.wS (s + 400))) dfltE : NI).edgeOf = some dfltE := rfl
+      rw [h4] at hie
+      exact Or.inr (Or.inr (Or.inr (Option.some.inj hie).symm))
+  · -- the d2OPS gates
+    obtain ⟨op, hop, hiop⟩ := List.mem_flatMap.1 h
     have h0 := gatesOf_none op i hiop
     exact absurd (h0.symm.trans hie) (by simp)
 
@@ -442,7 +448,7 @@ theorem powSum_eq_edges (q : ℕ) :
     induction es with
     | nil => simp
     | cons e es ih =>
-        simp only [List.flatMap_cons, List.map_append, List.map_cons, List.sum_cons]
+        simp only [List.flatMap_cons, List.map_append, List.sum_append, List.map_cons, List.sum_cons]
         rw [h1 e.runs, ih]
   show ((QHNet.hist netS).map (fun p => p.2 * p.1 ^ q)).sum = _
   rw [show QHNet.hist netS =
