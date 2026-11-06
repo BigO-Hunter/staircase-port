@@ -661,18 +661,30 @@ lemma pA_all_ne_V (hn : 0 < n) (P : Matrix (Fin n) (Fin n) ℚ) (hP : P * P = P)
 
 /-! ## R7-7 — the corner-hole contract (coordination placeholder) and the restated data edge -/
 
-/-- **THE CORNER HOLE (coordination contract)** — local placeholder for the corner clause
-`isPiv_stairCorner`, being proved RIGHT NOW by a parallel agent (which owns
-Projector.lean/Pivot.lean; this clone consumes the brief shape verbatim):
-`\forall p \in runPairs (stairCornerRuns 23 529), IsPiv (qMStair (stairPairM x1 y1 x2 y2)) p.1 p.2`
-under `y1 \u2b1d\u1d65 x1 = 1`, `y2 \u2b1d\u1d65 x2 = 1` and the staircase-frame corner det. The 39 positions
-= the 21-run (1,507,21) + the 18-run (25,486,18). EXACT TYPE recorded in SCAFFOLD.md
-"## N7 NOTES". This `sorry` is the ONLY new sorryAx introduced by the rewire. -/
+/-- **THE CORNER CONTRACT (COMPOSED)** — now the PROVED clause: `isPiv_stairCorner`
+(Projector.lean, zero sorry) re-exported at the consumer's run list via the one-line
+`runPairs (stairCornerRuns 23 529) = runPairs [(1, 507, 21), (25, 486, 18)]` bridge. The
+five hypotheses mirror the proved binders verbatim (they are the proved clause's honest
+set; `h₁/h₂/hdet` are NOT needed by the corner clause — they are the middle-run's fuel,
+`isPiv_stairMid`). The rewire consumer derives `hu/hv` from the label facts (`labU`/`labV`)
+and `hT/hM1/hM2` from the Pall product's new `pDevStair`/`pMStairL` factors (the COMPOSE
+section below). This closes the ONLY sorry of the hypothesis-graph spine. -/
 theorem isPiv_stairCorner_contract (x1 y1 x2 y2 : Fin 23 → ℚ)
-    (h1 : y1 ⬝ᵥ x1 = 1) (h2 : y2 ⬝ᵥ x2 = 1)
-    (hdet : (stairCornerQOf (stairPairM x1 y1 x2 y2)).det ≠ 0) :
+    (hu : x1 ⟨0, by omega⟩ * x2 ⟨0, by omega⟩ ≠ 0)
+    (hv : y1 ⟨22, by omega⟩ * y2 ⟨22, by omega⟩ ≠ 0)
+    (hT : ∀ l, 1 ≤ l → l ≤ 21 →
+      stairRunA l * x2 (n7Fin l) * y2 (n7Fin (l + 1))
+        + stairRunB l * x1 (n7Fin l) * y1 (n7Fin (l + 1)) ≠ 0)
+    (hM1 : 25 ≤ rk (stairCornerQOf (stairPairM x1 y1 x2 y2)) 25 20)
+    (hM2 : ∀ t : ℕ, t < 18 →
+      26 ≤ rk (stairCornerQOf (stairPairM x1 y1 x2 y2)) (26 + t) (2 + t)) :
     ∀ p ∈ runPairs (stairCornerRuns 23 529),
-      IsPiv (qMStair (stairPairM x1 y1 x2 y2)) p.1 p.2 := by sorry
+      IsPiv (qMStair (stairPairM x1 y1 x2 y2)) p.1 p.2 := by
+  have hrun : runPairs (stairCornerRuns 23 529)
+      = runPairs [(1, 507, 21), (25, 486, 18)] := by
+    simp [stairCornerRuns, runPairs]
+  rw [hrun]
+  exact isPiv_stairCorner x1 y1 x2 y2 hu hv hT hM1 hM2
 
 /-- **N7** — `data_edge_stair` restated in the staircase frame (the old r6-frame statement in
 Signature.lean is deleted: its pivot hypothesis came from `isPiv_stair_lower`, REFUTED — N2d,

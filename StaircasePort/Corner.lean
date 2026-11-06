@@ -165,15 +165,10 @@ def n7R1 (l : ℕ) : Fin 1 → {r : Fin 45 // r.val < l} := fun _ => ⟨⟨0, by
 def n7C1 (l : ℕ) (hl : l ≤ 21) : Fin 1 → {c : Fin 45 // 23 + l ≤ c.val} := fun _ =>
   ⟨⟨44, by omega⟩, by omega⟩
 
-/-- run-2 hBlo minor rows: `0..24 ++ [25+t]`. -/
-def n7R26 (t : ℕ) (ht : t < 18) : Fin 26 → {r : Fin 45 // r.val < 26 + t} := fun i =>
-  ⟨n7M2row t ht i, by
-    rcases Nat.lt_or_ge i.val 25 with h | h
-    · omega
-    · have := ht; omega⟩
-/-- run-2 hBlo minor cols: `2+t .. 27+t`. -/
-def n7C26 (t : ℕ) : Fin 26 → {c : Fin 45 // 2 + t ≤ c.val} := fun j =>
-  ⟨n7M2col t j, by omega⟩
+-- COMPOSE (2026-11-05): the dead `n7R26`/`n7C26` defs (leftovers of the ABANDONED
+-- n7_rk_block/isPiv_block route, never referenced by any proof) are DELETED — they
+-- referenced the never-defined `n7M2row`/`n7M2col` and broke the integration build.
+-- The run-2 minor indices live in the N2c certificate lists (`n2cR12`.., Pivot.lean).
 
 /-! #### run 1: the 21 above-diagonal positions (l, 22+l) -/
 
