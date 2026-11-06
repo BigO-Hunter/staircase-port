@@ -37,6 +37,7 @@ namespace StaircasePort.Stair
 open Matrix Finset IntMul.Kappa.R6.Bit IntMul.Kappa.R6.Bit.NB
 open scoped Kronecker
 open N52
+open MvPolynomial
 
 set_option maxHeartbeats 1000000
 
@@ -616,5 +617,46 @@ theorem side2_edge_Stair (x y : Fin (19 + 4) → ℚ) (hxy : y ⬝ᵥ x = 1)
       obtain rfl : b = 19 + 3 := hi
       rw [side2_A_diag_last_Stair]
       exact hy ⟨19 + 3, by omega⟩
+
+
+/-! ## R7-6 — the label facts at all coordinates (the staircase aux/side diag values need
+`y l ≠ 0` for every `l`, not just `l = 22` — see SCAFFOLD.md "## N7 NOTES") -/
+
+/-- The model rank-one label with the nonzero entry at column `l` (r6 `wP` generalised). -/
+def wPl (n : ℕ) (hn : 0 < n) (l : Fin n) : Matrix (Fin n) (Fin n) ℚ :=
+  vecMulVec (fun _ => 1) (Pi.single l 1)
+
+lemma wPl_dot (hn : 0 < n) (l : Fin n) :
+    (Pi.single l (1 : ℚ)) ⬝ᵥ (fun _ => 1) = 1 := by
+  simp [dotProduct, Pi.single_apply]
+
+lemma wPl_idem (hn : 0 < n) (l : Fin n) : wPl n hn l * wPl n hn l = wPl n hn l :=
+  vmv_idem _ _ (wPl_dot hn l)
+
+lemma wPl_trace (hn : 0 < n) (l : Fin n) : (wPl n hn l).trace = 1 := by
+  simp only [wPl, trace_vecMulVec, dotProduct_comm, wPl_dot hn l]
+
+lemma wPl_apply (hn : 0 < n) (l β : Fin n) : wPl n hn l β l = 1 := by
+  simp [wPl, vecMulVec_apply, Pi.single_apply]
+
+/-- **NEW (N7)** — `pA_U_ne` (N52) at EVERY coordinate pair: the polynomial `pA XU P β l` is
+nonzero for all `(β, l)`. Same proof as `pA_U_ne`, conjugating to `wPl n hn l` (whose `(β, l)`
+entry is 1 for every `β`) instead of `wP`. -/
+lemma pA_all_ne (hn : 0 < n) (P : Matrix (Fin n) (Fin n) ℚ) (hP : P * P = P) (htr : P.trace = 1)
+    (β l : Fin n) : pA XU P β l ≠ 0 := by
+  obtain ⟨U, hU, hc⟩ := conj_wit P (wPl n hn l) hP (wPl_idem hn l) (htr.trans (wPl_trace hn l).symm)
+  intro h0
+  have := congrArg (eval (ptUV U 1)) h0
+  rw [eval_pA_U, Uf_pt, hc, map_zero, Matrix.smul_apply, wPl_apply hn l, smul_eq_mul, mul_one] at this
+  exact hU this
+
+/-- **NEW (N7)** — the XV analogue. -/
+lemma pA_all_ne_V (hn : 0 < n) (P : Matrix (Fin n) (Fin n) ℚ) (hP : P * P = P) (htr : P.trace = 1)
+    (β l : Fin n) : pA XV P β l ≠ 0 := by
+  obtain ⟨U, hU, hc⟩ := conj_wit P (wPl n hn l) hP (wPl_idem hn l) (htr.trans (wPl_trace hn l).symm)
+  intro h0
+  have := congrArg (eval (ptUV 1 U)) h0
+  rw [eval_pA_V, Vf_pt, hc, map_zero, Matrix.smul_apply, wPl_apply hn l, smul_eq_mul, mul_one] at this
+  exact hU this
 
 end StaircasePort.Stair
