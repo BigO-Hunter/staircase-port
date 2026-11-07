@@ -84,6 +84,28 @@ theorem formal_labels : ∀ (prog : List (Instr Wr R m)) (L : Wr → FMat m N) (
       · subst h; simp [lmulF_mul]
       · rw [Function.update_of_ne h, Function.update_of_ne h]
 
+/-- **The FormalOK consumer shape** (the r6 `formalOK_sol_aux` spine, abstracted).
+If (1) `fInit` factors as `lmulF (L0 x) (φ0 x)` with single-term `φ0`, (2) the program's
+gates are label-consistent for `L0`, and (3) per role-family the composed LABEL track
+(`labStepH`) lands at `swapMat` while the composed VALUE track (`scalarStepM`) lands at
+the role's own single term, then the network is formally correct. The dense-program port
+supplies (3) per band through `DenseProg.gw_band_cases` + the ι-inverse lemmas. -/
+theorem formalOK_of_tracks {W T : ℕ} (ρ : Fin W → Fin W)
+    (prog : List (Instr (Fin W ⊕ Fin T) R m)) (L0 : (Fin W ⊕ Fin T) → FMat m N)
+    (φ0 : (Fin W ⊕ Fin T) → FV R (Fin W) m N)
+    (hf : QHNet.fInit (R := R) (W := W) (T := T) (m := m) N
+        = fun x => lmulF (L0 x) (φ0 x))
+    (hl1 : LabGates N prog L0)
+    (hrho : ∀ w : Fin W,
+      lmulF (prog.foldl (labStepH N) L0 (.inl (ρ w)))
+        (prog.foldl scalarStepM φ0 (.inl (ρ w))) = Finsupp.single (swapMat, w) 1) :
+    (QHNet.mk prog ρ : QHNet R W T m).FormalOK N := by
+  intro w
+  show (QHNet.mk prog ρ).prog.foldl (fStep N) (QHNet.fInit N)
+    (.inl ((QHNet.mk prog ρ).ρ w)) = _
+  rw [hf, formal_labels N prog L0 φ0 hl1]
+  exact hrho w
+
 end FormalRun
 
 end StaircasePort.QF
