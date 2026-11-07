@@ -721,8 +721,10 @@ theorem sum_map_const_of {α : Type*} (f : α → ℝ) (c : ℝ) (l : List α)
   induction l with
   | nil => simp
   | cons a l ih =>
-      simp only [List.map_cons, List.sum_cons, h a (by simp)]
-      rw [ih]
+      have ha : f a = c := h a (by simp)
+      simp only [List.map_cons, List.sum_cons, ha]
+      rw [ih fun x hx => h x (by simp [hx])]
+      push_cast [List.length_cons]
       ring
 
 /-- `map (fun _ => b)` is a replicate. -/
@@ -730,7 +732,7 @@ theorem map_const_replicate {α β : Type*} (b : β) (l : List α) :
     (l.map fun _ => b) = List.replicate l.length b := by
   induction l with
   | nil => rfl
-  | cons a l ih => simp [ih]
+  | cons a l ih => simp [ih, List.replicate_succ]
 
 /-- `filterMap edgeOf` over a mapped constant edge is a replicate. -/
 theorem filterMap_edge_const (e : Edge 529) (l : List ℕ) :
@@ -757,7 +759,9 @@ theorem filterMap_none_nil {α β : Type*} (f : α → Option β) (l : List α)
     (h : ∀ x ∈ l, f x = none) : l.filterMap f = [] := by
   induction l with
   | nil => rfl
-  | cons a l ih => rw [List.filterMap_cons, h a (by simp), ih]
+  | cons a l ih =>
+      rw [List.filterMap_cons, h a (by simp)]
+      exact ih fun x hx => h x (by simp [hx])
 
 theorem part1_edges : part1.filterMap Instr.edgeOf = List.replicate D2.v dataE := by
   show ((List.range D2.v).map fun t => Instr.edge (ι (D2.wY t)) dataE).filterMap Instr.edgeOf = _
@@ -912,35 +916,35 @@ theorem netG_le_bitR7 (τ : ℝ) :
   simp only [IntMul.Kappa.histMoment, netG, IntMul.Kappa.Jain.bitR7, List.map_cons,
     List.sum_cons, List.map_nil, List.sum_nil]
   have h1 : (((10693 : ℕ) : ℝ)) * (((1 : ℕ) : ℝ) / 529) ^ τ ≤ (((1690297301 : ℕ) : ℝ)) * (((1 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 10693 : ℕ) : ℝ)) ≤ ((( 1690297301 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h3 : (((1 : ℕ) : ℝ)) * (((3 : ℕ) : ℝ) / 529) ^ τ ≤ (((1356586 : ℕ) : ℝ)) * (((3 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 1356586 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h5 : (((1 : ℕ) : ℝ)) * (((5 : ℕ) : ℝ) / 529) ^ τ ≤ (((354200 : ℕ) : ℝ)) * (((5 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 354200 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h7 : (((1 : ℕ) : ℝ)) * (((7 : ℕ) : ℝ) / 529) ^ τ ≤ (((3580962 : ℕ) : ℝ)) * (((7 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 3580962 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h9 : (((1 : ℕ) : ℝ)) * (((9 : ℕ) : ℝ) / 529) ^ τ ≤ (((1526602 : ℕ) : ℝ)) * (((9 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 1526602 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h11 : (((1 : ℕ) : ℝ)) * (((11 : ℕ) : ℝ) / 529) ^ τ ≤ (((5093396 : ℕ) : ℝ)) * (((11 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 5093396 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h13 : (((1 : ℕ) : ℝ)) * (((13 : ℕ) : ℝ) / 529) ^ τ ≤ (((2164162 : ℕ) : ℝ)) * (((13 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 2164162 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h15 : (((1 : ℕ) : ℝ)) * (((15 : ℕ) : ℝ) / 529) ^ τ ≤ (((7948248 : ℕ) : ℝ)) * (((15 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 7948248 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h17 : (((1 : ℕ) : ℝ)) * (((17 : ℕ) : ℝ) / 529) ^ τ ≤ (((8476006 : ℕ) : ℝ)) * (((17 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 8476006 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h18 : (((1771 : ℕ) : ℝ)) * (((18 : ℕ) : ℝ) / 529) ^ τ ≤ (((6272882 : ℕ) : ℝ)) * (((18 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1771 : ℕ) : ℝ)) ≤ ((( 6272882 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h19 : (((1 : ℕ) : ℝ)) * (((19 : ℕ) : ℝ) / 529) ^ τ ≤ (((1639946 : ℕ) : ℝ)) * (((19 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 1639946 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h21 : (((1772 : ℕ) : ℝ)) * (((21 : ℕ) : ℝ) / 529) ^ τ ≤ (((6906900 : ℕ) : ℝ)) * (((21 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1772 : ℕ) : ℝ)) ≤ ((( 6906900 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h23 : (((1 : ℕ) : ℝ)) * (((23 : ℕ) : ℝ) / 529) ^ τ ≤ (((61280142 : ℕ) : ℝ)) * (((23 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 61280142 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h439 : (((1771 : ℕ) : ℝ)) * (((439 : ℕ) : ℝ) / 529) ^ τ ≤ (((6272882 : ℕ) : ℝ)) * (((439 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1771 : ℕ) : ℝ)) ≤ ((( 6272882 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have h483 : (((1 : ℕ) : ℝ)) * (((483 : ℕ) : ℝ) / 529) ^ τ ≤ (((61280142 : ℕ) : ℝ)) * (((483 : ℕ) : ℝ) / 529) ^ τ :=
-    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+    mul_le_mul_of_nonneg_right (show ((( 1 : ℕ) : ℝ)) ≤ ((( 61280142 : ℕ) : ℝ)) by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have g485 : 0 ≤ (((545468 : ℕ) : ℝ)) * (((485 : ℕ) : ℝ) / 529) ^ τ :=
     mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
   have g487 : 0 ≤ (((173558 : ℕ) : ℝ)) * (((487 : ℕ) : ℝ) / 529) ^ τ :=
