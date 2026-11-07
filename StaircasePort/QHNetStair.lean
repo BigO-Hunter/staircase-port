@@ -37,7 +37,9 @@ THE DOCUMENTED STUBS (Platform-stub pattern; every one names its discharge route
    port. The leaf's DOMINANCE clause is now proved directly (`netS_dominance` via
    `netG_le_bitR7`: entrywise multiplicity dominance, 15 decided comparisons).
 5. `netS_FormalOK`  — the formal-frame calculus port (Stage 2): flagBasis_stair (Rewire,
-   proved) + formal_labels/genF_labGates machinery over the D2 gate schedule.
+   proved) + the DENSE program port (the skeleton touches ~31.7k edge wires vs the
+   accepted NB net's per-(b,slot) density over all 108M roles — FormalOK fails at
+   untouched roles; measured verdict + route in the FormalOK section below).
 
 Gate wire map: operand node codes (1..64042 in d2OPS) map through `gw` to roles `Fin W`;
 the semantic node→(role/temporary) schedule (d2WOUTC/T/N + RET tables) is Stage 2's
@@ -1001,12 +1003,32 @@ theorem d2_childCount_eq_S0 : D2.d2HistChildCount = Mom.bitR7PowSum 0 := by
 theorem d2_rankSum_eq_S1 : D2.d2HistRankSum = Mom.bitR7PowSum 1 := by
   rw [D2.d2HistRankSum_eq, Mom.bitR7S1]
 
-/-! ## FormalOK — STUB 5 (Stage 2's frame-calculus port) -/
+/-! ## FormalOK — STUB 5 (Stage 2's frame-calculus port; gap MEASURED, lane G2)
 
-/-- STUB 5: `FormalOK` at every large prime power. Discharge route: the formal-frame
-calculus (`formal_labels` / `genF_labGates` / `progH_correct`, platform-Proved for r6)
-retargeted to the D2 gate schedule; the flag-basis half is `flagBasis_stair` (Rewire.lean,
-PROVED). Included so the leaf assembly below is shape-complete. -/
+VERDICT (lane G2): `netS_FormalOK` is NOT provable for the F5 skeleton program as
+constructed. `FormalOK` (Defs4:1346) demands role `ρ w` end at `single (swapMat, w)`
+for EVERY role `w : Fin W` — an untouched role keeps its `fInit` value
+`single (1, u) ≠ single (swapMat, w)`. The skeleton's program touches only
+~31.7k edge wires (1771 `wY` + 12 `wS` + 28866 exit slots) plus the ~64k d2OPS
+gate nodes — vs W = 108,516,254 roles. The accepted R8 net (`NB.net (toNB ch0P)`,
+Def_IntMul_Kappa_R8_Data_BitOppbankQHNet) gets density from
+`prog = (range v).flatMap (blk1/blk2)`: per-(block, slot) chunk edges + XOR gates
+over the stage words `cs1`/`cs2` (W1F/W2F), covering the whole role space.
+
+Discharge route (= BUILD_PLAN Stage 2, "certificate bookkeeping"):
+1. DENSE PROGRAM PORT: rebuild `netS.prog` on the per-(b, slot) schedule —
+   `chunkProg`-style retarget of the D2 stage word (`d2OPS`, 82983 ops) to the
+   NB block layout (`blk1`/`blk2`, W1F/W2F shapes; the R8 retarget
+   Def_IntMul_Kappa_R8_Data_BitOppbankGenData_* + LocGrecDense is the template).
+   Must re-verify RunsOK/EdgesOK/hist afterward (extra frame-change edges are
+   run-free, so the moment bridge is untouched; EdgesOK needs per-edge clearance).
+2. FORMAL CALCULUS: `formal_labels` / `scalarStepM` stage composition
+   (Defs4:1245-1290 machinery, platform-Proved for r6) over the stage words +
+   `flagBasis_stair` (Rewire, PROVED) as the FB0-analogue.
+3. The wire map `gw`/`ι`/`ρF` here already matches the NB layout shape. -/
+
+/-- STUB 5: `FormalOK` at every large prime power. See the measured verdict above —
+requires the dense-program port (Stage 2) before the calculus applies. -/
 theorem netS_FormalOK (q : ℕ) (hq : q.Prime) (f : ℕ) : netS.FormalOK (q ^ f) := by
   sorry
 
