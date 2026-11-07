@@ -190,14 +190,94 @@ theorem ι2_a_wU (a s : ℕ) (ha : a < v) (hs : s < v) :
     if_neg (by omega : ¬((2 * v + NR + s : ℕ) < 2 * v + NR)),
     if_neg (by omega : ¬((2 * v + NR + s : ℕ) < 2 * v + NR + v)), if_pos (by omega)]
 
-/-! ## The five-band decomposition: every global wire index is a `(block, local)` image
-(the density statement — FormalOK's per-role case analysis enumerates exactly these). -/
+/-! ## Local bounds used throughout -/
 
-/-- Local bounds used throughout. -/
 theorem hwY (T : ℕ) (hT : T < v) : wY T < wEnt := by simp only [wY, wEnt]; omega
 theorem hwS_lt (q : ℕ) (hq : q < NR) : wS q < wAuxEnd := by simp only [wS, wEnt, wAuxEnd]; omega
 theorem hwT_lt (c : ℕ) (hc : c < h) : wT c < NL := by simp only [wT, wAuxEnd, NL]; omega
 theorem hwU_lt (s : ℕ) (hs : s < v) : wU s < NL + v := by simp only [wU, NL]; omega
+
+/-! ## The band decomposition: every global wire index is a `(block, local)` image
+(the density statement — FormalOK's per-role case analysis enumerates exactly these). -/
+
+/-- **Density.** Every global wire index `g < W + Tmp` is exactly one of the seven
+bands — a data-x role, a data-y role, a b-side slot, an a-side slot, or one of the
+three temporary bands, each with its `(block, local wire)` coordinates in range.
+Together with `ι1_b_*`/`ι2_a_*` this is the "every role is transformed" coverage:
+no coordinate of `Fin W ⊕ Fin Tmp` is outside the schedule's reach. -/
+theorem gw_band_cases (g : ℕ) (hg : g < W + Tmp) :
+    (∃ a s : ℕ, a < v ∧ s < v ∧ g = a * v + s) ∨
+    (∃ a s : ℕ, a < v ∧ s < v ∧ g = N + a * v + s) ∨
+    (∃ b q : ℕ, b < v ∧ q < NR ∧ g = 2 * N + b * NR + q) ∨
+    (∃ a q : ℕ, a < v ∧ q < NR ∧ g = 2 * N + v * NR + a * NR + q) ∨
+    (∃ b c : ℕ, b < v ∧ c < h ∧ g = W + h * b + c) ∨
+    (∃ a c : ℕ, a < v ∧ c < h ∧ g = W + h * v + h * a + c) ∨
+    (∃ a s : ℕ, a < v ∧ s < v ∧ g = W + 2 * h * v + a * v + s) := by
+  have hv0 : 0 < v := by decide
+  have hNR0 : 0 < NR := by decide
+  have hh0 : 0 < h := by decide
+  have hNN : N = v * v := rfl
+  rcases Nat.lt_or_ge g N with hb1 | hb1
+  · refine Or.inl ⟨g / v, g % v, ?_, Nat.mod_lt g hv0, ?_⟩
+    · have hlt : g < v * v := by omega
+      exact (Nat.div_lt_iff_lt_mul hv0).2 hlt
+    · have := Nat.div_add_mod g v
+      omega
+  · rcases Nat.lt_or_ge g (2 * N) with hb2 | hb2
+    · have hsub : g - N < N := by omega
+      rw [hNN] at hsub
+      refine Or.inr (Or.inl ⟨(g - N) / v, (g - N) % v,
+        (Nat.div_lt_iff_lt_mul hv0).2 hsub, Nat.mod_lt _ hv0, ?_⟩)
+      have e : g = N + (g - N) := by omega
+      have := Nat.div_add_mod (g - N) v
+      rw [e, Nat.mul_comm v ((g - N) / v)]
+      omega
+    · rcases Nat.lt_or_ge g (2 * N + v * NR) with hb3 | hb3
+      · have hsub : g - 2 * N < v * NR := by omega
+        refine Or.inr (Or.inr (Or.inl ⟨(g - 2 * N) / NR, (g - 2 * N) % NR,
+          (Nat.div_lt_iff_lt_mul hNR0).2 hsub, Nat.mod_lt _ hNR0, ?_⟩))
+        have e : g = 2 * N + (g - 2 * N) := by omega
+        have := Nat.div_add_mod (g - 2 * N) NR
+        rw [e, Nat.mul_comm NR ((g - 2 * N) / NR)]
+        omega
+      · rcases Nat.lt_or_ge g W with hb4 | hb4
+        · have hsub : g - (2 * N + v * NR) < v * NR := by omega
+          refine Or.inr (Or.inr (Or.inr (Or.inl ⟨(g - (2 * N + v * NR)) / NR,
+            (g - (2 * N + v * NR)) % NR, (Nat.div_lt_iff_lt_mul hNR0).2 hsub,
+            Nat.mod_lt _ hNR0, ?_⟩)))
+          have e : g = 2 * N + v * NR + (g - (2 * N + v * NR)) := by omega
+          have := Nat.div_add_mod (g - (2 * N + v * NR)) NR
+          rw [e, Nat.mul_comm NR ((g - (2 * N + v * NR)) / NR)]
+          omega
+        · rcases Nat.lt_or_ge g (W + h * v) with hb5 | hb5
+          · have hsub : g - W < h * v := by omega
+            refine Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨(g - W) / h, (g - W) % h,
+              (Nat.div_lt_iff_lt_mul hh0).2 hsub, Nat.mod_lt _ hh0, ?_⟩))))
+            have e : g = W + (g - W) := by omega
+            have := Nat.div_add_mod (g - W) h
+            rw [e, Nat.mul_comm h ((g - W) / h)]
+            omega
+          · rcases Nat.lt_or_ge g (W + h * v + h * v) with hb6 | hb6
+            · have hsub : g - (W + h * v) < h * v := by omega
+              refine Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨
+                (g - (W + h * v)) / h, (g - (W + h * v)) % h,
+                (Nat.div_lt_iff_lt_mul hh0).2 hsub, Nat.mod_lt _ hh0, ?_⟩)))))
+              have e : g = W + h * v + (g - (W + h * v)) := by omega
+              have := Nat.div_add_mod (g - (W + h * v)) h
+              rw [e, Nat.mul_comm h ((g - (W + h * v)) / h)]
+              omega
+            · have hsub : g - (W + 2 * (h * v)) < N := by
+                  have : W + Tmp = W + 2 * (h * v) + N := by
+                    simp only [Tmp, hNN, Nat.mul_add]; omega
+                  omega
+              refine Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨
+                (g - (W + 2 * (h * v))) / v, (g - (W + 2 * (h * v))) % v,
+                (Nat.div_lt_iff_lt_mul hv0).2 (by rw [hNN] at hsub; exact hsub),
+                Nat.mod_lt _ hv0, ?_⟩)))))
+              have e : g = W + 2 * (h * v) + (g - (W + 2 * (h * v))) := by omega
+              have := Nat.div_add_mod (g - (W + 2 * (h * v))) v
+              rw [e, Nat.mul_comm v ((g - (W + 2 * (h * v))) / v)]
+              omega
 
 /-! ## Chunk/instruction machinery (inlined verbatim from the R8 QHNet file) -/
 
