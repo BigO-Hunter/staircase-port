@@ -1302,3 +1302,26 @@ QHNetStair (expect only real-file-context errors: EMt_sum's filterMap/sum chain,
 histMoment_netS's show-from-rfl — both mirror proved F5 code); (2) fix + commit per fix;
 (3) `n5_axcheck.lean` — expect sorryAx road = netS_FormalOK + Platform stubs only;
 (4) then STUB 5 (FormalOK dense port, Stage-2 scale).
+
+## R8-FAMILY LANE (darkhipo, 2026-11-06): both plain-line hypotheses resolved NEGATIVE — sister-leaf map updated
+
+Audited `Thm_bitNetR7plain_mom_final.lean` (prove2me_workspace) per GAP_MAP. Verdicts:
+
+* **H1 `net0Pnd_formalOK_of_FB0` — GAP NAMED.** Same class as our STUB-5: the prescribed
+  FB0 route is provably blocked (`Thm_pnd_obstruction`: `(1773,1774) ∈ idxD` with
+  non-nested rank-one projectors; repair does not touch `ch0P`). Route = correct
+  densSupG/nestOK + r6 NB_formalOK port (Stage-2 scale, same as ours).
+* **H2 `net0Pnd_moment_le_oppbank` — FALSE** (offline certificate, `r8_sim.py` committed
+  in prove2me_workspace @ a18988d; fidelity anchored on 54,290 records + both Lean-proved
+  move-membership facts): net0Pnd children **1,712,831,505** vs bitR8's 749,446,467
+  (fails as τ→0); rankSum **55,476,226,113** vs 55,395,128,481 (fails at τ=1). Same
+  counting refutes `Oppbank.mom_eq`. So H1∧H2 cannot both hold: the net0P/net0Pnd
+  witness line is a dead end for the moment clause; the 4 R8 leaves
+  (fefc194e/oppbank_net/2e2fbbed/cxNetR8) need a REBUILT witness whose child-width
+  histogram matches/dominates bitR8. Full receipts:
+  prove2me_workspace/Theorems/R8_FAMILY_GAP_CERTIFICATES.md (commit a18988d).
+
+**RESUME POINT (R8 lane):** stub `R8.cxNetR8G` (dd643349) verbatim in prove2me_workspace
+(`Thm_R8_cxNetR8G.lean`, platform-statement-exact, 1 sorry); then the gap-named witness
+construction is the R8-lane Stage-0-class task (regenerate edge-family specs so the
+SideR/DataR/AuxR child counts match bitR8's 749M children, not 1.71G).
