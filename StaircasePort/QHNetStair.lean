@@ -791,11 +791,12 @@ theorem EMt_data (τ : ℝ) : EMt τ dataE
       = [(((439 : ℕ) : ℝ) / 529) ^ τ, (((21 : ℕ) : ℝ) / 529) ^ τ,
          (((18 : ℕ) : ℝ) / 529) ^ τ] := rfl
   have hss : (rs'.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum
-      = 6 * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+      = (((6 : ℕ) : ℝ)) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
     rw [sum_map_const_of _ _ _ hr2, hr3]
   unfold EMt
-  rw [hr1, List.map_append, List.sum_append, hrun, List.sum_cons, List.sum_cons, List.sum_nil,
-    hss]
+  rw [hr1, List.map_append, List.sum_append, hrun]
+  simp only [List.sum_cons, List.sum_nil]
+  rw [hss]
   ring
 
 theorem EMt_aux (τ : ℝ) : EMt τ auxE
@@ -803,11 +804,12 @@ theorem EMt_aux (τ : ℝ) : EMt τ auxE
   have hrun : (auxRuns 19).map (fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ)
       = [(((23 : ℕ) : ℝ) / 529) ^ τ, (((483 : ℕ) : ℝ) / 529) ^ τ] := rfl
   unfold EMt
-  rw [auxE_runs, hrun, List.sum_cons, List.sum_nil]
+  rw [auxE_runs, hrun]
+  simp only [List.sum_cons, List.sum_nil, add_zero]
 
 theorem EMt_side (τ : ℝ) (r : ℕ) (hr23 : r ≤ 23) (hr : 23 < 2 * r) :
     EMt τ (sideE r)
-      = (((2 * r - 23 : ℕ) : ℝ) / 529) ^ τ + (23 - r) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+      = (((2 * r - 23 : ℕ) : ℝ) / 529) ^ τ + ((23 - r : ℕ) : ℝ) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
   obtain ⟨Q, -, rs', hr1, hr2, hr3⟩ := sideE_h r hr23
   have hlen4 : (runPairs (sideRuns 23 529 r)).length = 2 * r - 23 := by
     rw [sideRuns, if_pos hr]
@@ -817,7 +819,7 @@ theorem EMt_side (τ : ℝ) (r : ℕ) (hr23 : r ≤ 23) (hr : 23 < 2 * r) :
     rw [hlen4] at h4
     omega
   have hss : (rs'.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum
-      = (23 - r) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+      = ((23 - r : ℕ) : ℝ) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
     rw [sum_map_const_of _ _ _ hr2, hlen]
   unfold EMt
   rw [hr1, sideRuns, if_pos hr, List.map_append, List.sum_append]
