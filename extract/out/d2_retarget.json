@@ -1,0 +1,113 @@
+{
+ "geometry": {
+  "h": 23,
+  "v": 1771,
+  "R": 28866,
+  "wEnt": 3542,
+  "wAuxEnd": 32408,
+  "NL": 32431,
+  "N": 3136441,
+  "W": 108516254,
+  "Tmp": 3217907,
+  "cbase": 1773
+ },
+ "maxNode": 64042,
+ "nNodes": 64042,
+ "adds": 62271,
+ "cbase": 1773,
+ "maxCode": 65815,
+ "codeWidth": 17,
+ "orientation": "identity",
+ "limbFields": 3855,
+ "limbCount": 9,
+ "seedMaxCode": 65109,
+ "verdicts": [
+  [
+   "geometry.R == frozen R",
+   true,
+   "R=28866"
+  ],
+  [
+   "geometry.NL == 2v+NR+h",
+   true,
+   "NL=32431"
+  ],
+  [
+   "geometry.W == 2N+2vR",
+   true,
+   "W=108516254"
+  ],
+  [
+   "geometry.Tmp == 46v+N",
+   true,
+   "Tmp=3217907"
+  ],
+  [
+   "R==28866 (D2Data)",
+   true,
+   ""
+  ],
+  [
+   "NL==32431 (R7; R8 was 31359)",
+   true,
+   "NL=32431"
+  ],
+  [
+   "node span 1..64042",
+   true,
+   "min=1 max=64042 distinct=64042"
+  ],
+  [
+   "node count == v + adds",
+   true,
+   "nodes=64042 v+adds=64042"
+  ],
+  [
+   "cbase == v+2 == 1773",
+   true,
+   ""
+  ],
+  [
+   "16-bit fields are INSUFFICIENT for the d2 word",
+   true,
+   "maxCode=65815 > 65535"
+  ],
+  [
+   "17-bit fields suffices",
+   true,
+   "maxCode=65815 <= 131071"
+  ],
+  [
+   "all initial wire codes < 2^width",
+   true,
+   "max init code=65109"
+  ],
+  [
+   "count('src' starts) == v",
+   true,
+   "n=1771"
+  ],
+  [
+   "pack/decode round-trips (reversed-field convention pinned)",
+   true,
+   "orientation=identity"
+  ],
+  [
+   "limb count * 3855 fields covers NL",
+   true,
+   "limbs=9"
+  ]
+ ],
+ "dependencies_present": {},
+ "dependencies_absent": {
+  "R6 Defs51 (genF/genStepF/mvF/codeOf/Loc: injS/retS/GREC Rec encoder)": [],
+  "R6 GenData_1 (Rec/chunk label packs SG1_*)": [],
+  "R6 GenData_2 (stage-2 packs SG2_*)": [],
+  "R6 Defs52 (NB program assembly)": []
+ },
+ "not_delivered": [
+  "Rec/LInstr list (needs the R6 Loc/GenData encoder)",
+  "cs1/cs2 chunk lists",
+  "stage-2 (SG2) packs"
+ ]
+}

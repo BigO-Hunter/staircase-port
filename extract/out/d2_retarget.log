@@ -1,0 +1,20 @@
+PND geometry.R == frozen R                               PASS R=28866
+PND geometry.NL == 2v+NR+h                               PASS NL=32431
+PND geometry.W == 2N+2vR                                 PASS W=108516254
+PND geometry.Tmp == 46v+N                                PASS Tmp=3217907
+PND R==28866 (D2Data)                                    PASS 
+PND NL==32431 (R7; R8 was 31359)                         PASS NL=32431
+PND node span 1..64042                                   PASS min=1 max=64042 distinct=64042
+PND node count == v + adds                               PASS nodes=64042 v+adds=64042
+PND cbase == v+2 == 1773                                 PASS 
+PND 16-bit fields are INSUFFICIENT for the d2 word       PASS maxCode=65815 > 65535
+PND 17-bit fields suffices                               PASS maxCode=65815 <= 131071
+PND all initial wire codes < 2^width                     PASS max init code=65109
+PND count('src' starts) == v                             PASS n=1771
+PND pack/decode round-trips (reversed-field convention pinned) PASS orientation=identity
+PND limb count * 3855 fields covers NL                   PASS limbs=9
+DEP ABSENT R6 Defs51 (genF/genStepF/mvF/codeOf/Loc: injS/retS/GREC Rec encoder) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
+DEP ABSENT R6 GenData_1 (Rec/chunk label packs SG1_*) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
+DEP ABSENT R6 GenData_2 (stage-2 packs SG2_*) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
+DEP ABSENT R6 Defs52 (NB program assembly) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
+wrote /Users/dmitri.arkhipov/bigo-campaign/staircase-port/StaircasePort/D2Chunks.lean (130 lines)
