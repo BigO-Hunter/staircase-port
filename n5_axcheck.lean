@@ -14,3 +14,9 @@ open StaircasePort.QS
 #print axioms d2_childCount_eq_S0
 #print axioms d2_rankSum_eq_S1
 #print axioms dfltE_EdgeQ
+#print axioms exists_dataE
+#print axioms exists_auxE
+#print axioms exists_sideE
+#print axioms antiDiagQ_det_ne_zero
+#print axioms sideA_rank
+#print axioms sideA_hcor
