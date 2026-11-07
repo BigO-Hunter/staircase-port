@@ -1285,8 +1285,20 @@ inside Rewire's discharged witnesses).
 single-file check waits on Corner/Projector/Rewire oleans — peers grinding, driver
 /tmp/g2_driver.py serializes behind them and falls back to its own calm-window
 `lake build StaircasePort.Rewire`, logs /tmp/g2_check.log).
-**RESUME POINT:** (1) `grep Rewire.olean` → driver auto-elaborates QHNetStair (expect
-first-pass tactic errors in the ~300 new lines: `List.filterMap_cons` match reduction,
-`simp only` proj-iota on literal pairs, atom-matching of `((w:ℕ):ℝ)/529)^τ` between the
-netG/bitR7 unfoldings); (2) fix + commit per fix; (3) `n5_axcheck.lean` — expect the
-sorryAx road = netS_FormalOK + Platform stubs only; (4) then STUB 5 (FormalOK port).
+**PRE-FLIGHT VERIFIED (scratch vs cached oleans, no Rewire needed):** /tmp/g2_scratch.lean
+(dominance kernel netG_le_bitR7 with all 37 facts + linarith, sum_map_const_of,
+map_const_replicate, filterMap_none_nil) and /tmp/g2_scratch2.lean (emt_data/aux/side,
+side_sum, fm_edge_const/map, rep_sum) BOTH rc=0 — tactic fixes banked: rw-with-implication
+side goals (feed ih its arg), push_cast [List.length_cons] before ring in length-cons
+inductions, List.replicate_succ in map-const, `mul_le_mul_of_nonneg_right` with TYPED show
+facts (Nat.cast_le.2 + bare `by norm_num` both fail on unassigned metavars; `by norm_num`
+on the cast comparison directly works), Real.rpow_nonneg for the τ-atom positivity,
+`add_zero` in sum-consumption simp sets, atom forms `((w:ℕ):ℝ)`/`((23 - r : ℕ) : ℝ)` kept
+cast-outer so netG/bitR7 unfoldings match. STUB-5 gap MEASURED + documented in-file
+(commits f432f2c/88a2714-class): FormalOK fails at untouched roles — dense-program port =
+Stage 2. Wound R2125608933 records the false-stub process gap.
+**RESUME POINT:** (1) `grep Rewire.olean` → driver /tmp/g2_driver.py auto-elaborates
+QHNetStair (expect only real-file-context errors: EMt_sum's filterMap/sum chain,
+histMoment_netS's show-from-rfl — both mirror proved F5 code); (2) fix + commit per fix;
+(3) `n5_axcheck.lean` — expect sorryAx road = netS_FormalOK + Platform stubs only;
+(4) then STUB 5 (FormalOK dense port, Stage-2 scale).
