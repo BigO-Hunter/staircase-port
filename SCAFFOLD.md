@@ -1219,3 +1219,43 @@ documented stubs; histMoment_expansion [propext, Classical.choice, Quot.sound] a
 powSum_expansion [propext, Quot.sound] are STUB-FREE; d2_childCount_eq_S0 / d2_rankSum_eq_S1
 [propext] only. Package build: attempts continue (oleans accumulate); verdict line = grep
 "Build completed successfully" /tmp/f5_build.log.
+
+## STAGE 1 RESUME (2026-11-06, lane-F5b sp-f5b) — stubs 1-3 DISCHARGED (committed 3c2356f);
+## build pending on the Corner chain
+Committed (QHNetStair.lean, +221/−38):
+1. **exists_dataE PROVED** — data_edge_stair at the witness labels: hdet := stair_data_cert
+   (defeq: stairMQ = stairPairM witness, stairCornerQOf = the corStairQ Matrix.of),
+   hcorner := isPiv_stairCorner_witness (stairCornerRuns 23 529 defeq the literal list).
+2. **exists_auxE PROVED** — aux1_edge_Stair at generic labels x := const 1, y := const 1/23
+   (aux_hxy lemma; hx/hy trivial); the delivered run list IS `auxRuns 19` (defeq).
+3. **exists_sideE PROVED (r ≤ 23)** — side1_edge_Stair at the same generic labels with the
+   NEW explicit witness `sideA r` (block form [I_r Y₂; 0 0]): sideX/sideY factorization
+   (sideYX = 1, sideXY = sideA), sideA_idem by mul_assoc, sideA_rank via N52.rank_eq_trace
+   (trace = r by sum_indicator_subset), corner block = anti-diagonal ⇒ det ≠ 0 by the NEW
+   antiDiagQ_det_ne_zero (Dᵀ·D = I orthogonality route, no det computation).
+4. **PREDICATE DELTA (honest, documented in-file + header)**: dataPred/sidePred restated to
+   the shape the staircase machinery DELIVERS — `runs = certified list ++ rs'` with rs'
+   existential but COUNT-pinned (6 data singletons; runPairs(sideRuns).length + rs'.length
+   = r side singletons) instead of the pinned stairSingles/exact-sideRuns lists. DataE''s
+   rs' was ALREADY existential in Rewire — pinning it here was unjustified. Consequences:
+   data/side RunOK now rides EdgeQ's own first conjunct (dataE_runOK/sideE_runOK, replacing
+   dataE_runs/sideE_runs); EMq_data/EMq_side cross-ties are unchanged (they were never
+   about dataE/the scheduled edges); the moment chain (powSum_eq_edges → netS_hist_eq stub
+   → netS_powSum_eq/netS_dominance) is statement-identical.
+5. QHNetStair.lean NOW IMPORTS StaircasePort.Rewire (no cycle — nothing imports QHNetStair;
+   Rewire's own sorryAx road = isPiv_stairCorner_contract + the 3 Platform stubs, all
+   documented). `open scoped Kronecker` added locally.
+
+**BUILD STATE / RESUME POINT**: the single-file check (`lake env lean
+StaircasePort/QHNetStair.lean`, driver /tmp/opencode/f5b_check_loop.py → /tmp/f5b_check.log,
+60 attempts × 90s) fails fast until `.lake/build/lib/lean/StaircasePort/Rewire.olean` EXISTS
+— Corner/Projector/Rewire oleans were NEVER landed (peer builds
+`lake build StaircasePort.Corner` / `Submission` / `StaircasePort`×2 grinding since 15:22
+under the memory-admission reaper, free_gb 1.86, swap 6.96/8.0; reaps continuing). Resume:
+(1) check Rewire.olean exists; if not, one calm-window driver `LAKE_JOBS=1 lake build
+StaircasePort.Rewire` (detached, python Popen start_new_session=True); (2) then the check
+loop elaborates QHNetStair (expect first-pass tactic errors in the NEW ~200 ln — sideYX/
+sideXY/antiDiagQ Fin-coercion fights are the likely spots; fixes are local); (3) re-run
+n5_axcheck.lean (expect the sorryAx road to drop from 5 stubs to 2: netS_hist_eq +
+netS_FormalOK); (4) commit + tick this section. Do NOT restart the Corner chain from
+scratch — peers are already on it; oleans accumulate.
