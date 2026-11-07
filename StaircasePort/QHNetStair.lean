@@ -13,9 +13,11 @@ WHAT IS PROVED HERE (no new data invented):
 * `netS_RunsOK` — every edge carries a certified run list (stairDataRuns ++ stairSingles
   via Data.lean `stairRunOK`; auxRuns 19; sideRuns 23 529 r by arithmetic; dfltE vacuous);
 * `netS_EdgesOK_large` — uniform good-prime clearance (Q witnesses from the pickE stubs);
-* the D3 moment bridge REDUCTION: one list identity (`netS_hist_eq`, the schedule-multiplicity
-  stub) implies BOTH `netS_powSum_eq` (powSum q netHist = bitR7PowSum q, the D3 shape against
-  the frozen MomOracle) AND the leaf's moment dominance (via `histMoment_expansion`);
+* the D3 moment bridge: `netS_dominance` PROVED (lane G2) — the net's grouped width
+  multiset `netG` is entrywise dominated by bitR7's frozen counts, so the leaf's
+  moment clause closes with NO multiplicity port. The former `netS_hist_eq`/`netS_powSum_eq`
+  EQUALITY claims were REMOVED (verdict below): the class skeleton's 16,018 runs do
+  not reproduce the producer's 1,905,413,587-child readout tree;
 * the leaf assembly `staircase_leaf_mod_stubs` in the exact `BitNetMomStmtG` shape.
 
 THE DOCUMENTED STUBS (Platform-stub pattern; every one names its discharge route):
@@ -29,9 +31,11 @@ THE DOCUMENTED STUBS (Platform-stub pattern; every one names its discharge route
 3. DISCHARGED (this lane, F5b): `exists_sideE r` — Rewire's `side1_edge_Stair` at generic
    labels with the explicit rank-r idempotent `sideA r` (block form [I_r Y₂; 0 0]; rank by
    N52.rank_eq_trace; corner block = anti-diagonal, det ≠ 0 by orthogonality).
-4. `netS_hist_eq`   — the net's child-width multiset is bitR7 expanded. This is the producer
-   readout-schedule multiplicity port (deferred.py readout/V-gate structure ↔ d2HIST block
-   structure); the R8 line carried the identical residual (NetMom `MomEqStmt` open).
+4. REMOVED (lane G2): `netS_hist_eq` — the equality is FALSE for the class skeleton
+   (16,018 runs vs 1,905,413,587 producer children); the multiplicity layer
+   (d2SIGMA/d2VLEAFSLOTS/d2LATEV, the 485..527 readout widths) stays the Stage-1.5
+   port. The leaf's DOMINANCE clause is now proved directly (`netS_dominance` via
+   `netG_le_bitR7`: entrywise multiplicity dominance, 15 decided comparisons).
 5. `netS_FormalOK`  — the formal-frame calculus port (Stage 2): flagBasis_stair (Rewire,
    proved) + formal_labels/genF_labGates machinery over the D2 gate schedule.
 
@@ -689,29 +693,305 @@ theorem powSum_expansion (q : ℕ) (h : List (ℕ × ℕ)) :
   simp [Mom.powSum, List.map_flatMap, sum_flatMap, List.map_replicate, List.sum_replicate,
     smul_eq_mul, mul_one]
 
-/-- STUB 4 (moment/schedule multiplicity): the net's child-width multiset is `Jain.bitR7`
-expanded. This is the producer readout-schedule port (deferred.py readout/V-gate structure
-↔ d2HIST block structure — the multiplicity layer of the D2 dataset); the R8 line carried
-the identical residual (NetMom `MomEqStmt`). Once discharged, `netS_powSum_eq` and
-`netS_dominance` below close with NO further mathematics. -/
-theorem netS_hist_eq :
-    QHNet.hist netS = IntMul.Kappa.Jain.bitR7.flatMap fun p => List.replicate p.2 (p.1, 1) := by
-  sorry
+/-! ### The former STUB 4 — verdict (lane G2, measured): the list identity is FALSE here.
 
-/-- **D3 bridge (the lane's target statement)**: `powSum q netHist = bitR7PowSum q` —
-proved modulo STUB 4; kernel-decidable per q once the multiplicity layer pins the
-per-class counts (the S₀/S₁ cross-ties below are the q = 0, 1 instances). -/
-theorem netS_powSum_eq (q : ℕ) :
-    Mom.powSum q (QHNet.hist netS) = Mom.bitR7PowSum q := by
-  rw [netS_hist_eq]
-  exact powSum_expansion q IntMul.Kappa.Jain.bitR7
+`QHNet.hist netS` (one child per run of every edge occurrence, Defs4 `widths`) has
+16,018 children: 1771 data-class occurrences × 9 pinned runs (widths 439, 21, 18 and
+six 1s; `dataPred`), 1 aux occurrence (widths 23, 483), and the 11 side classes
+r = 12..22 (width 2r−23 plus the `sidePred`-pinned 23−r width-1 singles). The
+producer histogram has 1,905,413,587 children — the schedule-multiplicity layer
+(d2SIGMA readout frames, d2VLEAFSLOTS/d2LATEV, the 485..527 readout widths) is NOT
+represented in the class skeleton and remains the Stage-1.5 port (the R8 line
+carried the identical residual, NetMom `MomEqStmt`). So the former `netS_hist_eq`
+list identity and the derived `powSum` EQUALITY (`netS_powSum_eq`, removed with it)
+are not provable as stated. The leaf needs only DOMINANCE, which closes below with
+NO multiplicity port: the net's grouped width multiset `netG` is entrywise dominated
+by the frozen bitR7 counts (all 15 coefficient comparisons are decided Naturals), so
+`histMoment netG ≤ histMoment bitR7` holds termwise for every τ ≥ 0. -/
 
-/-- The leaf's moment clause, from the same single stub. -/
+/-- Per-edge τ-moment: `∑_{ρ ∈ e.runs} (ρ.2.2 / 529) ^ τ` (the τ-analogue of `EMq`). -/
+noncomputable def EMt (τ : ℝ) (e : Edge 529) : ℝ :=
+  (e.runs.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum
+
+/-- Sum of a mapped list on which `f` is constant. -/
+theorem sum_map_const_of {α : Type*} (f : α → ℝ) (c : ℝ) (l : List α)
+    (h : ∀ x ∈ l, f x = c) : (l.map f).sum = l.length * c := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+      simp only [List.map_cons, List.sum_cons, h a (by simp)]
+      rw [ih]
+      ring
+
+/-- `map (fun _ => b)` is a replicate. -/
+theorem map_const_replicate {α β : Type*} (b : β) (l : List α) :
+    (l.map fun _ => b) = List.replicate l.length b := by
+  induction l with
+  | nil => rfl
+  | cons a l ih => simp [ih]
+
+/-- `filterMap edgeOf` over a mapped constant edge is a replicate. -/
+theorem filterMap_edge_const (e : Edge 529) (l : List ℕ) :
+    (l.map (fun _ => Instr.edge (ι 0) e)).filterMap Instr.edgeOf = List.replicate l.length e := by
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+      have hedge : (Instr.edge (ι 0) e : NI).edgeOf = some e := rfl
+      rw [List.map_cons, List.filterMap_cons, hedge, ih]
+      rfl
+
+/-- `filterMap edgeOf` over a mapped edge family is the mapped family. -/
+theorem filterMap_edge_map (g : ℕ → Edge 529) (l : List ℕ) :
+    (l.map (fun x => Instr.edge (ι 0) (g x))).filterMap Instr.edgeOf = l.map g := by
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+      have hedge : (Instr.edge (ι 0) (g a) : NI).edgeOf = some (g a) := rfl
+      rw [List.map_cons, List.filterMap_cons, hedge, ih]
+      rfl
+
+/-- A filterMap whose function is `none` on the list is empty. -/
+theorem filterMap_none_nil {α β : Type*} (f : α → Option β) (l : List α)
+    (h : ∀ x ∈ l, f x = none) : l.filterMap f = [] := by
+  induction l with
+  | nil => rfl
+  | cons a l ih => rw [List.filterMap_cons, h a (by simp), ih]
+
+theorem part1_edges : part1.filterMap Instr.edgeOf = List.replicate D2.v dataE := by
+  show ((List.range D2.v).map fun t => Instr.edge (ι (D2.wY t)) dataE).filterMap Instr.edgeOf = _
+  rw [filterMap_edge_map]
+  simp [map_const_replicate]
+
+theorem part2_edges : part2.filterMap Instr.edgeOf = auxE :: sideRanks.map (fun r => sideE r) := by
+  show (Instr.edge (ι (D2.wS 0)) auxE ::
+    (sideRanks.map fun r => Instr.edge (ι (D2.wS (r + 1))) (sideE r))).filterMap Instr.edgeOf = _
+  rw [List.filterMap_cons, show (Instr.edge (ι (D2.wS 0)) auxE : NI).edgeOf = some auxE from rfl,
+    filterMap_edge_map]
+  rfl
+
+theorem part3_edges : part3.filterMap Instr.edgeOf = List.replicate D2.Rslots dfltE := by
+  show ((List.range D2.Rslots).map fun s => Instr.edge (ι (D2.wS (s + 400))) dfltE).filterMap
+    Instr.edgeOf = _
+  rw [filterMap_edge_map]
+  simp [map_const_replicate]
+
+theorem EMt_dflt (τ : ℝ) : EMt τ dfltE = 0 := rfl
+
+theorem EMt_data (τ : ℝ) : EMt τ dataE
+    = (((439 : ℕ) : ℝ) / 529) ^ τ + (((21 : ℕ) : ℝ) / 529) ^ τ
+      + (((18 : ℕ) : ℝ) / 529) ^ τ + 6 * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+  obtain ⟨Q, -, rs', hr1, hr2, hr3⟩ := dataE_h
+  have hrun : (stairDataRuns 23 529).map (fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ)
+      = [(((439 : ℕ) : ℝ) / 529) ^ τ, (((21 : ℕ) : ℝ) / 529) ^ τ,
+         (((18 : ℕ) : ℝ) / 529) ^ τ] := rfl
+  have hss : (rs'.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum
+      = 6 * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+    rw [sum_map_const_of _ _ _ hr2, hr3]
+  unfold EMt
+  rw [hr1, List.map_append, List.sum_append, hrun, List.sum_cons, List.sum_cons, List.sum_nil,
+    hss]
+  ring
+
+theorem EMt_aux (τ : ℝ) : EMt τ auxE
+    = (((23 : ℕ) : ℝ) / 529) ^ τ + (((483 : ℕ) : ℝ) / 529) ^ τ := by
+  have hrun : (auxRuns 19).map (fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ)
+      = [(((23 : ℕ) : ℝ) / 529) ^ τ, (((483 : ℕ) : ℝ) / 529) ^ τ] := rfl
+  unfold EMt
+  rw [auxE_runs, hrun, List.sum_cons, List.sum_nil]
+
+theorem EMt_side (τ : ℝ) (r : ℕ) (hr23 : r ≤ 23) (hr : 23 < 2 * r) :
+    EMt τ (sideE r)
+      = (((2 * r - 23 : ℕ) : ℝ) / 529) ^ τ + (23 - r) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+  obtain ⟨Q, -, rs', hr1, hr2, hr3⟩ := sideE_h r hr23
+  have hlen4 : (runPairs (sideRuns 23 529 r)).length = 2 * r - 23 := by
+    rw [sideRuns, if_pos hr]
+    simp [runPairs]
+  have hlen : rs'.length = 23 - r := by
+    have h4 := hr3
+    rw [hlen4] at h4
+    omega
+  have hss : (rs'.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum
+      = (23 - r) * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+    rw [sum_map_const_of _ _ _ hr2, hlen]
+  unfold EMt
+  rw [hr1, sideRuns, if_pos hr, List.map_append, List.sum_append]
+  simp only [List.map_cons, List.sum_cons, List.map_nil, List.sum_nil]
+  rw [hss]
+  ring
+
+theorem side_sum (τ : ℝ) :
+    (sideRanks.map (fun r => EMt τ (sideE r))).sum
+      = (((1 : ℕ) : ℝ) / 529) ^ τ + (((3 : ℕ) : ℝ) / 529) ^ τ + (((5 : ℕ) : ℝ) / 529) ^ τ
+        + (((7 : ℕ) : ℝ) / 529) ^ τ + (((9 : ℕ) : ℝ) / 529) ^ τ + (((11 : ℕ) : ℝ) / 529) ^ τ
+        + (((13 : ℕ) : ℝ) / 529) ^ τ + (((15 : ℕ) : ℝ) / 529) ^ τ + (((17 : ℕ) : ℝ) / 529) ^ τ
+        + (((19 : ℕ) : ℝ) / 529) ^ τ + (((21 : ℕ) : ℝ) / 529) ^ τ
+        + 66 * (((1 : ℕ) : ℝ) / 529) ^ τ := by
+  rw [show sideRanks = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] from rfl]
+  simp only [List.map_cons, List.sum_cons, List.map_nil, List.sum_nil]
+  rw [EMt_side τ 12 (by omega) (by norm_num), EMt_side τ 13 (by omega) (by norm_num),
+    EMt_side τ 14 (by omega) (by norm_num), EMt_side τ 15 (by omega) (by norm_num),
+    EMt_side τ 16 (by omega) (by norm_num), EMt_side τ 17 (by omega) (by norm_num),
+    EMt_side τ 18 (by omega) (by norm_num), EMt_side τ 19 (by omega) (by norm_num),
+    EMt_side τ 20 (by omega) (by norm_num), EMt_side τ 21 (by omega) (by norm_num),
+    EMt_side τ 22 (by omega) (by norm_num)]
+  simp only [Nat.reduceSub, Nat.reduceMul]
+  ring
+
+/-- The net's moment = the sum of per-edge moments over the schedule (τ-analogue of
+`powSum_eq_edges`). -/
+theorem histMoment_netS (τ : ℝ) :
+    IntMul.Kappa.histMoment (QHNet.hist netS) 529 τ
+      = ((QHNet.edges netS).map fun e => EMt τ e).sum := by
+  have h1 : ∀ rs : List (ℕ × ℕ × ℕ),
+      (((rs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)).map
+          fun p => (p.2 : ℝ) * ((p.1 : ℝ) / 529) ^ τ).sum
+        = (rs.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum := by
+    intro rs
+    induction rs with
+    | nil => simp
+    | cons ρ rs ih =>
+        simp only [List.map_cons, List.sum_cons, one_mul]
+        rw [ih]
+  have key : ∀ es : List (Edge 529),
+      (((es.flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)).map
+          fun p => (p.2 : ℝ) * ((p.1 : ℝ) / 529) ^ τ).sum
+        = (es.map fun e => (e.runs.map fun ρ => (((ρ.2.2 : ℕ) : ℝ) / 529) ^ τ).sum).sum := by
+    intro es
+    induction es with
+    | nil => simp
+    | cons e es ih =>
+        simp only [List.flatMap_cons, List.map_append, List.sum_append, List.map_cons,
+          List.sum_cons]
+        rw [h1 e.runs, ih]
+  show (((QHNet.hist netS).map fun p => (p.2 : ℝ) * ((p.1 : ℝ) / 529) ^ τ)).sum = _
+  rw [show QHNet.hist netS =
+      ((QHNet.edges netS).flatMap fun e => e.runs.map fun ρ => (ρ.2.2 : ℕ)).map fun w => (w, 1)
+      from rfl]
+  exact key (QHNet.edges netS)
+
+/-- The net's edge schedule carries exactly `D2.v` data occurrences, one aux, the 11
+side classes, and `D2.Rslots` childless exit edges. -/
+theorem EMt_sum (τ : ℝ) :
+    ((QHNet.edges netS).map fun e => EMt τ e).sum
+      = (D2.v : ℝ) * EMt τ dataE + EMt τ auxE
+        + (sideRanks.map (fun r => EMt τ (sideE r))).sum := by
+  have hprog : netS.prog = ((part1 ++ part2) ++ part3) ++ d2Ops.flatMap gatesOf := rfl
+  have hnil : (d2Ops.flatMap gatesOf).filterMap Instr.edgeOf = [] :=
+    filterMap_none_nil _ _ (fun x hx => by
+      obtain ⟨op, hop, hx⟩ := List.mem_flatMap.1 hx
+      exact gatesOf_none op x hx)
+  show (((netS.prog.filterMap Instr.edgeOf).map fun e => EMt τ e).sum) = _
+  rw [hprog, List.filterMap_append, hnil, List.append_nil]
+  rw [List.filterMap_append, part1_edges]
+  rw [part2_edges, part3_edges]
+  simp only [List.map_append, List.sum_append, List.map_cons, List.sum_cons, List.map_nil,
+    List.sum_nil, List.map_replicate, List.length_replicate, EMt_dflt, sum_map_const_of,
+    D2.v_eq, D2.Rslots_eq]
+  ring
+
+/-- The net's grouped child-width multiset (measured: 16,018 children in 15 widths —
+see the former-STUB-4 verdict above). -/
+def netG : List (ℕ × ℕ) :=
+  [(1, 10693), (3, 1), (5, 1), (7, 1), (9, 1), (11, 1), (13, 1), (15, 1), (17, 1),
+    (18, 1771), (19, 1), (21, 1772), (23, 1), (439, 1771), (483, 1)]
+
+theorem histMoment_netS_eq (τ : ℝ) :
+    IntMul.Kappa.histMoment (QHNet.hist netS) 529 τ = IntMul.Kappa.histMoment netG 529 τ := by
+  rw [histMoment_netS, EMt_sum, EMt_data, EMt_aux, side_sum, D2.v_eq]
+  simp only [IntMul.Kappa.histMoment, netG, List.map_cons, List.sum_cons, List.map_nil,
+    List.sum_nil]
+  ring
+
+/-- The dominance kernel: the net's grouped multiset is entrywise dominated by the
+frozen bitR7 counts (15 decided coefficient comparisons + 22 nonneg tail terms). -/
+theorem netG_le_bitR7 (τ : ℝ) :
+    IntMul.Kappa.histMoment netG 529 τ ≤
+      IntMul.Kappa.histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
+  simp only [IntMul.Kappa.histMoment, netG, IntMul.Kappa.Jain.bitR7, List.map_cons,
+    List.sum_cons, List.map_nil, List.sum_nil]
+  have h1 : (((10693 : ℕ) : ℝ)) * (((1 : ℕ) : ℝ) / 529) ^ τ ≤ (((1690297301 : ℕ) : ℝ)) * (((1 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h3 : (((1 : ℕ) : ℝ)) * (((3 : ℕ) : ℝ) / 529) ^ τ ≤ (((1356586 : ℕ) : ℝ)) * (((3 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h5 : (((1 : ℕ) : ℝ)) * (((5 : ℕ) : ℝ) / 529) ^ τ ≤ (((354200 : ℕ) : ℝ)) * (((5 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h7 : (((1 : ℕ) : ℝ)) * (((7 : ℕ) : ℝ) / 529) ^ τ ≤ (((3580962 : ℕ) : ℝ)) * (((7 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h9 : (((1 : ℕ) : ℝ)) * (((9 : ℕ) : ℝ) / 529) ^ τ ≤ (((1526602 : ℕ) : ℝ)) * (((9 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h11 : (((1 : ℕ) : ℝ)) * (((11 : ℕ) : ℝ) / 529) ^ τ ≤ (((5093396 : ℕ) : ℝ)) * (((11 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h13 : (((1 : ℕ) : ℝ)) * (((13 : ℕ) : ℝ) / 529) ^ τ ≤ (((2164162 : ℕ) : ℝ)) * (((13 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h15 : (((1 : ℕ) : ℝ)) * (((15 : ℕ) : ℝ) / 529) ^ τ ≤ (((7948248 : ℕ) : ℝ)) * (((15 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h17 : (((1 : ℕ) : ℝ)) * (((17 : ℕ) : ℝ) / 529) ^ τ ≤ (((8476006 : ℕ) : ℝ)) * (((17 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h18 : (((1771 : ℕ) : ℝ)) * (((18 : ℕ) : ℝ) / 529) ^ τ ≤ (((6272882 : ℕ) : ℝ)) * (((18 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h19 : (((1 : ℕ) : ℝ)) * (((19 : ℕ) : ℝ) / 529) ^ τ ≤ (((1639946 : ℕ) : ℝ)) * (((19 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h21 : (((1772 : ℕ) : ℝ)) * (((21 : ℕ) : ℝ) / 529) ^ τ ≤ (((6906900 : ℕ) : ℝ)) * (((21 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h23 : (((1 : ℕ) : ℝ)) * (((23 : ℕ) : ℝ) / 529) ^ τ ≤ (((61280142 : ℕ) : ℝ)) * (((23 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h439 : (((1771 : ℕ) : ℝ)) * (((439 : ℕ) : ℝ) / 529) ^ τ ≤ (((6272882 : ℕ) : ℝ)) * (((439 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have h483 : (((1 : ℕ) : ℝ)) * (((483 : ℕ) : ℝ) / 529) ^ τ ≤ (((61280142 : ℕ) : ℝ)) * (((483 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_le_mul_right' (Nat.cast_le.2 (by norm_num)) _
+  have g485 : 0 ≤ (((545468 : ℕ) : ℝ)) * (((485 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g487 : 0 ≤ (((173558 : ℕ) : ℝ)) * (((487 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g489 : 0 ≤ (((293986 : ℕ) : ℝ)) * (((489 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g491 : 0 ≤ (((580888 : ℕ) : ℝ)) * (((491 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g493 : 0 ≤ (((14168 : ℕ) : ℝ)) * (((493 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g495 : 0 ≤ (((322322 : ℕ) : ℝ)) * (((495 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g497 : 0 ≤ (((17710 : ℕ) : ℝ)) * (((497 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g499 : 0 ≤ (((1129898 : ℕ) : ℝ)) * (((499 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g501 : 0 ≤ (((127512 : ℕ) : ℝ)) * (((501 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g503 : 0 ≤ (((410872 : ℕ) : ℝ)) * (((503 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g505 : 0 ≤ (((99176 : ℕ) : ℝ)) * (((505 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g507 : 0 ≤ (((1186570 : ℕ) : ℝ)) * (((507 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g509 : 0 ≤ (((340032 : ℕ) : ℝ)) * (((509 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g511 : 0 ≤ (((322322 : ℕ) : ℝ)) * (((511 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g513 : 0 ≤ (((106260 : ℕ) : ℝ)) * (((513 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g515 : 0 ≤ (((1583274 : ℕ) : ℝ)) * (((515 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g517 : 0 ≤ (((626934 : ℕ) : ℝ)) * (((517 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g519 : 0 ≤ (((2854852 : ℕ) : ℝ)) * (((519 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g521 : 0 ≤ (((13711082 : ℕ) : ℝ)) * (((521 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g523 : 0 ≤ (((4629394 : ℕ) : ℝ)) * (((523 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g525 : 0 ≤ (((5653032 : ℕ) : ℝ)) * (((525 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  have g527 : 0 ≤ (((6233920 : ℕ) : ℝ)) * (((527 : ℕ) : ℝ) / 529) ^ τ :=
+    mul_nonneg (by norm_num) (Real.rpow_nonneg (by norm_num) τ)
+  linarith
+
+/-- The leaf's moment clause — PROVED (no stub): the net's grouped width multiset is
+entrywise dominated by bitR7's frozen counts, so the τ-moment is dominated termwise. -/
 theorem netS_dominance (τ : ℝ) (hτ : 0 < τ) (hτ1 : τ ≤ 1) :
     IntMul.Kappa.histMoment (QHNet.hist netS) 529 τ ≤
       IntMul.Kappa.histMoment IntMul.Kappa.Jain.bitR7 529 τ := by
-  rw [netS_hist_eq]
-  exact (histMoment_expansion IntMul.Kappa.Jain.bitR7 529 τ).le
+  rw [histMoment_netS_eq]
+  exact netG_le_bitR7 τ
 
 /-- q = 0 cross-tie (zero new axioms: both sides kernel-pinned in D2Data/MomOracle). -/
 theorem d2_childCount_eq_S0 : D2.d2HistChildCount = Mom.bitR7PowSum 0 := by
@@ -734,7 +1014,8 @@ theorem netS_FormalOK (q : ℕ) (hq : q.Prime) (f : ℕ) : netS.FormalOK (q ^ f)
 
 /-- Stage-1 assembly: the ∃-statement of `bitNetR7_mom` (e27d1a90) with
 T = 3217907, C = netS — RunsOK and the EdgesOK clause PROVED (modulo the three
-EdgeQ-existence stubs), FormalOK and the moment clause riding stubs 5 and 4. -/
+EdgeQ-existence stubs), the moment clause PROVED (`netS_dominance`, no stub),
+FormalOK riding stub 5. -/
 theorem staircase_leaf_mod_stubs :
     ∃ (T : ℕ) (C : QHNet (ZMod 2) 108516254 T 529) (q₀ : ℕ),
       C.RunsOK ∧
