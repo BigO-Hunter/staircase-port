@@ -19,13 +19,16 @@ WHAT IS PROVED HERE (no new data invented):
 * the leaf assembly `staircase_leaf_mod_stubs` in the exact `BitNetMomStmtG` shape.
 
 THE DOCUMENTED STUBS (Platform-stub pattern; every one names its discharge route):
-1. `exists_dataE`   — ∃ Q, EdgeQ (data-class edge) Q with runs = stairDataRuns ++ stairSingles.
-   Route: Rewire.lean `data_edge_stair` (PROVED modulo corner contract + Platform stubs) at
-   the witness labels + instantiating DataE''s existential rs' := stairSingles.
-2. `exists_auxE`    — ∃ Q, EdgeQ (aux-class edge) Q with runs = auxRuns 19. Route: the r6
-   `NB.aux_edge_of` construction (platform-Proved; ref/nb_aux_edge_of_solution.lean:561)
-   retargeted to the staircase frame (N7's aux_edge_of_Stair in Rewire.lean).
-3. `exists_sideE r` — same for the side class at rank r (ref/nb_side_edge_of_solution.lean:196).
+1. DISCHARGED (this lane, F5b): `exists_dataE` — direct composition of Rewire's
+   `data_edge_stair` at the witness labels (hdet := stair_data_cert, corner clause :=
+   isPiv_stairCorner_witness). dataPred/sidePred were RESTATED to the shape the staircase
+   machinery delivers (certified run list ++ existential singleton suffix with pinned
+   counts) — the delivered shape's RunOK rides EdgeQ's own first conjunct.
+2. DISCHARGED (this lane, F5b): `exists_auxE` — Rewire's `aux1_edge_Stair` at generic
+   labels (all-ones x, y = 1/23); the delivered run list IS `auxRuns 19`.
+3. DISCHARGED (this lane, F5b): `exists_sideE r` — Rewire's `side1_edge_Stair` at generic
+   labels with the explicit rank-r idempotent `sideA r` (block form [I_r Y₂; 0 0]; rank by
+   N52.rank_eq_trace; corner block = anti-diagonal, det ≠ 0 by orthogonality).
 4. `netS_hist_eq`   — the net's child-width multiset is bitR7 expanded. This is the producer
    readout-schedule multiplicity port (deferred.py readout/V-gate structure ↔ d2HIST block
    structure); the R8 line carried the identical residual (NetMom `MomEqStmt` open).
@@ -41,6 +44,7 @@ and hist are independent of it.
 import StaircasePort.D2Data
 import StaircasePort.MomOracle
 import StaircasePort.Data
+import StaircasePort.Rewire
 import Definitions.Def_IntMul_Kappa_R6_Defs4
 import Mathlib
 
@@ -150,10 +154,20 @@ theorem pickE_spec {P : Edge 529 → Prop} (h : ∃ e, P e) : P (pickE P) := by
   rw [dif_pos h]
   exact Classical.choose_spec h
 
-def dataPred (e : Edge 529) : Prop := ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ e Q ∧ e.runs = D1
+/-- Data class in the shape the staircase machinery DELIVERS (`Rewire.data_edge_stair` =
+`DataE'`): the certified run list plus an existential 6-singleton suffix. The singleton
+COUNT is what the moment algebra consumes (each contributes width 1); the specific
+positions are the pivot extraction's choice and are pinned nowhere downstream. -/
+def dataPred (e : Edge 529) : Prop :=
+  ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ e Q ∧ ∃ rs',
+    e.runs = stairDataRuns 23 529 ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧ rs'.length = 6
 def auxPred (e : Edge 529) : Prop := ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ e Q ∧ e.runs = auxRuns 19
+/-- Side class in the shape `Rewire.side1_edge_Stair` delivers: the certified width-run
+plus an existential singleton suffix (total pivot count r). -/
 def sidePred (r : ℕ) (e : Edge 529) : Prop :=
-  ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ e Q ∧ e.runs = sideRuns 23 529 r
+  ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ e Q ∧ ∃ rs',
+    e.runs = sideRuns 23 529 r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+    (runPairs (sideRuns 23 529 r)).length + rs'.length = r
 
 /-- Side-class ranks: widths 2r−23 ∈ {1,3,…,21} for r = 12..22 (the odd tail of d2HIST);
 ranks ≤ 11 give empty run lists (childless) and are omitted. -/
@@ -163,43 +177,209 @@ noncomputable def dataE : Edge 529 := pickE dataPred
 noncomputable def auxE : Edge 529 := pickE auxPred
 noncomputable def sideE (r : ℕ) : Edge 529 := pickE (sidePred r)
 
-/-! ## The three frame-existence stubs (discharge routes in the file header) -/
+/-! ## Generic labels for the aux/side classes (any nonzero labels with y·x = 1) -/
 
-/-- STUB 1 (data class): the staircase frame realises an edge over ℚ with the certified
-data run list. Discharge: Rewire.lean `data_edge_stair` (proved mod corner contract +
-Platform stubs) instantiated at the witness labels, rs' := stairSingles. -/
-theorem exists_dataE : ∃ e, dataPred e := by sorry
+open scoped Kronecker in
+theorem aux_hxy : (fun _ : Fin 23 => ((1 : ℚ) / 23)) ⬝ᵥ (fun _ : Fin 23 => 1) = 1 := by
+  simp only [dotProduct, Fin.sum_univ_cast, one_mul]
+  rw [Finset.sum_const, smul_eq_mul, Finset.card_range]
+  norm_num
 
-/-- STUB 2 (aux class): the staircase frame realises the aux edge with runs `auxRuns 19`
-(widths 23 and 483 — the `61280142` histogram rows). Discharge: N7's aux_edge_of_Stair
-route, ref/nb_aux_edge_of_solution.lean:561. -/
-theorem exists_auxE : ∃ e, auxPred e := by sorry
+/-! ## The side-class witness idempotent (rank r, invertible staircase corner block) -/
 
-/-- STUB 3 (side class): the staircase frame realises the side edge at rank r with runs
-`sideRuns 23 529 r` (widths 2r−23, the odd histogram tail). Discharge:
-ref/nb_side_edge_of_solution.lean:196 retargeted to qMStair. -/
-theorem exists_sideE (r : ℕ) : ∃ e, sidePred r e := by sorry
+/-- The anti-diagonal 0-1 matrix has nonzero determinant (it is orthogonal: `Dᵀ * D = I`,
+so `det D ^ 2 = 1`). -/
+theorem antiDiagQ_det_ne_zero (n : ℕ) :
+    (Matrix.of fun i j : Fin n => if (i : ℕ) + (j : ℕ) = n - 1 then (1 : ℚ) else 0).det ≠ 0 := by
+  have hDD : (Matrix.of fun i j : Fin n => if (i : ℕ) + (j : ℕ) = n - 1 then (1 : ℚ) else 0)ᵀ *
+      (Matrix.of fun i j : Fin n => if (i : ℕ) + (j : ℕ) = n - 1 then (1 : ℚ) else 0) = 1 := by
+    ext i j
+    simp only [Matrix.transpose_apply, Matrix.mul_apply, Matrix.of_apply, Matrix.one_apply]
+    by_cases hij : (i : ℕ) = (j : ℕ)
+    · subst hij
+      rw [Finset.sum_eq_single (⟨n - 1 - (i : ℕ), by have := i.isLt; omega⟩ : Fin n)]
+      · rw [if_pos (by have := i.isLt; omega)]
+        rw [if_pos (by have := i.isLt; omega)]
+        exact mul_one _
+      · intro k _ hk
+        have hik : (k : ℕ) ≠ n - 1 - (i : ℕ) := by
+          intro hc
+          exact hk (by rw [hc]; rfl)
+        rw [if_neg (by have := k.isLt; omega : ¬((k : ℕ) + (i : ℕ) = n - 1))]
+        exact zero_mul _
+      · intro hb
+        exact absurd hb (Finset.mem_univ _)
+    · rw [Finset.sum_eq_zero]
+      intro k _
+      by_cases h1 : (k : ℕ) + (i : ℕ) = n - 1
+      · rw [if_pos h1, if_neg (by have := k.isLt; omega : ¬((k : ℕ) + (j : ℕ) = n - 1))]
+        exact mul_zero _
+      · rw [if_neg h1]
+        exact zero_mul _
+  have h1 : ((Matrix.of fun i j : Fin n =>
+        if (i : ℕ) + (j : ℕ) = n - 1 then (1 : ℚ) else 0)ᵀ).det *
+      (Matrix.of fun i j : Fin n => if (i : ℕ) + (j : ℕ) = n - 1 then (1 : ℚ) else 0).det = 1 := by
+    rw [← Matrix.det_mul, hDD, Matrix.det_one]
+  intro h0
+  rw [Matrix.det_transpose, h0, zero_mul] at h1
+  exact zero_ne_one h1
+
+/-- Rank-`r` idempotent with invertible staircase corner block: block form `[I_r Y₂; 0 0]`
+— identity on the first `r` diagonal entries, plus an anti-diagonal bridge from rows `< r`
+into columns `≥ r` along `i + j = 22`. -/
+def sideA (r : ℕ) : Matrix (Fin 23) (Fin 23) ℚ :=
+  Matrix.of fun i j =>
+    if (i : ℕ) = (j : ℕ) ∧ (i : ℕ) < r then 1
+    else if (i : ℕ) < r ∧ r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22 then 1 else 0
+
+/-- The 23×r half of the rank factorization (identity embedding). -/
+def sideX (r : ℕ) : Matrix (Fin 23) (Fin r) ℚ :=
+  Matrix.of fun i k => if (i : ℕ) = (k : ℕ) then 1 else 0
+
+/-- The r×23 half of the rank factorization (`[I_r Y₂]`). -/
+def sideY (r : ℕ) : Matrix (Fin r) (Fin 23) ℚ :=
+  Matrix.of fun k j =>
+    if (k : ℕ) = (j : ℕ) then 1 else if r ≤ (j : ℕ) ∧ (k : ℕ) + (j : ℕ) = 22 then 1 else 0
+
+theorem sideYX (r : ℕ) : sideY r * sideX r = 1 := by
+  ext k l
+  simp only [Matrix.mul_apply, sideY, sideX, Matrix.of_apply, Matrix.one_apply]
+  have hll23 : ((⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23) : ℕ) = (l : ℕ) := rfl
+  have hllr : ((⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin r) : ℕ) = (l : ℕ) := rfl
+  rw [Finset.sum_eq_single (⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23), hll23, hllr]
+  · by_cases hkl : (k : ℕ) = (l : ℕ)
+    · rw [if_pos hkl, if_pos rfl, mul_one, if_pos hkl]
+    · rw [if_neg hkl,
+        if_neg (by intro hc; have := l.isLt; omega :
+          ¬(r ≤ (l : ℕ) ∧ (k : ℕ) + (l : ℕ) = 22)),
+        zero_mul, if_neg hkl]
+  · intro j _ hjne
+    have hjl : (j : ℕ) ≠ (l : ℕ) := by
+      intro hc
+      exact hjne (Fin.val_inj.2 hc)
+    rw [hllr, if_neg hjl]
+    exact zero_mul _
+
+theorem sideXY (r : ℕ) : sideX r * sideY r = sideA r := by
+  ext i j
+  by_cases hi : (i : ℕ) < r
+  · have hir : ((⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin r) : ℕ) = (i : ℕ) := rfl
+    have hij23 : ((⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin 23) : ℕ) = (i : ℕ) := rfl
+    rw [Finset.sum_eq_single (⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin r)]
+    · simp only [sideX, Matrix.of_apply, sideY, sideA, eq_self_iff_true, if_true, hir, hij23]
+      by_cases hij : (i : ℕ) = (j : ℕ)
+      · rw [if_pos hij, if_pos (⟨hij, hi⟩ : ((i : ℕ) = (j : ℕ)) ∧ (i : ℕ) < r)]
+      · rw [if_neg hij, if_neg (fun hc => hij hc.1.1),
+          show (((i : ℕ) < r ∧ r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22) =
+              (r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22)) from by rw [and_iff_left hi]]
+    · intro k _ hkne
+      have hkr : ((⟨(k : ℕ), by have := k.isLt; omega⟩ : Fin r) : ℕ) = (k : ℕ) := rfl
+      have hik : (i : ℕ) ≠ (k : ℕ) := by
+        intro hc
+        exact hkne (Fin.val_inj.2 hc)
+      rw [hkr, if_neg hik]
+      exact zero_mul _
+  · rw [Finset.sum_eq_zero]
+    intro k _
+    have hkr : ((⟨(k : ℕ), by have := k.isLt; omega⟩ : Fin r) : ℕ) = (k : ℕ) := rfl
+    rw [hkr, if_neg (fun hc => hi (by have := k.isLt; omega : (i : ℕ) < r))]
+    exact zero_mul _
+
+theorem sideA_idem (r : ℕ) : sideA r * sideA r = sideA r := by
+  have h1 : sideA r = sideX r * sideY r := (sideXY r).symm
+  rw [h1, h1, ← Matrix.mul_assoc, sideYX r, Matrix.one_mul]
+
+theorem sideA_trace (r : ℕ) (hr : r ≤ 23) : (sideA r).trace = (r : ℚ) := by
+  simp only [Matrix.trace, Matrix.diag, sideA, Matrix.of_apply]
+  rw [Finset.sum_congr rfl (fun i _ => by
+    by_cases hlt : (i : ℕ) < r
+    · simp [hlt]
+    · simp [hlt])]
+  have h2 : ∀ i : Fin 23, (if (i : ℕ) < r then (1 : ℚ) else 0) =
+      (Finset.range r).indicator (fun _ => (1 : ℚ)) i := fun i => by
+    rw [Finset.indicator_apply, Finset.mem_range]
+  rw [Finset.sum_congr rfl (fun i _ => h2 i), Finset.sum_indicator_subset _ _
+    (Finset.range_subset.2 hr), Finset.sum_const, smul_eq_mul, mul_one, Finset.card_range,
+    Nat.cast_ofNat]
+
+theorem sideA_rank (r : ℕ) (hr : r ≤ 23) : (sideA r).rank = r := by
+  have h1 := N52.rank_eq_trace (sideA r) (sideA_idem r)
+  rw [sideA_trace r hr] at h1
+  exact Nat.cast_injective (R := ℚ) h1
+
+/-- The staircase corner block of `sideA r` is the anti-diagonal, hence invertible. -/
+theorem sideA_hcor (r : ℕ) (hr : r ≤ 23) : 23 < 2 * r →
+    ((sideA r).submatrix (fun l : Fin (23 - r) => (⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23))
+      (fun c : Fin (23 - r) => (⟨23 - (23 - r) + (c : ℕ), by have := c.isLt; omega⟩ : Fin 23))).det ≠ 0 := by
+  intro _
+  have hrEq : 23 - (23 - r) = r := by omega
+  have hEq : (sideA r).submatrix
+      (fun l : Fin (23 - r) => (⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23))
+      (fun c : Fin (23 - r) => (⟨23 - (23 - r) + (c : ℕ), by have := c.isLt; omega⟩ : Fin 23))
+      = Matrix.of fun i j : Fin (23 - r) => if (i : ℕ) + (j : ℕ) = (23 - r) - 1 then (1 : ℚ) else 0 := by
+    ext i j
+    simp only [Matrix.submatrix_apply, Matrix.of_apply, sideA]
+    have hi : (i : ℕ) < 23 - r := i.isLt
+    have hc : (j : ℕ) < 23 - r := j.isLt
+    by_cases hsum : (i : ℕ) + (j : ℕ) = (23 - r) - 1
+    · rw [if_pos (by omega), if_neg (by omega), if_pos (by omega)]
+    · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  rw [hEq]
+  exact antiDiagQ_det_ne_zero (23 - r)
+
+/-! ## The three frame-existence THEOREMS (stubs 1-3 DISCHARGED) -/
+
+/-- (Was STUB 1.) Direct composition: `Rewire.data_edge_stair` at the witness labels —
+hdet from `stair_data_cert` (N3), the 39-position corner clause from
+`isPiv_stairCorner_witness` (N7). -/
+theorem exists_dataE : ∃ e, dataPred e := by
+  have hdet : (stairCornerQOf ((1 - vecMulVec stairQX1 stairQY1) ⊗ₖ
+      (1 - vecMulVec stairQX2 stairQY2))).det ≠ 0 := stair_data_cert
+  obtain ⟨e, hE, rs', hr1, hr2, hr3⟩ := data_edge_stair stairQX1 stairQY1 stairQX2 stairQY2
+    stairQxy1 stairQxy2 hdet isPiv_stairCorner_witness
+  exact ⟨e, _, hE, rs', hr1, hr2, hr3⟩
+
+/-- (Was STUB 2.) Direct composition: `Rewire.aux1_edge_Stair` at generic nonzero labels
+(all-ones over 23, y = 1/23) — the conclusion's run list IS `auxRuns 19`. -/
+theorem exists_auxE : ∃ e, auxPred e := by
+  obtain ⟨e, hE, hruns⟩ := aux1_edge_Stair (fun _ => (1 : ℚ) / 23) (fun _ => 1) aux_hxy
+    (fun β _ => one_ne_zero) (fun _ => by norm_num)
+  exact ⟨e, _, hE, hruns⟩
+
+/-- (Was STUB 3.) Direct composition: `Rewire.side1_edge_Stair` at generic labels with the
+explicit rank-r idempotent `sideA r` (rank by trace, corner block anti-diagonal). -/
+theorem exists_sideE (r : ℕ) (hr : r ≤ 23) : ∃ e, sidePred r e := by
+  obtain ⟨e, hE, rs', hr1, hr2, hr3⟩ := side1_edge_Stair (fun _ => (1 : ℚ) / 23) (fun _ => 1)
+    aux_hxy (fun β _ => one_ne_zero) (fun _ => by norm_num) (sideA r) (sideA_idem r) r
+    (sideA_rank r hr) (sideA_hcor r hr)
+  exact ⟨e, _, hE, rs', hr1, hr2, hr3⟩
 
 theorem dataE_spec : dataPred dataE := pickE_spec exists_dataE
 theorem auxE_spec : auxPred auxE := pickE_spec exists_auxE
-theorem sideE_spec (r : ℕ) : sidePred r (sideE r) := pickE_spec (exists_sideE r)
+theorem sideE_spec (r : ℕ) (hr : r ≤ 23) : sidePred r (sideE r) := pickE_spec (exists_sideE r hr)
 
-theorem dataE_h : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ dataE Q ∧ dataE.runs = D1 :=
+theorem dataE_h : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ dataE Q ∧ ∃ rs',
+    dataE.runs = stairDataRuns 23 529 ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧ rs'.length = 6 :=
   pickE_spec exists_dataE
 theorem auxE_h : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ auxE Q ∧ auxE.runs = auxRuns 19 :=
   pickE_spec exists_auxE
-theorem sideE_h (r : ℕ) :
-    ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ (sideE r) Q ∧ (sideE r).runs = sideRuns 23 529 r :=
-  pickE_spec (exists_sideE r)
+theorem sideE_h (r : ℕ) (hr : r ≤ 23) : ∃ Q : Matrix (Fin 529) (Fin 529) ℚ, EdgeQ (sideE r) Q ∧
+    ∃ rs', (sideE r).runs = sideRuns 23 529 r ++ rs' ∧ (∀ ρ ∈ rs', ρ.2.2 = 1) ∧
+    (runPairs (sideRuns 23 529 r)).length + rs'.length = r :=
+  pickE_spec (exists_sideE r hr)
 
 theorem dataE_EdgeQ : EdgeQ dataE (Classical.choose dataE_h) := (Classical.choose_spec dataE_h).1
 theorem auxE_EdgeQ : EdgeQ auxE (Classical.choose auxE_h) := (Classical.choose_spec auxE_h).1
-theorem sideE_EdgeQ (r : ℕ) : EdgeQ (sideE r) (Classical.choose (sideE_h r)) :=
-  (Classical.choose_spec (sideE_h r)).1
+theorem sideE_EdgeQ (r : ℕ) (hr : r ≤ 23) : EdgeQ (sideE r) (Classical.choose (sideE_h r hr)) :=
+  (Classical.choose_spec (sideE_h r hr)).1
 
-theorem dataE_runs : dataE.runs = D1 := (Classical.choose_spec dataE_h).2
 theorem auxE_runs : auxE.runs = auxRuns 19 := (Classical.choose_spec auxE_h).2
-theorem sideE_runs (r : ℕ) : (sideE r).runs = sideRuns 23 529 r := (Classical.choose_spec (sideE_h r)).2
+
+/-- RunOK for the data class rides EdgeQ's own first conjunct (the delivered run shape
+is DataE''s, not the pinned D1 — the moment algebra only needs the singleton count). -/
+theorem dataE_runOK : ∀ ρ ∈ dataE.runs, RunOK 529 ρ := fun ρ hρ => dataE_EdgeQ.1 ρ hρ
+theorem sideE_runOK (r : ℕ) (hr : r ≤ 23) : ∀ ρ ∈ (sideE r).runs, RunOK 529 ρ :=
+  fun ρ hρ => sideE_EdgeQ r hr |>.1 ρ hρ
 
 /-! ## Trivial-edge EdgeQ (no runs) — dfltE_Q pattern, proved -/
 
@@ -309,13 +489,13 @@ theorem prog_edges_fam : ∀ e ∈ QHNet.edges netS,
 theorem netS_RunsOK : netS.RunsOK := by
   intro e he ρ hρ
   rcases prog_edges_fam e he with rfl | rfl | ⟨r, hrm, rfl⟩ | rfl
-  · rw [dataE_runs] at hρ; exact stairRunOK ρ hρ
+  · exact dataE_runOK ρ hρ
   · rw [auxE_runs] at hρ; exact auxRunOK ρ hρ
   · have hr23 : r ≤ 23 := by
       have h : r ∈ List.range' 12 11 := by simpa [sideRanks] using hrm
       have h2 := List.mem_range'.1 h
       omega
-    rw [sideE_runs r] at hρ; exact sideRunOK r hr23 ρ hρ
+    exact sideE_runOK r hr23 ρ hρ
   · exact absurd hρ (by simp [dfltE])
 
 /-! ## EdgesOK at large prime powers — PROVED (good-prime clearance route)
@@ -416,8 +596,11 @@ theorem netS_EdgesOK_large :
   rcases prog_edges_fam e he with rfl | rfl | ⟨r, hrm, rfl⟩ | rfl
   · exact edgeOK_at_of_edgeQ dataE ⟨_, dataE_EdgeQ⟩ q hq (by omega) f
   · exact edgeOK_at_of_edgeQ auxE ⟨_, auxE_EdgeQ⟩ q hq (by omega) f
-  · have hb := foldr_max_bound (fun r => edgeQClearBound (sideE r)) sideRanks r hrm
-    exact edgeOK_at_of_edgeQ (sideE r) ⟨_, sideE_EdgeQ r⟩ q hq (by omega) f
+  · have hr23 : r ≤ 23 := by
+      have h : r ∈ List.range' 12 11 := by simpa [sideRanks] using hrm
+      have h2 := List.mem_range'.1 h
+      omega
+    exact edgeOK_at_of_edgeQ (sideE r) ⟨_, sideE_EdgeQ r hr23⟩ q hq (by omega) f
   · exact edgeOK_at_of_edgeQ dfltE ⟨0, dfltE_EdgeQ⟩ q hq (by omega) f
 
 /-! ## The moment bridge (D3) -/
