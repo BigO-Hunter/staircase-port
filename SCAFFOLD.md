@@ -1259,3 +1259,34 @@ sideXY/antiDiagQ Fin-coercion fights are the likely spots; fixes are local); (3)
 n5_axcheck.lean (expect the sorryAx road to drop from 5 stubs to 2: netS_hist_eq +
 netS_FormalOK); (4) commit + tick this section. Do NOT restart the Corner chain from
 scratch — peers are already on it; oleans accumulate.
+
+## STAGE 1 G2 (2026-11-06, lane-G2 sp-g2) — former STUB 4 VERDICT: equality FALSE; moment
+## clause DISCHARGED via entrywise dominance (authored ea04d68; build pending on the chain)
+**Measured verdict (the gap named):** `netS_hist_eq` was not hard — it was FALSE. `QHNet.hist`
+counts one child per run of every edge occurrence (Defs4 `widths`); the class skeleton has
+16,018 children (1771 data occurrences × 9 runs, 1 aux, 11 side classes with `sidePred`'s
+pinned 23−r singles each) vs bitR7's 1,905,413,587. Missing = the producer readout-multiplicity
+layer (d2SIGMA 11565 frames, d2VLEAFSLOTS/d2LATEV, the 485..527 readout widths — no F5 class
+carries them). So `netS_hist_eq` AND `netS_powSum_eq` (the powSum EQUALITY) are unprovable as
+stated; both REMOVED with verdict docs. Per-class counts measured off the frozen d2HIST
+(d2_data.json hist_stair == Jain.bitR7 literal, 37 pairs): w=439 needs 6,272,882 = 1771×3542
+(=wEnt!), w=483/23 need 61,280,142, w=1 needs 1.69e9.
+**The closure (what the leaf actually needs):** BitNetMomStmtG's third clause is an
+INEQUALITY. `netS_dominance` now PROVED with no multiplicity port: `netG` (the skeleton's
+grouped multiset, 15 widths) is entrywise dominated by bitR7's counts — 1771 ≤ c₄₃₉,
+1771 ≤ c₁₈, 1772 ≤ c₂₁, 10693 ≤ c₁, 1 ≤ c_odd/₂₃/₄₈₃ — so `histMoment netG ≤ histMoment
+bitR7` termwise (`netG_le_bitR7`: 15 `mul_le_mul_right'` decided comparisons + 22 nonneg
+tail terms + linarith). New τ-algebra: `EMt` per-edge moment, `EMt_data/aux/side`,
+`EMt_sum` (schedule carries D2.v data + 1 aux + 11 side + D2.Rslots childless),
+`histMoment_netS` (τ-analogue of powSum_eq_edges), `histMoment_netS_eq`.
+Leaf sorryAx road is now STUB 5 (netS_FormalOK) ONLY (+ the 3 documented Platform stubs
+inside Rewire's discharged witnesses).
+**Files:** QHNetStair.lean (+313/−26), n5_axcheck.lean; commit ea04d68 (authored; the
+single-file check waits on Corner/Projector/Rewire oleans — peers grinding, driver
+/tmp/g2_driver.py serializes behind them and falls back to its own calm-window
+`lake build StaircasePort.Rewire`, logs /tmp/g2_check.log).
+**RESUME POINT:** (1) `grep Rewire.olean` → driver auto-elaborates QHNetStair (expect
+first-pass tactic errors in the ~300 new lines: `List.filterMap_cons` match reduction,
+`simp only` proj-iota on literal pairs, atom-matching of `((w:ℕ):ℝ)/529)^τ` between the
+netG/bitR7 unfoldings); (2) fix + commit per fix; (3) `n5_axcheck.lean` — expect the
+sorryAx road = netS_FormalOK + Platform stubs only; (4) then STUB 5 (FormalOK port).
