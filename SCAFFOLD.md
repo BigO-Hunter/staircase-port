@@ -1356,3 +1356,56 @@ SideR/DataR/AuxR child counts match bitR8's 749M children, not 1.71G).
    mechanical `genF_labGates` (259 ln) + `NB_sc_prog` (2436 ln) ports onto
    `formalOK_of_tracks`, per-family labels riding `flagBasis_stair`; (c) leaf swap-in
    netS→netDense with RunsOK/EdgesOK/hist re-verification.
+
+## STAGE 2 PART 2 (2026-11-07, lane formalok-port re-fired) — label port 1 LANDS, retarget
+## WIDTH DECISION measured, chain still blocked
+Commits: 98c7944 (LabGen), c28c663 (D2Chunks + extract/d2_retarget.py), 6a7256d (PackCore).
+1. **`genF_labGates` port = LANDED** (`StaircasePort/LabGen.lean`, 277 ln, 0 sorry, rc=0).
+   Defs51 is absent everywhere, so genF/genStepF/mvF are inlined verbatim; the engine is
+   fully generic (any Wr/R/m/N, arbitrary D). Tactic fix banked: name `(R := R) (N := N)`
+   on the two `obtain` calls into `moves_labels`/`genF_labGates` — the label type
+   `Wr → FMat m N` does not mention R, so `CommRing ?m` sticks with no expected type.
+2. **THE RETARGET'S WIDTH DECISION (measured — this is the R8 pack NOT transferring):**
+   code(n) = cbase + n with cbase = v+2 = 1773. The frozen d2 word has **64042** nodes
+   (1..64042, == v + 62271 adds) ⇒ max code **65815 > 65535** ⇒ **16-bit fields cannot
+   hold it**. R8 packed 16 bits because its densified count (62478 → 64251) fit. The d2
+   retarget packs **17-bit fields**; proved both ways in `D2Chunks` (width16_fails,
+   width17_suffices, codes_fit). Field width is a function of the node count — derived.
+   **The R8 GenData_0 words also look shifted (code<<4 + a dim nibble); that convention is
+   NOT replicated** — the two packings are not interchangeable. Pinned, not assumed.
+3. **`StaircasePort/D2Chunks.lean`** — geometry at R7 (NL = wAuxEnd + h = 32431; R8's
+   GenData_0 uses 2v+NR+h, not the 3v+NR variant), code alphabet, width-parametric
+   catB/fieldOf/packCodes/codeOf, and **`SG_slots0`** = the slot-band initial label state
+   (`code(wS q) = cbase + hold[q][0]`) packed at 17 bits into 9 limbs of 3855 fields
+   (17·3855 = 65535 bits). Full 32431-field round-trip verified offline
+   (`extract/d2_retarget.py`, all PND verdicts PASS, certificate
+   `extract/out/d2_retarget.json`), 4 fields pinned in Lean by `decide` on the 551327-bit
+   Nat (kernel-evaluated ⇒ Lean table == Python derivation).
+4. **`StaircasePort/PackCore.lean`** — the width-parametric half of `NB_sc_prog`:
+   testBit_fieldOf / fieldOf_lt / testBit_ge_of_lt / **fieldOf_catB (round-trip law)** /
+   fieldOf_packCodes / slots0_decode, all PROVED at parametric B. This is what makes a
+   17-bit seed reason-able at all (the platform lemmas are all fixed at 16).
+5. **THE REC DERIVATION IS DEPENDENCY-BLOCKED, and now says so with an audit.**
+   Constructing the `Rec` (= LInstr) list — `(code, moves, gates)` per step — needs the R6
+   `Loc`/GenData encoder (injS/retS + the cND densify pass). The audit in `d2_retarget.py`
+   reports `Defs51`, `Def_IntMul_Kappa_R6_Data_BitNBGenData_1`, `_2`, `Defs52` ABSENT from
+   BOTH `~/bigo-campaign/staircase-port` and `~/prove2me_workspace`. **Do not guess these
+   semantics** — SCAFFOLD's own history (H2/FALSE-equality lessons) is what guessing costs.
+6. **CHAIN: still blocked (named).** `.lake/build/lib/lean/StaircasePort/Rewire.olean` does
+   not exist; a peer `lake build StaircasePort` has been grinding (pid moving). Consequences:
+   QHNetStair.olean on disk is STALE (Nov 6 14:06, built before Rewire was even imported),
+   the leaf swap-in netS→netDense (item 5) and `n5_axcheck.lean` are untouched this pass.
+   The sorryAx road therefore remains **STUB 5 + Rewire's 3 Platform stubs — unmeasured,
+   not improved**. Do not re-run axcheck against a stale olean tree and call it a receipt.
+
+**RESUME POINT (in order):**
+1. `grep Rewire.olean` → when it exists, `lake env lean StaircasePort/QHNetStair.lean`
+   (LAKE_JOBS=1, LEAN_NUM_THREADS=1, detached) → fix real-file-context errors → then
+   `n5_axcheck.lean`; expect STUB 5 + 3 Platform stubs.
+2. **Unblock the Rec derivation**: either obtain R6 `Defs51` + `GenData_1/2` (+`Defs52`)
+   from the platform, or reconstruct the Rec encoder from the R8 artifacts that ARE present
+   (`LocSlots` INJ/RETS/RETN/SRC + `GenF` + `LocGrecDense` GREC + `LocWire`), then re-run
+   `extract/d2_retarget.py` — its gates (geometry, maxima, width, full round-trip) already
+   pass; add the Rec/chunk gate there and only then emit `cs1`/`cs2`.
+3. Label port 2 remainder (Good/LT tree layer, foldl_mvP_eq, genP_eq, segChk_sound) —
+   depends on item 2's packs, not on the chain.
