@@ -25,6 +25,8 @@ modules are OFF the pending Corner→Projector→Rewire chain — additive, noth
   R-independent).
 * **10 ι-inverse lemmas** (proved): `ι1_b_wX/wY/wS/wT`, `ι2_a_wX/wY/wS/wT/wU` — the exact
   coordinates the per-role case analysis rewires through (r6 `ι1x_eq`… shapes).
+* **Injectivity block** (proved): `gw_inj`/`g1_lt`/`g2_lt`/`g1_inj`/`g2_inj`/`ι1_inj`/
+  `ι2_inj` — consumed by the label-port items (2)-(4) (r6 `g2_inj`/`ι1_inj` shapes).
 * **`gw_band_cases` (proved — the DENSITY statement):** every global wire index
   `g < W + Tmp` is exactly one `(block, local wire)` coordinate across the seven bands
   (x-roles [0,N) / y-roles [N,2N) / b-slots / a-slots / 3 temp bands), div/mod witness

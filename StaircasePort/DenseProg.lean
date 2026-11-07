@@ -279,6 +279,57 @@ theorem gw_band_cases (g : ℕ) (hg : g < W + Tmp) :
               rw [e, Nat.mul_comm v ((g - (W + 2 * (h * v))) / v)]
               omega
 
+/-! ## Injectivity of the wire maps (consumed by the lab_prog/sc_prog label ports) -/
+
+theorem gw_inj {g g' : ℕ} (h1 : g < W + Tmp) (h2 : g' < W + Tmp) (heq : gw g = gw g') :
+    g = g' := by
+  by_cases ha : g < W
+  · by_cases hb : g' < W
+    · rw [dif_pos ha, dif_pos hb] at heq
+      exact Fin.val_inj (Sum.inl.inj heq)
+    · rw [dif_pos ha, dif_neg hb] at heq
+      exact absurd heq (by simp)
+  · by_cases hb : g' < W
+    · rw [dif_neg ha, dif_pos hb] at heq
+      exact absurd heq.symm (by simp)
+    · rw [dif_neg ha, dif_neg hb] at heq
+      have e := Fin.val_inj (Sum.inr.inj heq)
+      have m1 : (g - W) % Tmp = g - W := Nat.mod_eq_of_lt (by omega)
+      have m2 : (g' - W) % Tmp = g' - W := Nat.mod_eq_of_lt (by omega)
+      omega
+
+theorem g1_lt (b w : ℕ) (hb : b < v) (hw : w < wAuxEnd + h) : g1 b w < W + Tmp := by
+  unfold g1
+  simp only [v, N, wEnt, wAuxEnd, NR, W, h]
+  split_ifs <;> omega
+
+theorem g2_lt (a w : ℕ) (ha : a < v) (hw : w < NL + v) : g2 a w < W + Tmp := by
+  unfold g2
+  simp only [v, N, wEnt, wAuxEnd, NL, NR, W, h]
+  split_ifs <;> omega
+
+theorem g1_inj {b b' w w' : ℕ} (hb : b < v) (hb' : b' < v) (hw : w < wAuxEnd + h)
+    (hw' : w' < wAuxEnd + h) (heq : g1 b w = g1 b' w') : b = b' ∧ w = w' := by
+  unfold g1 at heq
+  simp only [v, N, wEnt, wAuxEnd, NR, W, h] at heq
+  split_ifs at heq <;> omega
+
+theorem g2_inj {a a' w w' : ℕ} (ha : a < v) (ha' : a' < v) (hw : w < NL + v)
+    (hw' : w' < NL + v) (heq : g2 a w = g2 a' w') : a = a' ∧ w = w' := by
+  unfold g2 at heq
+  simp only [v, N, wEnt, wAuxEnd, NL, NR, W, h] at heq
+  split_ifs at heq <;> omega
+
+theorem ι1_inj {b b' w w' : ℕ} (hb : b < v) (hb' : b' < v) (hw : w < wAuxEnd + h)
+    (hw' : w' < wAuxEnd + h) (heq : ι1 b w = ι1 b' w') : b = b' ∧ w = w' :=
+  g1_inj hb hb' hw hw' (gw_inj (g1_lt b w hb hw) (g1_lt b' w' hb' hw')
+    (by unfold ι1 at heq; exact heq))
+
+theorem ι2_inj {a a' w w' : ℕ} (ha : a < v) (ha' : a' < v) (hw : w < NL + v)
+    (hw' : w' < NL + v) (heq : ι2 a w = ι2 a' w') : a = a' ∧ w = w' :=
+  g2_inj ha ha' hw hw' (gw_inj (g2_lt a w ha hw) (g2_lt a' w' ha' hw')
+    (by unfold ι2 at heq; exact heq))
+
 /-! ## Chunk/instruction machinery (inlined verbatim from the R8 QHNet file) -/
 
 abbrev LInstr := ℕ × List ℕ × List (ℕ × ℕ)
