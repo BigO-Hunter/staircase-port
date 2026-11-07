@@ -198,9 +198,8 @@ theorem antiDiagQ_det_ne_zero (n : ℕ) :
     by_cases hij : (i : ℕ) = (j : ℕ)
     · subst hij
       rw [Finset.sum_eq_single (⟨n - 1 - (i : ℕ), by have := i.isLt; omega⟩ : Fin n)]
-      · rw [if_pos (by have := i.isLt; omega)]
-        rw [if_pos (by have := i.isLt; omega)]
-        exact mul_one _
+      · rw [if_pos (by have := i.isLt; omega), if_pos (by have := i.isLt; omega),
+          mul_one, if_pos rfl]
       · intro k _ hk
         have hik : (k : ℕ) ≠ n - 1 - (i : ℕ) := by
           intro hc
@@ -244,45 +243,56 @@ def sideY (r : ℕ) : Matrix (Fin r) (Fin 23) ℚ :=
 theorem sideYX (r : ℕ) : sideY r * sideX r = 1 := by
   ext k l
   simp only [Matrix.mul_apply, sideY, sideX, Matrix.of_apply, Matrix.one_apply]
-  have hll23 : ((⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23) : ℕ) = (l : ℕ) := rfl
-  have hllr : ((⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin r) : ℕ) = (l : ℕ) := rfl
-  rw [Finset.sum_eq_single (⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23), hll23, hllr]
-  · by_cases hkl : (k : ℕ) = (l : ℕ)
+  rw [Finset.sum_eq_single (⟨(l : ℕ), by have := l.isLt; omega⟩ : Fin 23)]
+  · show (if (k : ℕ) = (l : ℕ) then (1 : ℚ)
+        else if r ≤ (l : ℕ) ∧ (k : ℕ) + (l : ℕ) = 22 then (1 : ℚ) else 0) *
+        (if (l : ℕ) = (l : ℕ) then (1 : ℚ) else 0) =
+        (if (k : ℕ) = (l : ℕ) then (1 : ℚ) else 0)
+    by_cases hkl : (k : ℕ) = (l : ℕ)
     · rw [if_pos hkl, if_pos rfl, mul_one, if_pos hkl]
     · rw [if_neg hkl,
         if_neg (by intro hc; have := l.isLt; omega :
           ¬(r ≤ (l : ℕ) ∧ (k : ℕ) + (l : ℕ) = 22)),
         zero_mul, if_neg hkl]
   · intro j _ hjne
+    show sideY r k j * (if (j : ℕ) = (l : ℕ) then (1 : ℚ) else 0) = 0
     have hjl : (j : ℕ) ≠ (l : ℕ) := by
       intro hc
       exact hjne (Fin.val_inj.2 hc)
-    rw [hllr, if_neg hjl]
+    rw [if_neg hjl]
     exact zero_mul _
+  · intro hb
+    exact absurd hb (Finset.mem_univ _)
 
 theorem sideXY (r : ℕ) : sideX r * sideY r = sideA r := by
   ext i j
   by_cases hi : (i : ℕ) < r
-  · have hir : ((⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin r) : ℕ) = (i : ℕ) := rfl
-    have hij23 : ((⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin 23) : ℕ) = (i : ℕ) := rfl
-    rw [Finset.sum_eq_single (⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin r)]
-    · simp only [sideX, Matrix.of_apply, sideY, sideA, eq_self_iff_true, if_true, hir, hij23]
+  · rw [Finset.sum_eq_single (⟨(i : ℕ), by have := i.isLt; omega⟩ : Fin r)]
+    · show (if (i : ℕ) = (i : ℕ) then (1 : ℚ) else 0) *
+          (if (i : ℕ) = (j : ℕ) then (1 : ℚ)
+            else if r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22 then (1 : ℚ) else 0) =
+          (if (i : ℕ) = (j : ℕ) ∧ (i : ℕ) < r then (1 : ℚ)
+            else if (i : ℕ) < r ∧ r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22 then (1 : ℚ)
+            else 0)
+      simp only [show ((i : ℕ) = (i : ℕ)) = True from rfl, if_true]
       by_cases hij : (i : ℕ) = (j : ℕ)
       · rw [if_pos hij, if_pos (⟨hij, hi⟩ : ((i : ℕ) = (j : ℕ)) ∧ (i : ℕ) < r)]
       · rw [if_neg hij, if_neg (fun hc => hij hc.1.1),
           show (((i : ℕ) < r ∧ r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22) =
               (r ≤ (j : ℕ) ∧ (i : ℕ) + (j : ℕ) = 22)) from by rw [and_iff_left hi]]
     · intro k _ hkne
-      have hkr : ((⟨(k : ℕ), by have := k.isLt; omega⟩ : Fin r) : ℕ) = (k : ℕ) := rfl
+      show (if (i : ℕ) = (k : ℕ) then (1 : ℚ) else 0) * sideY r k j = 0
       have hik : (i : ℕ) ≠ (k : ℕ) := by
         intro hc
         exact hkne (Fin.val_inj.2 hc)
-      rw [hkr, if_neg hik]
+      rw [if_neg hik]
       exact zero_mul _
+    · intro hb
+      exact absurd hb (Finset.mem_univ _)
   · rw [Finset.sum_eq_zero]
     intro k _
-    have hkr : ((⟨(k : ℕ), by have := k.isLt; omega⟩ : Fin r) : ℕ) = (k : ℕ) := rfl
-    rw [hkr, if_neg (fun hc => hi (by have := k.isLt; omega : (i : ℕ) < r))]
+    show (if (i : ℕ) = (k : ℕ) then (1 : ℚ) else 0) * sideY r k j = 0
+    rw [if_neg (fun hc => hi (by have := k.isLt; omega : (i : ℕ) < r))]
     exact zero_mul _
 
 theorem sideA_idem (r : ℕ) : sideA r * sideA r = sideA r := by
@@ -290,17 +300,19 @@ theorem sideA_idem (r : ℕ) : sideA r * sideA r = sideA r := by
   rw [h1, h1, ← Matrix.mul_assoc, sideYX r, Matrix.one_mul]
 
 theorem sideA_trace (r : ℕ) (hr : r ≤ 23) : (sideA r).trace = (r : ℚ) := by
-  simp only [Matrix.trace, Matrix.diag, sideA, Matrix.of_apply]
-  rw [Finset.sum_congr rfl (fun i _ => by
+  show ∑ i : Fin 23, sideA r i i = (r : ℚ)
+  have h1 : ∀ i : Fin 23, sideA r i i = (if (i : ℕ) < r then (1 : ℚ) else 0) := by
+    intro i
+    simp only [sideA, Matrix.of_apply]
     by_cases hlt : (i : ℕ) < r
     · simp [hlt]
-    · simp [hlt])]
+    · simp [hlt]
+  rw [Finset.sum_congr rfl (fun i _ => h1 i)]
   have h2 : ∀ i : Fin 23, (if (i : ℕ) < r then (1 : ℚ) else 0) =
       (Finset.range r).indicator (fun _ => (1 : ℚ)) i := fun i => by
     rw [Finset.indicator_apply, Finset.mem_range]
   rw [Finset.sum_congr rfl (fun i _ => h2 i), Finset.sum_indicator_subset _ _
-    (Finset.range_subset.2 hr), Finset.sum_const, smul_eq_mul, mul_one, Finset.card_range,
-    Nat.cast_ofNat]
+    (Finset.range_subset.2 hr), Finset.sum_const, smul_eq_mul, mul_one, Finset.card_range]
 
 theorem sideA_rank (r : ℕ) (hr : r ≤ 23) : (sideA r).rank = r := by
   have h1 := N52.rank_eq_trace (sideA r) (sideA_idem r)
@@ -319,8 +331,13 @@ theorem sideA_hcor (r : ℕ) (hr : r ≤ 23) : 23 < 2 * r →
       = Matrix.of fun i j : Fin (23 - r) => if (i : ℕ) + (j : ℕ) = (23 - r) - 1 then (1 : ℚ) else 0 := by
     ext i j
     simp only [Matrix.submatrix_apply, Matrix.of_apply, sideA]
+    show (if (i : ℕ) = 23 - (23 - r) + (j : ℕ) ∧ (i : ℕ) < r then (1 : ℚ)
+        else if (i : ℕ) < r ∧ r ≤ 23 - (23 - r) + (j : ℕ) ∧
+          (i : ℕ) + (23 - (23 - r) + (j : ℕ)) = 22 then (1 : ℚ) else 0) =
+      (if (i : ℕ) + (j : ℕ) = (23 - r) - 1 then (1 : ℚ) else 0)
     have hi : (i : ℕ) < 23 - r := i.isLt
     have hc : (j : ℕ) < 23 - r := j.isLt
+    simp only [hrEq]
     by_cases hsum : (i : ℕ) + (j : ℕ) = (23 - r) - 1
     · rw [if_pos (by omega), if_neg (by omega), if_pos (by omega)]
     · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
