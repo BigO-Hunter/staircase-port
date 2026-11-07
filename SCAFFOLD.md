@@ -1325,3 +1325,34 @@ Audited `Thm_bitNetR7plain_mom_final.lean` (prove2me_workspace) per GAP_MAP. Ver
 (`Thm_R8_cxNetR8G.lean`, platform-statement-exact, 1 sorry); then the gap-named witness
 construction is the R8-lane Stage-0-class task (regenerate edge-family specs so the
 SideR/DataR/AuxR child counts match bitR8's 749M children, not 1.71G).
+
+## STAGE 2 (2026-11-06, lane formalok-port) — the formal_labels calculus + the dense-program
+## port skeleton LANDED (FormalCalc.lean + DenseProg.lean, both elaborates-clean, OFF the chain)
+
+1. **FormalCalc.lean (PROVED, 0 sorry)** — `lmulF_mul` + `formal_labels` (the LabGates
+   segment calculus, verbatim port of the platform's Proved r6
+   `Thm_IntMul_Kappa_R6_Bit_formal_labels`) + **`formalOK_of_tracks`** (NEW, generic):
+   the r6 `formalOK_sol_aux` spine abstracted — fInit = lmulF∘(L0,φ0) + LabGates +
+   per-family (label→swapMat) × (value→single term) ⇒ FormalOK. The per-role work is now
+   pure per-band data.
+2. **DenseProg.lean** — NB block layout at R7 scale: NR=28866 (R8 used 27794),
+   W = 2N+2v·NR = 108516254 and Tmp = 2hv+N = 3217907 decide-pinned (= D2.W/Tmp
+   numerically). PROVED: `ρn_lt_W`, the **10 ι-inverse lemmas**, and
+   **`gw_band_cases`** — every global wire index < W+Tmp is exactly one
+   (block, local-wire) coordinate over the 7 bands (div/mod witnesses): the
+   FormalOK coverage, 7/7, by construction. DEFINED: chunk machinery (inlined R8
+   shapes), `ChD`, `entI`/`corrI`/`blk1`/`blk2`/`progD`/`netDense` — parameterized over
+   the chunk lists + edge families. STATED + routed (1 documented sorry):
+   `netDense_formalOK` (STAGE-2 target).
+3. Both modules import ONLY Defs4 (+Mathlib) — no BitOppbank dependency (those files are
+   in Definitions/ but NOT built in this checkout; the R8 lane owns them). Nothing
+   imports the new modules; the pending Corner→Projector→Rewire chain and QHNetStair are
+   untouched. n5_axcheck NOT re-run (chain-blocked; expected road unchanged: leaf =
+   STUB 5 + Rewire's 3 Platform stubs until the chain lands).
+4. **RESUME (full receipt: FORMALOK_REPORT.md)**: (a) chain: relaunch driver / grep
+   f5_build.log, elaborate QHNetStair, re-run n5_axcheck; (b) parallel, chain-free:
+   GREC/D2 table retarget (pack the frozen d2 stage word into Rec/chunk shape; R8
+   GenData_0 is the template; mixFB-boundary landmine R2125607274 applies), then the
+   mechanical `genF_labGates` (259 ln) + `NB_sc_prog` (2436 ln) ports onto
+   `formalOK_of_tracks`, per-family labels riding `flagBasis_stair`; (c) leaf swap-in
+   netS→netDense with RunsOK/EdgesOK/hist re-verification.
