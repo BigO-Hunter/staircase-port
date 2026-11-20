@@ -18,4 +18,9 @@ Open work: the remaining corner positions at the witness; full middle-run arm co
 
 ## License
 
-Licensed under the Copy-Free/Stays-Free (CFSF) License — see [LICENSE](LICENSE). CFSF: copy-free (use for any purpose) and stays-free (nobody may fence this work). The name is unclaimed in software licensing (checked 2026-11-09) and is deliberately not "Copyfree" — the Copyfree Initiative's certification mark — since CFSF's anti-enclosure condition is excluded by their standard. 
+Licensed under the Copy-Free/Stays-Free (CFSF) License — see [LICENSE](LICENSE). CFSF: copy-free (use for any purpose) and stays-free (nobody may fence this work). The name is unclaimed in software licensing (checked 2026-11-09) and is deliberately not "Copyfree" — the Copyfree Initiative's certification mark — since CFSF's anti-enclosure condition is excluded by their standard.
+
+## Recovery branches
+
+See [RECOVERY.md](RECOVERY.md) for the private `recovery/` branches preserving the stage-two integrated local main and ten N-/composition recovery lanes. These are source branches with original history, not claims that every lane is complete.
+
