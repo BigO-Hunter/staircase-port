@@ -1,4 +1,4 @@
-warning: mathlib: repository '/Users/dmitri.arkhipov/bigo-campaign/sp-d2/.lake/packages/mathlib' has local changes
+warning: mathlib: repository '.lake/packages/mathlib' has local changes
 'StaircasePort.D2.d2HIST_eq_bitR7' does not depend on any axioms
 'StaircasePort.D2.d2HistChildCount_eq' depends on axioms: [propext]
 'StaircasePort.D2.d2HistRankSum_eq' depends on axioms: [propext]

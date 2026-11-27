@@ -2,11 +2,14 @@
 """Fetch exact formal_statements of isPiv_rank1_lower / isPiv_mid / edge_of_pivs from
 prove2.me search results (statements come inline; no solution-file fetches needed).
 Token re-minted via POST /agent/refresh; written back to credentials.json. NEVER prints secrets.
-401 -> re-mint + retry once. Saves to /private/tmp/staircase-port/extract/statements/*.json"""
-import json, pathlib, sys, urllib.request, urllib.parse, urllib.error
+401 -> re-mint + retry once. Saves to extract/statements/*.json (repo-relative).
 
-WS = pathlib.Path.home() / "prove2me_workspace"
-OUT = pathlib.Path("/private/tmp/staircase-port/extract/statements")
+Credentials workspace: $PROVE2ME_WORKSPACE (default: ~/prove2me_workspace)."""
+import json, os, pathlib, sys, urllib.request, urllib.parse, urllib.error
+
+WS = pathlib.Path(os.environ.get("PROVE2ME_WORKSPACE")
+                  or (pathlib.Path.home() / "prove2me_workspace"))
+OUT = pathlib.Path(__file__).resolve().parent / "statements"
 OUT.mkdir(parents=True, exist_ok=True)
 creds = json.loads((WS / "credentials.json").read_text())
 
