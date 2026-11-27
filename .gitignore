@@ -1,2 +1,4 @@
 .lake/
 extract/jainroot/
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
 # MIDRUN_REPORT — sp-midrun (independent middle-run arm, witness-1 staircase port)
 
-Clone: ~/bigo-campaign/sp-midrun @ 49b69f8. JSONs: `extract/out/midrun_r6frame.json`,
+Snapshot: 49b69f8 (this repo's independent middle-run arm). JSONs: `extract/out/midrun_r6frame.json`,
 `extract/out/midrun_orders.json`. Method: rightmost-pivot profile pc of qM M (one 529×529
 elimination; `rk(X,Y) = #{r<X : pc_r ≥ Y}`, `IsPiv(i,j) ⟺ pc_i = j` — the producer's own
 identity, check_stair.py:175). All ranks double-prime (1000000007, 998244353, asserted
