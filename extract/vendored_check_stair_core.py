@@ -1,6 +1,6 @@
 """Vendored core of jainroot check_stair.py (independent/deferred-readout/check_stair.py,
 certificate_round7 @ c05adfe lineage) — RECONSTRUCTED VERBATIM from session context after
-the host restart wiped /private/tmp (leaf-recon copy lost). Contains exactly the three
+the host restart wiped the scratch workspace (producer recon copy lost). Contains exactly the three
 functions N2b extraction needs: design(), structure(), cut_bound(), plus P/iv. The original
 file also had: sparse_params, runs, mv, flag_factors, corner_at, main (witness sampling
 via linalg.rightmost_pivots + check_lifted.point_UV) — NOT vendored (not needed for cut

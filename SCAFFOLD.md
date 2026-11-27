@@ -4,10 +4,10 @@ Date: 2026-11-04. Skeleton only: definitions + sorry'd statements + extracted da
 Every statement elaborates against the REAL platform definitions (Defs4 closure below).
 
 ## Environment
-- Toolchain v4.34.1 + Mathlib d13f23b7 (project copied from /private/tmp/intmult-sol, its
-  `.lake` APFS-cloned with `cp -Rc`; intmult-sol itself untouched).
+- Toolchain v4.34.1 + Mathlib d13f23b7 (project copied from the intmult-sol development, its
+  `.lake` cache cloned; intmult-sol itself untouched).
 - `Definitions/` = exact 64-file import closure of `Def_IntMul_Kappa_R6_Defs4` (source:
-  ~/prove2me_workspace/Definitions, bodies identical to intmult-sol's migrated copies —
+  the platform Definitions workspace, bodies identical to intmult-sol's migrated copies —
   only provenance headers differ) + `Def_IntMul_KappaJainData`. Built GREEN on v4.34.1:
   `build_defs.log` "Build completed successfully (8987 jobs)", 0 errors. This validates the
   whole r6 vocabulary (QHNet, Edge, EdgeQ, rk, IsPiv, RunOK, runPairs, runPiv, pswQ, qM,
@@ -27,7 +27,7 @@ Every statement elaborates against the REAL platform definitions (Defs4 closure 
 | extract/gen_lean_data.py | StaircasePort/CertData.lean, StaircasePort/NEBlocks.lean | generated Lean data (exact ints only) |
 
 Producer chain copy: extract/jainroot/ (check_stair.py + linalg/check_lifted/deferred/
-certificate_round7 @ c05adfe, from /private/tmp/leaf-recon — jain-verify NOT touched).
+certificate_round7 @ c05adfe, from the producer recon copy — jain-verify NOT touched).
 
 ## N-item map
 | N | file | statements | depends on |
@@ -122,7 +122,7 @@ DISCRIMINATING negative control (--control: certified=False, 3 rank violations).
   file headers; every `/--` is attached to a declaration.
 - Bare `end` for unnamed sections; no `end noncomputable section` anywhere.
 - All builds detached (nohup + log): build_defs.log, build_scaffold.log.
-## N4 NOTES (2026-11-04, N4 agent)
+## N4 NOTES (2026-11-04)
 - N4 PROVED: stair_f_nonvanishing + stair_hu/hv/hT, axioms [propext, Classical.choice,
   Quot.sound], NO native_decide, zero sorry in Nonvan.lean. Same-file helpers: stairTv_mem,
   stairG_val, stairA/C/B/D_ne_zero, stairCoeffA/B_ne_zero ([propext, Quot.sound]).
@@ -137,14 +137,13 @@ DISCRIMINATING negative control (--control: certified=False, 3 rank violations).
   fallback (simp arith leaves forms like `!1+3 = 0`). hu/hv closed by simp alone.
 - Benign warnings left in place (2x unnecessarySeqFocus, 2x never-executed norm_num) --
   file is green; not worth a re-verification cycle.
-## N3 RESUME (2026-11-04, subagent sp-n3) — STATUS: PROVED, item COMPLETE
+## N3 RESUME (2026-11-04) — STATUS: PROVED, item COMPLETE
 Stopping point: ALL six N3 statements proved in StaircasePort/Cert.lean, zero sorry in the
 file; `lake build StaircasePort` GREEN (8997 jobs); commit e91cda8 (+ final axcheck commit).
 stair_data_cert axioms: [propext, Classical.choice, Quot.sound] — kernel-checked, no
 native_decide, no sorryAx (n3_axcheck.lean prints all 6 + 3 ported helpers).
 
-GAP-7 TIMING (decide +kernel; wall via /usr/bin/time -l; host at load ~65/16 cores, so
-wall >> CPU; baseline import ≈60s wall):
+GAP-7 TIMING (decide +kernel; wall via /usr/bin/time -l; baseline import ≈60s wall):
 | stage | content | wall | CPU(u+s) | axioms |
 |---|---|---|---|---|
 | t0 | native_decide sanity: all props TRUE (dots, worst entry, all 2025, certChk) | 89s | 17s | VM (test-only) |
@@ -167,7 +166,7 @@ n3_t1_kernel_entry.lean n3_t2_kernel_row.lean n3_t4_kernel_chk.lean n3_axcheck.l
 extract/n3_corner_stats.py. No shared-file change requests.
 Next for successors: N2c (stairCorner_pivots_witness) and N5-2 flagBasis_stair hcert can now
 consume stair_data_cert; nothing blocked on N3.
-## N2b NOTES (2026-11-05/06, sp-n2b-r2 — recovery agent after the kernel panic)
+## N2b NOTES (2026-11-05/06)
 STATUS: PROVED + MERGED. `stairNE_rk_le` in StaircasePort/Pivot.lean is no longer sorry.
 
 ### THE STATEMENT-SHAPE FINDING (the scaffold's N2b statement was FALSE)
@@ -180,8 +179,8 @@ HONEST FORM (what is proved, and what N2c/N2d actually consume):
   theorem stairNE_rk_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
       ∀ t ∈ stairNEBlocks, rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (t.1+1) t.2.1 ≤ t.2.2.2
   stairPairM x₁ y₁ x₂ y₂ := (1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂)
-Found INDEPENDENTLY twice (this agent's numeric check + the predecessor's counterexample in
-RESCUE_RESUME.md), so it is not a measurement artefact.
+Found INDEPENDENTLY twice (the numeric check + the earlier counterexample in
+recovery/sp-n2b-r2:RESCUE_RESUME.md), so it is not a measurement artefact.
 
 ### NEBlocks.lean INTERFACE (regenerated here; predecessor's version was lost/was NOT built)
 My regen differs from the predecessor's rescued blueprint and is BETTER for the proof: instead

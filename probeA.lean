@@ -1,9 +1,8 @@
-/- N2b probe (RESCUE COPY, rebuilt from session context 2026-11-06 after the /private/tmp
-wipe). Target: content of StaircasePort/Pivot.lean additions once a base project exists.
-Verification status: P1 + P2 (Fin-23-indexed variant) ran GREEN pre-wipe via
+/- N2b probe (RESCUE COPY, rebuilt 2026-11-06). Target: content of StaircasePort/Pivot.lean additions once a base project exists.
+Verification status: P1 + P2 (Fin-23-indexed variant) ran GREEN before the rebuild via
 `lake env lean`; the Nat-indexed rework + P3 part 1 below were WRITTEN but NOT re-run —
-first job on a rebuilt base is to run this file. See RESUME.md for blueprints of the
-remaining P3 part 2 / P4. -/
+first job on a rebuilt base is to run this file. See recovery/sp-n2b-r2 (RESCUE_RESUME.md)
+for blueprints of the remaining P3 part 2 / P4. -/
 import StaircasePort.Pivot
 
 namespace StaircasePort.Stair

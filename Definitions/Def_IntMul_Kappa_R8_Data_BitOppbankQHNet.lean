@@ -139,7 +139,7 @@ def sweepR (a b f : ℕ) : List LInstr :=
 
 /-- Stage-one word (R6 Defs51 `W1F` shape, NR=27794 / densified GREC chunking).
 
-DIVERGENCE (wound R2125607274): the `mixFB` block boundaries end at 143
+DIVERGENCE (audited): the `mixFB` block boundaries end at 143
 while R8 `GREC` has 213 elements — the block run covers only 36,608 of
 54,290 records. This is INTENTIONAL-LOOKING BUT LOAD-BEARING: a measured
 attempt to extend the partition to 213 (`mixFB 143 213`, 2026-10-30) SCRAMBLED
@@ -158,7 +158,7 @@ def W1F : List LInstr :=
 
 /-- Stage-two word (R6 Defs51 `W2F` shape).
 
-DIVERGENCE (wound R2125607274): same boundaries as `W1F` (ends 143 of 213).
+DIVERGENCE (audited): same boundaries as `W1F` (ends 143 of 213).
 The extension experiment was reverted after it scrambled the reads — see
 `W1F` docstring. Do NOT extend the coverage. -/
 def W2F : List LInstr :=

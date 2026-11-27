@@ -1,16 +1,14 @@
-# N2b RESCUE + RESUME (sp-n2b agent, 2026-11-05/06)
+# N2b RESCUE + RESUME (2026-11-05/06)
 
 ## WHAT HAPPENED
-Host restarts (3+) wiped ALL of /private/tmp: the sp-n2b workspace, the base repo
-(commit 3797328, "N2a PROVED"), /private/tmp/leaf-recon (jainroot producer chain),
-/private/tmp/intmult-sol (proven .lake/Mathlib oleans, 11G). No APFS local snapshots.
-Base commit 3797328 NOT found anywhere else on disk (checked: ~, ~/prove2me_workspace
-[different repo, no StaircasePort, cat-file 3797328 = not a valid object], ~/Workspace,
-~/worktrees, /private/var/tmp). The 5 commits made in the clone (extract scripts,
-regenerated NEBlocks.lean, green probes) died with it — never pushed (per rules).
-This directory (HOME, survives restarts) is the durable rescue package, rebuilt from
-session context. LESSON for the orchestrator: /private/tmp clones are NOT durable
-state across host restarts; workspaces must live under $HOME or push to a remote.
+Host restarts (3+) wiped the scratch workspace: the N2b worktree, the base repo
+(commit 3797328, "N2a PROVED"), the jainroot producer-chain copy, and the proven
+.lake/Mathlib oleans (11G). No local snapshots. Base commit 3797328 was not found
+anywhere else on disk. The 5 commits made in the clone (extract scripts, regenerated
+NEBlocks.lean, green probes) died with it — never pushed. This directory is the durable
+rescue package, rebuilt from session context. LESSON: scratch-location clones are NOT
+durable state across host restarts; workspaces must live in durable storage or push to
+a remote.
 
 ## STATUS: PARTIAL (phases 1+2 done-and-verified pre-wipe; phase 3 in progress)
 - Phase 1 EXTRACTION: DONE, verified. check_stair.py 23 reran certified=True on this

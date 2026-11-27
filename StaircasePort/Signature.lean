@@ -54,7 +54,7 @@ open scoped Kronecker
 
 /-! ## N5-1 ported helpers — verbatim from nb_data_edge_solution.lean (sub d536680e,
 ACCEPTED; line cites below are into that file). Namespaced `DEPort` to stay clear of
-N5-2 / peer files. Everything here is PROVED (no sorry): the label algebra (:485-494),
+N5-2 / other files. Everything here is PROVED (no sorry): the label algebra (:485-494),
 the flag-basis qM calculus (:290-303, :332-350), rank-via-trace (:389-395), the run-list
 toolkit (:458-475) and `edge_singles` (:450-456, consuming the Platform.edge_of_pivs stub).
 NOT ported here (owned elsewhere): the corner-identity machinery `Tm_row`/`Ti_col`/
