@@ -3,7 +3,7 @@ import Definitions.Def_IntMul_Kappa_R6_Defs4
 /-!
 # One-run edges for the fixed-point/full-swap obstruction
 
-Original definition from the R8 oppbank reconstruction repair (R2125607035).
+Original definition from the R8 oppbank reconstruction repair.
 Only the two interface constructors live here; the proof and its supporting
 lemmas are theorem-side, so this definition stays lightweight and census-free.
 -/

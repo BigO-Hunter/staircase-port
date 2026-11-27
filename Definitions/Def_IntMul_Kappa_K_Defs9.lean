@@ -367,7 +367,7 @@ section
   `d = ⌊b^ε⌋`, `K = ⌊d^c⌋`, `α = ⌈(12d²b)^{1/4}⌉` satisfy these bounds with `p = 6b`.
 * `kappaBound_of_table`: a correct multitape machine whose time on length `n ≥ n₀` is at most
   `C₀ (V(n) · Ncost(n) + n)` with `V ≤ 48n`, `p = 6 lg n` and parameters obeying the pointwise
-  bounds satisfies the campaign statement `KappaBound (2⁻¹⁸²)`, i.e. time `O(n (lg n)^{1-κ})`.
+  bounds satisfies the target statement `KappaBound (2⁻¹⁸²)`, i.e. time `O(n (lg n)^{1-κ})`.
 -/
 
 open Real
@@ -392,7 +392,7 @@ def Ncost (p d K ℓ α : ℝ) : ℝ :=
 
 /-! ### The concrete parameters of §9.2.1 satisfy the pointwise bounds -/
 
-/-! ### Connection to the campaign statement -/
+/-! ### Connection to the target statement -/
 
 end
 
