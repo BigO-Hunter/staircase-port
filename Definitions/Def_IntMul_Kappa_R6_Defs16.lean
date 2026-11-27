@@ -725,7 +725,7 @@ section
 /-!
 # Round six, bit side: the statement `bitNetR6` (interface)
 
-Accepted restatement (coordinator, 2026-10-19): the round-six bit network as a `QHNet` over
+Accepted restatement (2026-10-19): the round-six bit network as a `QHNet` over
 `ZMod 2` with `W = 148225616` roles and `m = 529`, valid runs, admissible Bruhat data and formal
 frame correctness at every power of every large prime, and Jain's histogram. Consumed through
 `prop11H_formal`.
