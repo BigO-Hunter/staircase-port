@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""D2 table retarget (STAGE 2, lane formalok-port) — the GREC/D2 -> Rec/chunk pack at R7 geometry.
+"""D2 table retarget (STAGE 2) — the GREC/D2 -> Rec/chunk pack at R7 geometry.
 
 WHAT THIS DELIVERS (and what it deliberately does NOT):
   * the R7 label-pack geometry (NL = wAuxEnd + h = 32431) and the CODE WIDTH DECISION, measured:
@@ -75,8 +75,8 @@ NEEDED = {
     'R6 Defs52 (NB program assembly)':
         ['Definitions/Def_IntMul_Kappa_R6_Defs52.lean'],
 }
-ROOTS = [os.path.expanduser('~/bigo-campaign/staircase-port'),
-         os.path.expanduser('~/prove2me_workspace')]
+ROOTS = [ROOT,
+         os.path.expanduser(os.environ.get('PROVE2ME_WORKSPACE', '~/prove2me_workspace'))]
 
 
 def audit():

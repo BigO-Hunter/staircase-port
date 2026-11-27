@@ -13,8 +13,8 @@ PND all initial wire codes < 2^width                     PASS max init code=6510
 PND count('src' starts) == v                             PASS n=1771
 PND pack/decode round-trips (reversed-field convention pinned) PASS orientation=identity
 PND limb count * 3855 fields covers NL                   PASS limbs=9
-DEP ABSENT R6 Defs51 (genF/genStepF/mvF/codeOf/Loc: injS/retS/GREC Rec encoder) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
-DEP ABSENT R6 GenData_1 (Rec/chunk label packs SG1_*) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
-DEP ABSENT R6 GenData_2 (stage-2 packs SG2_*) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
-DEP ABSENT R6 Defs52 (NB program assembly) (searched: /Users/dmitri.arkhipov/bigo-campaign/staircase-port, /Users/dmitri.arkhipov/prove2me_workspace)
-wrote /Users/dmitri.arkhipov/bigo-campaign/staircase-port/StaircasePort/D2Chunks.lean (130 lines)
+DEP ABSENT R6 Defs51 (genF/genStepF/mvF/codeOf/Loc: injS/retS/GREC Rec encoder) (searched: this repo, the platform workspace)
+DEP ABSENT R6 GenData_1 (Rec/chunk label packs SG1_*) (searched: this repo, the platform workspace)
+DEP ABSENT R6 GenData_2 (stage-2 packs SG2_*) (searched: this repo, the platform workspace)
+DEP ABSENT R6 Defs52 (NB program assembly) (searched: this repo, the platform workspace)
+wrote StaircasePort/D2Chunks.lean (130 lines)

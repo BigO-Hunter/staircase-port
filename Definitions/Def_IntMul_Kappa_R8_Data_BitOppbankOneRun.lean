@@ -7,7 +7,7 @@ set_option relaxedAutoImplicit false
 /-!
 # Opposite-bank one-run edge interface
 
-Waypoint for R2125607035 (2026-10-29).  The audited upstream export at commit
+Waypoint (2026-10-29).  The audited upstream export at commit
 `d48a892d1ef0a194f9643142172e17bb0881b63f` produces 122504 charged steps and
 4231 aux sigma frames.  Its one-run compile has the following run shapes.  The
 `PEOne` predicate deliberately keeps the full `EdgeQ` requirement, including

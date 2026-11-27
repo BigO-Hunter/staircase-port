@@ -1,11 +1,11 @@
-# FORMALOK_REPORT — Stage 2, the `netS_FormalOK` port (lane formalok-port, 2026-11-06)
+# FORMALOK_REPORT — Stage 2, the `netS_FormalOK` port (2026-11-06)
 
-Leaf: bitNetR7_mom (e27d1a90) · repo: `~/bigo-campaign/staircase-port` · lane: THE LADDER'S
+Leaf: bitNetR7_mom (e27d1a90) · repo: `this repo` · lane: THE LADDER'S
 FORMALOK PORT. Stage-1 facts stand untouched (RunsOK / EdgesOK_large / `netS_dominance`
 PROVED; leaf sorryAx road = STUB 5 `netS_FormalOK` only + Rewire's 3 documented Platform
 stubs inside the discharged witnesses).
 
-## What the port delivered this session (all elaborates clean vs cached oleans; both
+## What the port delivered (all elaborates clean vs cached oleans; both
 modules are OFF the pending Corner→Projector→Rewire chain — additive, nothing imports them)
 
 ### 1. `StaircasePort/FormalCalc.lean` — the `formal_labels` calculus (PROVED, 0 sorry)
@@ -47,8 +47,8 @@ FB0-analogue the per-family label equations consume.
 1. **GREC/D2 table retarget** (data, offline-pre-verify in Python first): pack the frozen
    D2 stage word into the `Rec`/chunk shape and instantiate `cs1`/`cs2` (template:
    `Def_IntMul_Kappa_R8_Data_BitOppbankGenData_*` + `LocGrecDense`; NOTE those R8 files
-   are in `Definitions/` but NOT yet built in this checkout — the R8 lane owns them).
-   The R8 landmine R2125607274 applies: the `mixFB` segment boundaries are load-bearing;
+   are in `Definitions/` but NOT yet built in this checkout — the R8 work owns them).
+   The audited R8 landmine applies: the `mixFB` segment boundaries are load-bearing;
    do not "fix" coverage.
 2. **`genF_labGates` port** (259 ln, 0-sorry platform-Proved): LabGates over the
    generated chunks w.r.t. the stage-word labels.
@@ -62,15 +62,15 @@ FB0-analogue the per-family label equations consume.
    run-free edges leave the moment bridge untouched; EdgesOK needs per-edge clearance).
 
 ## axcheck footprint
-`n5_axcheck.lean` NOT re-run this session: QHNetStair re-elaboration is blocked on the
-peer Corner→Projector→Rewire chain (5 peer `lake build` processes grinding; the
-g2/f5b drivers exhausted their attempt budgets, `Rewire.olean` still absent). Expected
+`n5_axcheck.lean` NOT re-run: QHNetStair re-elaboration is blocked on the
+Corner→Projector→Rewire chain (5 concurrent `lake build` processes grinding; the
+check drivers exhausted their attempt budgets, `Rewire.olean` still absent). Expected
 post-chain road: leaf = STUB 5 + Rewire's 3 Platform stubs; after items 1-5: STUB 5
 drops to `Platform`-stub-only (the 3 documented stubs inside the discharged witnesses —
-acceptable per the lane's receipt condition).
+acceptable per the receipt condition).
 
 ## Resume point
-1. `grep "Build completed successfully" /tmp/f5_build.log` or relaunch a driver
+1. `grep "Build completed successfully"` in the build log or relaunch a driver
    (LAKE_JOBS=1, LEAN_NUM_THREADS=1, detached, never foreground >2 min) — the chain
    (Corner→Projector→Rewire) then auto-elaborates QHNetStair; fix any real-file-context
    errors, re-run `n5_axcheck.lean`.

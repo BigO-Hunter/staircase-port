@@ -1,9 +1,9 @@
 /- Stage 0 cross-tie: the REGENERATED dataset's histogram has the oracle's power sums
 q = 0 and q = 1 (kernel-decided on both sides; the zero-axiom d2HIST_eq_bitR7 pin in
 D2Data.lean transfers all 46 sums). Built EXPLICITLY (`lake build StaircasePort.MomOracleD2`),
-not via the root import: it pulls the 13MB D2Data literal chain, which the host-memory
-reaper kept killing during the stage-0 session — the 46 core pins (MomOracle.lean) build
-on the Definitions closure alone. -/
+not via the root import: it pulls the 13MB D2Data literal chain, whose builds were
+repeatedly killed under memory pressure — the 46 core pins (MomOracle.lean) build on
+the Definitions closure alone. -/
 import StaircasePort.D2Data
 import StaircasePort.MomOracle
 

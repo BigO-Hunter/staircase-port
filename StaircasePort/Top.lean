@@ -2,7 +2,7 @@
 # Top-level target: the r7 leaf, restated against the real QHNet definitions
 
 formal_statement (platform e27d1a90-cfee-4b83-9b0b-b6c6f0ab652d, fetched verbatim to
-/private/tmp/leaf-recon/formal_statement.lean):
+ref/bitNetR7_mom_formal_statement.lean):
   `theorem bitNetR7_mom : BitNetMomStmtG 108516254 529 Jain.bitR7 := by sorry`
 `BitNetMomStmtG` (Def_IntMul_Kappa_RG_Defs.lean:31-34) unfolds to the ∃-statement below;
 the unfolding is restated here directly against Defs4's QHNet (Defs4:212) because RG_Defs'

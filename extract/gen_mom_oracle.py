@@ -3,7 +3,7 @@
 
 Computes S[q] = sum over (w, n_w) in bitR7 of n_w * w^q (exact integers) from the
 platform-frozen Definitions/Def_IntMul_KappaJainData.lean, writes the JSON artifact
-(~/bigo-campaign/stage0/bitR7_power_sums.json) and emits StaircasePort/MomOracle.lean
+(extract/out/bitR7_power_sums.json) and emits StaircasePort/MomOracle.lean
 (kernel `decide` pins, big-literal pattern; no native_decide, no Rat).
 
 Cross-checks built in: S0 == 1905413587 (childCount) and S1 == 57403754177 (rankSum),
@@ -14,7 +14,7 @@ import hashlib, json, os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 JAIN = os.path.join(ROOT, 'Definitions', 'Def_IntMul_KappaJainData.lean')
-STAGE0 = os.path.expanduser('~/bigo-campaign/stage0')
+STAGE0 = os.path.join(ROOT, 'extract', 'out')
 OUT_LEAN = os.path.join(ROOT, 'StaircasePort', 'MomOracle.lean')
 QMAX = 45
 
