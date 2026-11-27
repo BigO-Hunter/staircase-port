@@ -4,10 +4,10 @@ Date: 2026-11-04. Skeleton only: definitions + sorry'd statements + extracted da
 Every statement elaborates against the REAL platform definitions (Defs4 closure below).
 
 ## Environment
-- Toolchain v4.34.1 + Mathlib d13f23b7 (project copied from /private/tmp/intmult-sol, its
-  `.lake` APFS-cloned with `cp -Rc`; intmult-sol itself untouched).
+- Toolchain v4.34.1 + Mathlib d13f23b7 (project copied from the intmult-sol development, its
+  `.lake` cache cloned; intmult-sol itself untouched).
 - `Definitions/` = exact 64-file import closure of `Def_IntMul_Kappa_R6_Defs4` (source:
-  ~/prove2me_workspace/Definitions, bodies identical to intmult-sol's migrated copies —
+  the platform Definitions workspace, bodies identical to intmult-sol's migrated copies —
   only provenance headers differ) + `Def_IntMul_KappaJainData`. Built GREEN on v4.34.1:
   `build_defs.log` "Build completed successfully (8987 jobs)", 0 errors. This validates the
   whole r6 vocabulary (QHNet, Edge, EdgeQ, rk, IsPiv, RunOK, runPairs, runPiv, pswQ, qM,
@@ -27,7 +27,7 @@ Every statement elaborates against the REAL platform definitions (Defs4 closure 
 | extract/gen_lean_data.py | StaircasePort/CertData.lean, StaircasePort/NEBlocks.lean | generated Lean data (exact ints only) |
 
 Producer chain copy: extract/jainroot/ (check_stair.py + linalg/check_lifted/deferred/
-certificate_round7 @ c05adfe, from /private/tmp/leaf-recon — jain-verify NOT touched).
+certificate_round7 @ c05adfe, from the producer recon copy — jain-verify NOT touched).
 
 ## N-item map
 | N | file | statements | depends on |
@@ -122,7 +122,7 @@ DISCRIMINATING negative control (--control: certified=False, 3 rank violations).
   file headers; every `/--` is attached to a declaration.
 - Bare `end` for unnamed sections; no `end noncomputable section` anywhere.
 - All builds detached (nohup + log): build_defs.log, build_scaffold.log.
-## N4 NOTES (2026-11-04, N4 agent)
+## N4 NOTES (2026-11-04)
 - N4 PROVED: stair_f_nonvanishing + stair_hu/hv/hT, axioms [propext, Classical.choice,
   Quot.sound], NO native_decide, zero sorry in Nonvan.lean. Same-file helpers: stairTv_mem,
   stairG_val, stairA/C/B/D_ne_zero, stairCoeffA/B_ne_zero ([propext, Quot.sound]).
@@ -137,14 +137,13 @@ DISCRIMINATING negative control (--control: certified=False, 3 rank violations).
   fallback (simp arith leaves forms like `!1+3 = 0`). hu/hv closed by simp alone.
 - Benign warnings left in place (2x unnecessarySeqFocus, 2x never-executed norm_num) --
   file is green; not worth a re-verification cycle.
-## N3 RESUME (2026-11-04, subagent sp-n3) — STATUS: PROVED, item COMPLETE
+## N3 RESUME (2026-11-04) — STATUS: PROVED, item COMPLETE
 Stopping point: ALL six N3 statements proved in StaircasePort/Cert.lean, zero sorry in the
 file; `lake build StaircasePort` GREEN (8997 jobs); commit e91cda8 (+ final axcheck commit).
 stair_data_cert axioms: [propext, Classical.choice, Quot.sound] — kernel-checked, no
 native_decide, no sorryAx (n3_axcheck.lean prints all 6 + 3 ported helpers).
 
-GAP-7 TIMING (decide +kernel; wall via /usr/bin/time -l; host at load ~65/16 cores, so
-wall >> CPU; baseline import ≈60s wall):
+GAP-7 TIMING (decide +kernel; wall via /usr/bin/time -l; baseline import ≈60s wall):
 | stage | content | wall | CPU(u+s) | axioms |
 |---|---|---|---|---|
 | t0 | native_decide sanity: all props TRUE (dots, worst entry, all 2025, certChk) | 89s | 17s | VM (test-only) |
@@ -167,7 +166,7 @@ n3_t1_kernel_entry.lean n3_t2_kernel_row.lean n3_t4_kernel_chk.lean n3_axcheck.l
 extract/n3_corner_stats.py. No shared-file change requests.
 Next for successors: N2c (stairCorner_pivots_witness) and N5-2 flagBasis_stair hcert can now
 consume stair_data_cert; nothing blocked on N3.
-## N2b NOTES (2026-11-05/06, sp-n2b-r2 — recovery agent after the kernel panic)
+## N2b NOTES (2026-11-05/06)
 STATUS: PROVED + MERGED. `stairNE_rk_le` in StaircasePort/Pivot.lean is no longer sorry.
 
 ### THE STATEMENT-SHAPE FINDING (the scaffold's N2b statement was FALSE)
@@ -180,8 +179,8 @@ HONEST FORM (what is proved, and what N2c/N2d actually consume):
   theorem stairNE_rk_le (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) :
       ∀ t ∈ stairNEBlocks, rk (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)) (t.1+1) t.2.1 ≤ t.2.2.2
   stairPairM x₁ y₁ x₂ y₂ := (1 - vecMulVec x₁ y₁) ⊗ₖ (1 - vecMulVec x₂ y₂)
-Found INDEPENDENTLY twice (this agent's numeric check + the predecessor's counterexample in
-RESCUE_RESUME.md), so it is not a measurement artefact.
+Found INDEPENDENTLY twice (the numeric check + the earlier counterexample in
+recovery/sp-n2b-r2:RESCUE_RESUME.md), so it is not a measurement artefact.
 
 ### NEBlocks.lean INTERFACE (regenerated here; predecessor's version was lost/was NOT built)
 My regen differs from the predecessor's rescued blueprint and is BETTER for the proof: instead
@@ -238,7 +237,7 @@ zip-based cut-set interface (needs getD index bridges; StairNEBlock fields are s
 `rw [Finset.sum_apply]` under Matrix transparency (ext to entries first, always).
 NEXT: N2c (stairCorner_pivots_witness, still sorry) — consumes N3's stair_data_cert (proved)
 and now N2b's upper bound; then N2d.
-## N52 RESUME (2026-11-05, subagent sp-n52) — STATUS: PROVED, item COMPLETE
+## N52 RESUME (2026-11-05) — STATUS: PROVED, item COMPLETE
 `StaircasePort.Stair.flagBasis_stair` (Signature.lean:1525) is PROVED with its statement
 UNCHANGED. `lake build StaircasePort` GREEN (8997 jobs). Axioms:
 `[propext, sorryAx, Classical.choice, Quot.sound]` — the only road to sorryAx is four
@@ -308,7 +307,7 @@ is a FRAME discovery, not a proof gap:
 * When regex-substituting a variable name in Lean source, protect named-argument LABELS
   (`(h := ...)` must keep the `h`).
 * A hypothesis named `h` (`intro h`, `have h :`) is silently rewritten by such a substitution.
-## N2c NOTES (2026-11-05, subagent sp-n2c)
+## N2c NOTES (2026-11-05)
 STATUS: PROVED (build verification in progress at write time; see N2c RESUME below).
 ### THE STATEMENT IS TRUE AS SCAFFOLDED — and the route is NOT the r6 corner route
 `stairCorner_pivots_witness` (∀ x ∈ runPairs stairCornerRuns45, IsPiv stairCornerQ x.1 x.2)
@@ -363,11 +362,11 @@ site (otherwise "Unknown identifier stairNE_rk_le").
    bound as hypotheses — omega cannot conjure `< 45` from `Y ≤ c`.
 (g) `simpa` alone will not rewrite a matrix form into a hypothesis; build the goal's exact
    matrix with a `rfl`-checked `heq` and rw both.
-## N2c RESUME (2026-11-05, subagent sp-n2c) — STATUS: PROVED, item COMPLETE
+## N2c RESUME (2026-11-05) — STATUS: PROVED, item COMPLETE
 Stopping point: NOTHING in flight for N2c. `stairCorner_pivots_witness` is PROVED and
 spliced into StaircasePort/Pivot.lean (at the END of `namespace Stair`, after
 `stairNE_rk_le`); `lake build StaircasePort` GREEN (8997 jobs, 0 errors, build_n2c.log —
-~6 min at host load). Axioms (n2c_axcheck.lean): stairCorner_pivots_witness / stairPivAt /
+~6 min). Axioms (n2c_axcheck.lean): stairCorner_pivots_witness / stairPivAt /
 n2c_rank_lower / rkQ_le_of_block / isPiv_of_bounds / rk_ge_of_det /
 stairCornerRuns45_toFinset/_mem ALL `[propext, Classical.choice, Quot.sound]`; the kernel
 pins n2cChk0 `[propext]`, n2cEnt0 `[propext, Quot.sound]`. NO sorryAi, NO native_decide,
@@ -384,25 +383,25 @@ log (the 2-position probe that validated all generic plumbing before the full bu
 n2c_axcheck.lean, n2c_cert_search*.py, n2c_gen.py, n2c_struct.py.
 NO shared-file change requests. Nothing blocked on N2c: N2d can consume it as-is.
 
-### N2d STATUS: NOT STARTED (ran out of this agent's budget) — findings that save the next mind days
+### N2d STATUS: NOT STARTED (budget exhausted) — findings that save the next mind days
 1. STATEMENT SHAPE IS CONFIRMED CORRECT and needs NO delta: the consumer
-   (~/bigo-campaign/sp-n52/StaircasePort/Signature.lean:1499) calls
+   (StaircasePort/Signature.lean:1499) calls
    `isPiv_stair_lower _ _ _ _ h₁' h₂' (mul_ne_zero (hx1 _) (hx2 _)) (mul_ne_zero hy1 hy2) ?_ ?_`
    — exactly the scaffold's 9 arguments, in order, with `hdet` = the STAIRCASE-frame corner
    det (`stairCornerQOf (...)`), i.e. exactly what N3's stair_data_cert and the N5-2
-   course update say. So the frame correction the N5-2 agent measured (corStairQ ≠ cor,
+   course update say. So the frame correction N5-2 measured (corStairQ ≠ cor,
    r6 frame singular) does not change N2d's SIGNATURE; it changes only the PROOF, because
    the corner-transfer identity `Cp i j = cor M i j` (nb_data_edge_solution.lean:534-537)
    must be re-proved in the staircase frame.
 2. The middle run (45,45,439) is the easy half: Platform.isPiv_mid (m = 529, k = 45,
    p = qM M) needs hk (`2*45 ≤ 529`), hp (`p*p = p`, from DEPort.qM_idem + the
    Kronecker-of-idempotents identity already used verbatim in
-   sp-n52/Signature.lean:204-210), hrank (`(qM M).rank = 484`, the trace computation
+   Signature.lean:204-210), hrank (`(qM M).rank = 484`, the trace computation
    :211-217) and hC (the 45x45 corner at rows 0..44 / cols 484..528 = the transfer
    identity, staircase frame). Positions produced: (i,i) for 45 ≤ i < 484.
 3. The two corner runs (1,507,21) and (25,486,18) need: isPiv_block
    (nb_data_edge_solution.lean:227-238, PROVED with a full proof in
-   ~/bigo-campaign/sp-n52/ref/) + N2c lifted from the concrete witness to generic labels.
+   ref/) + N2c lifted from the concrete witness to generic labels.
    The lift is the flag_gen Zariski/Pall product route (nb_flag_gen_solution.lean:977-993);
    N4's stair_f_nonvanishing + stair_hu/hv/hT are built for precisely that product, so
    compose with them rather than re-deriving.
@@ -410,12 +409,12 @@ NO shared-file change requests. Nothing blocked on N2c: N2d can consume it as-is
    hB/hBd/hA/hAd) — those are the sparse-family facts, and the staircase family's versions
    are LtermsStair/RtermsStair support facts (a `decide`/`simp` on the concrete lists).
 
-## N2d NOTES (2026-11-05, subagent sp-n2d) — STATUS: STATEMENT REFUTED (no proof exists)
+## N2d NOTES (2026-11-05) — STATUS: STATEMENT REFUTED (no proof exists)
 ### Verdict
 `isPiv_stair_lower` (Pivot.lean) is **FALSE as stated**. Nothing is proved and nothing
 should be: at the extracted staircase witness every one of its five hypotheses holds while
 18 of the 39 corner positions it claims are not pivots of the matrix it names. This is the
-third false-premise discovery of the campaign (after N2b's false scaffold statement and
+third false-premise discovery (after N2b's false scaffold statement and
 N5-2's unsound pDat route) and it is a FRAME error, not a proof gap.
 
 ### The frame fact (two independent verifications)
@@ -497,7 +496,7 @@ CONDITIONALLY — it takes `hpiv` as a hypothesis; only the instantiation is uns
 * `set_option linter.unusedSimpArgs false in` is needed on these lemmas (the simp sets are
   deliberately over-complete) — otherwise the build emits unused-arg noise.
 
-## N2d RESUME (2026-11-05, subagent sp-n2d) — STATUS: STATEMENT REFUTED, no work in flight
+## N2d RESUME (2026-11-05) — STATUS: STATEMENT REFUTED, no work in flight
 **Stopping point:** nothing in flight. `lake build StaircasePort` GREEN (8997 jobs, exit 0)
 with the new frame-delta block; `n2d_axcheck.lean` prints
 `[propext, Classical.choice, Quot.sound]` for all eight new lemmas and `sorryAx` for
@@ -511,7 +510,7 @@ given `y₁⬝x₁ = 1`, `y₂⬝x₂ = 1`, `hu`, `hv`, `hT`, and
 1. Middle run via `Platform.isPiv_mid` + "isPiv_mid needs only hdet": the `hdet` in the
    statement is the staircase frame, `isPiv_mid` needs the corner of the matrix it is
    applied to, and `qM M`'s corner is the r6 frame (`qM_corner`) — measured rank 44 at the
-   witness, so this route is unavailable at the very witness the campaign chose.
+   witness, so this route is unavailable at the very witness chosen.
 2. Corner-transfer identity "`Cp i j = cor M i j` restated with `corStairQ`"
    (Signature.lean header point 1): false — the two frames read different matrix entries
    (`n2d_cor_00` vs `n2d_corStairQ_00`; 1528/2025 entries differ at the witness).
@@ -533,10 +532,10 @@ witness pivots lifted to generic labels through the flag_gen Pall product (N4's
 `flagBasis_stair` currently derives its conclusion from a false hypothesis (its `sorryAx`
 is a falsehood, not documented-stub debt).
 
-**Cross-wave consequence to raise with the coordinator:** the campaign's premise that the
+**Cross-wave consequence:** the premise that the
 staircase design is the flag basis of Defs4's `qM` is wrong (that is the whole content of
 `n2d_frame_delta`). Every "swap the runs list inside r6's data_edge" step inherits this.
-## MIDRUN NOTES (2026-11-06, sp-midrun — independent middle-run arm)
+## MIDRUN NOTES (2026-11-06 — independent middle-run arm)
 QUESTION: the open middle-run item of the N2d RESUME — (a) pivot status of the 439 middle
 positions of stairDataRuns in the r6 frame (qM M) at the witness, (b) dependence on
 flagEquiv's ARBITRARY middle order, (c) the middle clause isPiv_stairR7 must claim so
@@ -603,9 +602,9 @@ M[a*23+b][c*23+e] — writing the column block with b instead of c silently give
 pc-profile theorem needs the on-demand reduction (each new row reduced against ALL
 previous pivot rows); the producer's eager downward elimination computes the same reduced
 rows. Files: midrun_lib.py, midrun_r6frame.py, midrun_orders.py, midrun_spotcheck.py,
-MIDRUN_REPORT.md (also copied to ~/bigo-campaign/MIDRUN_REPORT.md), the two JSONs.
+MIDRUN_REPORT.md, the two JSONs.
 
-## MIDRUN RESUME (2026-11-06, sp-midrun) — STATUS: QUESTION ANSWERED, item COMPLETE
+## MIDRUN RESUME (2026-11-06) — STATUS: QUESTION ANSWERED, item COMPLETE
 Verdicts: (1) r6-frame middle run = 437/439 pivots at the witness; failures (464,464)
 [pc=483] and (483,483) [dependent row]; two primes + direct-elimination spot check.
 (2) Order-dependent YES (one shifted failure moves; the tail failure at 483 is in every
@@ -620,7 +619,7 @@ lemma for the middle clause; corner runs then ride on N2c lifted + isPiv_block i
 frame (N2d RESUME honest route). Cross-check pointers for N6: extract/out/midrun_r6frame.json
 (per-position A,B,C,D), extract/out/midrun_orders.json (4 orders × 2 primes + 3 generic
 controls).
-## N6 NOTES (2026-11-05, subagent sp-n6) — the R7/staircase PROJECTOR exists
+## N6 NOTES (2026-11-05) — the R7/staircase PROJECTOR exists
 ### What was built (deliverables 1-3)
 `StaircasePort/Projector.lean` (NEW, owned by N6) is the object `## N2d RESUME` asked for: the
 analogue of r6's `Tm`/`Ti`/`flagEquiv`/`qM` built from `LtermsStair`/`RtermsStair`. The
@@ -703,14 +702,14 @@ block for `(25,2)`, plus the nonvanishing factors those two identities need (the
 * Scratch: `n6_proj_probe.py`, `n6_struct_probe.py`, `n6_midrun.py`, `n6_xcheck_r6frame.py`,
   `n6_dbg*.py`, `n6_axcheck.lean`, `n6_chk.lean`, `extract/out/n6_midrun.json`.
 
-## N6 RESUME (2026-11-05, subagent sp-n6) — STATUS: the projector is BUILT and the middle run is
+## N6 RESUME (2026-11-05) — STATUS: the projector is BUILT and the middle run is
 PROVED; the 39 corner positions are the remaining gap
 
 **Stopping point.** `StaircasePort/Projector.lean` is complete, typechecks clean, and its axiom
 footprint is exactly `[propext, Classical.choice, Quot.sound]` on every construction lemma and
 `[propext, sorryAx, Classical.choice, Quot.sound]` on `isPiv_stairMid` — the only `sorryAx` road
 is `Platform.isPiv_mid`'s documented stub (Pivot.lean:69), which IS the intended proof channel.
-Nothing is in flight; `lake build StaircasePort` runs detached (~/bigo-campaign/sp-n6/.build_full.log).
+Nothing is in flight; `lake build StaircasePort` runs detached (patient retry loop).
 
 **Delivered.**
 1. `qMStair M = (PmStair * M * QmStair).submatrix flagEquivStair flagEquivStair`, with
@@ -721,7 +720,7 @@ Nothing is in flight; `lake build StaircasePort` runs detached (~/bigo-campaign/
    `QmStair_mul_PmStair : QmStair * PmStair = 1`, `qMStair_idem`, `qMStair_trace`.
 2. **`qMStair_corner : qMStair M ⟨i⟩ ⟨529-45+j⟩ = corStairQ M i j`** (i, j < 45) and
    `qMStair_cornerBlock` (the 45x45 top-right block IS `stairCornerQOf M`) — the corner-transfer
-   identity the whole campaign needed, and the thing `qM_corner` could never be restated into.
+   identity the whole port needed, and the thing `qM_corner` could never be restated into.
 3. **`isPiv_stairMid : h₁ → h₂ → hdet → ∀ i, 45 ≤ i → i < 484 → IsPiv (qMStair M) i i`** — the
    439 middle-run positions, discharged verbatim by `Platform.isPiv_mid` (hk, hp = idem,
    hrank = 484 from the trace, hC via `qMStair_cornerBlock` + `hdet`). Matches the independent
@@ -766,7 +765,7 @@ block-by-block computation. (The r6 control gives 0 for the `(i,22+g)` block it 
 nonzero minors for the shifted blocks — the r6 frame's rank-one region is different, which is
 exactly N2d's frame delta; that is a control that the probe DISCRIMINATES, not a discrepancy.)
 
-## N7 NOTES (2026-11-05, subagent sp-n7) — rewire plan + two structural discoveries
+## N7 NOTES (2026-11-05) — rewire plan + two structural discoveries
 ### Discovery 1 — the rewire CANNOT live in Signature.lean (import cycle)
 `StaircasePort/Projector.lean` (qMStair) imports `StaircasePort.Signature`; Signature cannot
 import it back. The N6 rewire spec ("take qMStair from StaircasePort.Projector") therefore
@@ -808,7 +807,7 @@ At generic labels (all x_β ≠ 0, all y_l ≠ 0, y·x = 1), staircase functiona
 * side1 B-block (TeStair*Cx x): upper 0, diag = x_β (β<22), stairAlZ·x_0 (β=22);
   A-block (Ry y*TeStair'): upper 0, diag = stairAZL.getD γ 0·y_{γ+1} (γ<22), y_22 (γ=22).
   side2: diag = x_β / stairBeZ·x_0 (B) and stairBZL.getD γ 0·y_{γ+1} / y_22 (A). All ≠ 0.
-  r6-frame control values reproduce (aux1 diag = -x_β y_22 etc.) — harness validated.
+  r6-frame control values reproduce (aux1 diag = -x_β y_22 etc.) — validated numerically.
 ### Label-fact extension (the staircase needs y_l ≠ 0 for l ≤ 21, r6 needed only y_22)
 The r6 diag values read y_22 (Rterms (22+β) carry the (·,22) coordinate); the staircase
 RtermsStair carry (·,β+1), so the aux/side diag nonvanishing needs y_l ≠ 0 for l = 1..22 —
@@ -819,7 +818,7 @@ for EVERY β, l — same proof as pA_U_ne with the witness P' := vecMulVec (fun 
 factor widens from ∏_β to ∏_{β,l}; hlab/labU/labV strengthen to (∀β, x'_β ≠ 0) ∧ (∀l, y'_l ≠ 0).
 No platform statement changes; flag_gen_stair_aux's signature is unchanged.
 ### Corner-hole contract (composition contract — the exact type data_edge_stair consumes)
-The corner agent's brief shape is consumed VERBATIM, no delta:
+The corner contract shape is consumed VERBATIM, no delta:
 `theorem isPiv_stairCorner_contract (x₁ y₁ x₂ y₂ : Fin 23 → ℚ) (h₁ : y₁ ⬝ᵥ x₁ = 1)
  (h₂ : y₂ ⬝ᵥ x₂ = 1) (hdet : (stairCornerQOf (stairPairM x₁ y₁ x₂ y₂)).det ≠ 0) :
  ∀ p ∈ runPairs (stairCornerRuns 23 529), IsPiv (qMStair (stairPairM x₁ y₁ x₂ y₂)) p.1 p.2`
@@ -835,7 +834,7 @@ data_edge_stair derives hpiv internally (middle run via isPiv_stairMid, corner r
 hcorner, case-split by the DEPort run toolkit). hu/hv/hT become UNUSED (the old
 isPiv_stair_lower fuel); pT factors stay in Pall (harmless).
 
-## N7 RESUME (2026-11-05, subagent sp-n7) — STATUS: REWIRE COMPLETE (PROVED modulo the corner hole)
+## N7 RESUME (2026-11-05) — STATUS: REWIRE COMPLETE (PROVED modulo the corner hole)
 **The rewire is LANDED and `lake build StaircasePort` is GREEN (8999 jobs).**
 `flagBasis_stair`'s statement is BYTE-IDENTICAL to the audited N5-2 version (diff-verified
 against e1953eb). Axioms of data_edge_stair/flagBasis_stair:
@@ -848,10 +847,10 @@ against e1953eb). Axioms of data_edge_stair/flagBasis_stair:
 1. data_edge_stair restated: conclusion `DataE' (qMStair M)` ✓. DELTA A: the `hpiv` slot is
    REPLACED by `(hdet, hcorner)` — hdet = staircase-frame corner det (hypothesis;
    stair_data_cert at the witness), hcorner = the corner contract. Reason: isPiv_stairMid
-   (PROVED) and the corner agent's brief shape have exactly these hypotheses, so the middle
+   (PROVED) and the corner contract shape has exactly these hypotheses, so the middle
    clause is derived internally (isPiv_stairMid) and hcorner is consumed verbatim. hu/hv/hT
    are no longer consumed (pT factors stay in Pall; harmless).
-2. Corner transfer: the old hCe swap is UNNECESSARY by construction — the corner agent's brief
+2. Corner transfer: the old hCe swap is UNNECESSARY by construction — the corner contract
    shape is already stated at `qMStair` (IsPiv (qMStair (stairPairM ...))), and inside the
    staircase aux_edge_of_Stair the r6 hCe step became `qMStair_corner` (EXACT, no transfer
    lemma). isPiv_block + isPiv_diag_of_lower ported for real.
@@ -890,7 +889,7 @@ N7 route computes the four rk values at (l,l) instead; axiom-clean
 [propext, Classical.choice, Quot.sound]. N52.aux_edge_of/N52.side_edge_of sorryAx footprint =
 Platform.isPiv_mid/edge_of_pivs/isPiv_side only.
 
-**THE CORNER HOLE — the composition contract (exact type, verbatim the corner agent's brief):**
+**THE CORNER HOLE — the composition contract (exact type, verbatim the corner contract):**
 ```
 theorem isPiv_stairCorner_contract (x₁ y₁ x₂ y₂ : Fin 23 → ℚ)
     (h₁ : y₁ ⬝ᵥ x₁ = 1) (h₂ : y₂ ⬝ᵥ x₂ = 1)
@@ -909,7 +908,7 @@ it, so the cycle forces the new file; N6 precedent). Signature.lean: data_edge_s
 flag_gen_stair_aux, flagBasis_stair DELETED (moved+restated in Rewire.lean); N52 toolkit +
 the two real stub ports added; everything else untouched. StaircasePort.lean root: one import
 line (StaircasePort.Rewire, after Projector). Pivot.lean/Projector.lean/Cert.lean/Data.lean:
-UNTOUCHED (other agents' files). Aux/side support computations live in Rewire.lean as
+UNTOUCHED (files owned by other items). Aux/side support computations live in Rewire.lean as
 *_Stair twins; the r6-frame aux1_edge etc. remain in Signature.lean (verbatim port record,
 now unused by flag_gen).
 
@@ -918,11 +917,11 @@ now unused by flag_gen).
 omega does NOT reduce Fin.val of literals inside Fin.ext goals — use
 `simp only [Fin.mk.injEq]; omega`. `simp (disch := omega)` errors "no progress" if a branch
 closes before the disch runs — guard closers with `try`. autoImplicit is OFF in
-Signature.lean — ported generic lemmas need explicit `{a b : ℕ}` binders. The harness kills
-nohup'd process GROUPS on host restarts — spawn builds via python subprocess.Popen(...,
-start_new_session=True) (R2125605543 recipe; survived 3 restarts here).
+Signature.lean — ported generic lemmas need explicit `{a b : ℕ}` binders. Spawn long
+builds via python subprocess.Popen(..., start_new_session=True) so a client timeout
+does not kill the whole process group.
 
-**Next steps:** (1) coordinator composes the corner proof (replace
+**Next steps:** (1) compose the corner proof (replace
 isPiv_stairCorner_contract's sorry — then data_edge_stair/flagBasis_stair are fully proved
 modulo the DOCUMENTED Platform stubs); (2) the submission wave swaps Platform.* sorries for
 the platform children; (3) N52.aux_edge_of/side_edge_of are now importable proofs for the

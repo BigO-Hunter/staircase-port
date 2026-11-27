@@ -7,9 +7,14 @@
   [F: flagBasis_stair — statement verbatim, proved by delegation]
   end StaircasePort.Stair
 """
-import re
+import pathlib, re, sys
 
-BK = "/tmp/sig_backup.lean"
+ROOT = pathlib.Path(__file__).resolve().parent
+if len(sys.argv) != 2:
+    sys.exit("usage: assemble_sig.py <pre-assembly Signature backup.lean>\n"
+             "Historical one-shot assembler; the assembled StaircasePort/Signature.lean\n"
+             "is already committed. The backup input is not vendored.")
+BK = sys.argv[1]
 bk = open(BK).read()
 
 FLAG_DOC = "/-- **N5-2** — `flagBasis_stair`"
@@ -24,7 +29,7 @@ M = bk[m:e].rstrip() + "\n"
 F = bk[a:m].rstrip() + "\n"
 
 # --- port body
-port = open("n52_port.lean").read()
+port = open(ROOT / "n52_port.lean").read()
 marker = "open scoped Kronecker\n"
 port_body = port[port.index(marker) + len(marker):].strip("\n")
 port_body = port_body.replace("namespace StaircasePort.Stair.N52", "namespace N52")
@@ -49,6 +54,6 @@ F2 = F.replace("""          Sinv)) := by
     stair_data_cert Lab hLab Pis hPis""")
 assert "exact N52.flag_gen_stair_aux" in F2
 
-open("StaircasePort/Signature.lean", "w").write(
+open(ROOT / "StaircasePort/Signature.lean", "w").write(
     A + "\n" + M + "\n" + opts + port_body + "\n\n" + F2 + "\n" + END + "\n")
-print("assembled:", len(open("StaircasePort/Signature.lean").read().split("\n")), "lines")
+print("assembled:", len(open(ROOT / "StaircasePort/Signature.lean").read().split("\n")), "lines")
