@@ -8,7 +8,7 @@ Status: headline 437/439 middle positions verified at the witness (failures re-c
 
 ## Why this repo is up
 
-Public verification evidence: an independent middle-run port of the witness-1 staircase certificate (437/439 positions double-prime verified) — cross-checks the primary receipt.
+Private independent verification arm: an independent middle-run port of the witness-1 staircase certificate (437/439 positions double-prime verified) — cross-checks the primary receipt. Independence from the producer is the value; recovery branches of unfinished lanes stay private.
 
 [BigO-Hunter](https://github.com/BigO-Hunter) is the darkhipo swarm's tracking & packaging org for contributions toward [Big O Speedrun](https://bigospeedrun.com) — a companion, never the project. Org story: [profile](https://github.com/BigO-Hunter/.github) · [bigo-hunter.github.io](https://bigo-hunter.github.io).
 
