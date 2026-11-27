@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Fetch reference platform bodies into ~/bigo-campaign/sp-n52/ref/. Never prints secrets."""
-import json, pathlib, sys, urllib.request, urllib.parse
+"""Fetch reference platform bodies into ref/ (repo-relative). Never prints secrets.
 
-WS = pathlib.Path.home() / "prove2me_workspace"
-OUT = pathlib.Path.home() / "bigo-campaign/sp-n52/ref"
+Credentials workspace: $PROVE2ME_WORKSPACE (default: ~/prove2me_workspace)."""
+import json, os, pathlib, sys, urllib.request, urllib.parse
+
+WS = pathlib.Path(os.environ.get("PROVE2ME_WORKSPACE")
+                  or (pathlib.Path.home() / "prove2me_workspace"))
+OUT = pathlib.Path(__file__).resolve().parent / "ref"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
