@@ -1,0 +1,31 @@
+name: Lean proof
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staircase-port:
+    name: Build the middle-run staircase port (StaircasePort + Definitions + Theorems)
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      LEAN_NUM_THREADS: 2
+    steps:
+      - name: Check out the port
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # The default target StaircasePort imports the Definitions and Theorems
+      # libraries transitively. extract/verify_n2b_statement.py is not run: it
+      # imports check_stair from extract/jainroot/..., which is not vendored.
+      - name: Build the Lean development
+        uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1
+        with:
+          lake-package-directory: .
+          build: "true"
+          test: "false"
+          lint: "false"
+          use-mathlib-cache: "true"
